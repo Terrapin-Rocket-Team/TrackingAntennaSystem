@@ -95,111 +95,117 @@ def compute_yaw_pitch(target_vec):
 
 
 def main():
-    # 1. Initializes rocket model and local variables
-
-    # Separate arrays for each data type
-    sim_positions = []
-    sim_accelerations = []
-    real_positions = []
-    real_accelerations = []
-
-    rocket = Rocket(
-        motorAccel=np.random.uniform(180, 220), 
-        burnTime=np.random.uniform(4.5, 5), 
-        length=3.835,
-        diameter=.1524,
-        mass_empty=40.8,
-        mass_full=60.8,
-        surface_roughness=np.random.uniform(1e-6, 10e-6),
-    )     
-
-    # 2. Generate simulated data
-    generator = RocketDataGenerator(
-        rocket=rocket, 
-        loop_frequency=20, 
-        pre_launch_delay=10,
-        launch_angle= np.random.uniform(-5, 5),
-        heading_angle=np.random.uniform(0, 2 * np.pi),
-        wind_affector=(lambda t: np.array([np.random.uniform(0, .2) * np.sin(t), np.random.uniform(0, .2)*np.cos(t), 0]))
-    )
-    sim_data = generator.generate()
-
-    # Extract simulated ground truth
-    sim_time_data = sim_data["time"]
-    r_x, r_y, r_z = sim_data["r_x"], sim_data["r_y"], sim_data["r_z"]
-    v_x, v_y, v_z = sim_data["v_x"], sim_data["v_y"], sim_data["v_z"]
-    # a_x, a_y, a_z = sim_data["a_x"], sim_data["a_y"], sim_data["a_z"]
-
-    # 3. Convert to antenna frame
-
-    # from GPS can get the difference in x and y --> can easily calculate theta as tan(theta) = y/x
-    theta = random_angle(-60, 60, 1)
-    # perform signal strength sweeping --> start vertical sweep perpendicular to ground (rest position) and get where it ends up from encoder (navigation)
-    phi = random_angle(0, 20, 1)
-    # distance between rocket stand and antenna, measured via GPS in meters
-    distance = np.random.uniform(0.5, 1.5) * 1609.34
-    x = distance * np.cos(theta) * np.cos(phi)
-    y = distance * np.sin(theta) * np.cos(phi)
-    z = distance * np.sin(phi)
-
-    displacement = np.array([x, y, z])
-    # print(displacement)
-
-    # Convert degrees to radians
-    yaw = np.radians(theta)
-    pitch = np.radians(phi)
-    roll = 0.0  # Assume zero roll
-
-    q = euler_to_quaternion(roll, pitch, yaw)
-    # print("Quaternion [w, x, y, z]:", q)
-
-    rotation_matrix = quaternion_to_rotation_matrix(q)
+    num_simulations = 100
     
-    antenna_positions = []
-    antenna_velocities = []
-    antenna_yaw = []
-    antenna_pitch = []
+    all_max_yaw_accel = []
+    all_max_pitch_accel = []
+    all_median_yaw_accel = []
+    all_median_pitch_accel = []
     
-    for i in range(len(sim_time_data)):
-        pos_antenna, vel_antenna = convert_rocket_to_antenna(r_x[i], r_y[i], r_z[i], v_x[i], v_y[i], v_z[i], displacement, rotation_matrix)
-        antenna_positions.append(pos_antenna)
-        antenna_velocities.append(vel_antenna)
-        yaw, pitch = compute_yaw_pitch(pos_antenna)
-        antenna_yaw.append(yaw)
-        antenna_pitch.append(pitch)
+    for sim_num in range(num_simulations):
+        print(f"Running simulation {sim_num + 1}/{num_simulations}...")
+        
+        # 1. Initializes rocket model and local variables
+        rocket = Rocket(
+            motorAccel=np.random.uniform(180, 220), 
+            burnTime=np.random.uniform(4.5, 5), 
+            length=3.835,
+            diameter=.1524,
+            mass_empty=40.8,
+            mass_full=60.8,
+            surface_roughness=np.random.uniform(1e-6, 10e-6),
+        )     
 
-    antenna_yaw = np.unwrap(antenna_yaw)
-    antenna_pitch = np.unwrap(antenna_pitch)
+        # 2. Generate simulated data
+        generator = RocketDataGenerator(
+            rocket=rocket, 
+            loop_frequency=20, 
+            pre_launch_delay=10,
+            launch_angle=np.random.uniform(-5, 5),
+            heading_angle=np.random.uniform(0, 2 * np.pi),
+            wind_affector=(lambda t: np.array([np.random.uniform(0, .2) * np.sin(t), 
+                                               np.random.uniform(0, .2)*np.cos(t), 0]))
+        )
+        sim_data = generator.generate()
 
-    # Plot yaw and pitch over time
-    plt.figure(figsize=(12, 6))
-    plt.plot(sim_time_data, np.degrees(antenna_yaw), label='Yaw (degrees)')
-    plt.plot(sim_time_data, np.degrees(antenna_pitch), label='Pitch (degrees)')
-    plt.xlabel('Time (s)')
-    plt.ylabel('Angle (degrees)')
-    plt.title('Antenna Yaw and Pitch over Time')
-    plt.legend()
-    plt.grid(True)
-    plt.show()
+        # Extract simulated ground truth
+        sim_time_data = sim_data["time"]
+        r_x, r_y, r_z = sim_data["r_x"], sim_data["r_y"], sim_data["r_z"]
+        v_x, v_y, v_z = sim_data["v_x"], sim_data["v_y"], sim_data["v_z"]
 
-    # Compute angular rates (rad/s)
-    dt_uniform = sim_time_data[1] - sim_time_data[0]
-    yaw_rate = np.gradient(antenna_yaw, dt_uniform)    # d(yaw)/dt
-    pitch_rate = np.gradient(antenna_pitch, dt_uniform)  # d(pitch)/dt
+        # 3. Convert to antenna frame
+        theta = random_angle(-60, 60, 1)
+        phi = random_angle(0, 20, 1)
+        distance = np.random.uniform(0.5, 1.5) * 1609.34
+        x = distance * np.cos(theta) * np.cos(phi)
+        y = distance * np.sin(theta) * np.cos(phi)
+        z = distance * np.sin(phi)
 
-    plt.figure(figsize=(12, 6))
-    plt.plot(sim_time_data, np.degrees(yaw_rate), label='Yaw Rate (deg/s)')
-    plt.plot(sim_time_data, np.degrees(pitch_rate), label='Pitch Rate (deg/s)')
-    plt.xlabel('Time (s)')
-    plt.ylabel('Angular Velocity (deg/s)')
-    plt.title('Antenna Angular Velocity Requirements')
-    plt.legend()
-    plt.grid(True)
-    plt.show()
+        displacement = np.array([x, y, z])
+
+        # Convert degrees to radians
+        yaw = np.radians(theta)
+        pitch = np.radians(phi)
+        roll = 0.0
+
+        q = euler_to_quaternion(roll, pitch, yaw)
+        rotation_matrix = quaternion_to_rotation_matrix(q)
+        
+        antenna_positions = []
+        antenna_velocities = []
+        antenna_yaw = []
+        antenna_pitch = []
+        
+        for i in range(len(sim_time_data)):
+            pos_antenna, vel_antenna = convert_rocket_to_antenna(
+                r_x[i], r_y[i], r_z[i], v_x[i], v_y[i], v_z[i], 
+                displacement, rotation_matrix
+            )
+            antenna_positions.append(pos_antenna)
+            antenna_velocities.append(vel_antenna)
+            yaw_angle, pitch_angle = compute_yaw_pitch(pos_antenna)
+            antenna_yaw.append(yaw_angle)
+            antenna_pitch.append(pitch_angle)
+
+        antenna_yaw = np.unwrap(antenna_yaw)
+        antenna_pitch = np.unwrap(antenna_pitch)
+
+        # Compute angular rates (rad/s)
+        dt_uniform = sim_time_data[1] - sim_time_data[0]
+        yaw_rate = np.gradient(antenna_yaw, dt_uniform)
+        pitch_rate = np.gradient(antenna_pitch, dt_uniform)
+
+        # Compute angular accelerations (rad/s²)
+        yaw_accel = np.gradient(yaw_rate, dt_uniform)
+        pitch_accel = np.gradient(pitch_rate, dt_uniform)
+
+        # Convert to degrees/s² and store statistics
+        yaw_accel_deg = np.degrees(yaw_accel)
+        pitch_accel_deg = np.degrees(pitch_accel)
+        
+        all_max_yaw_accel.append(np.max(np.abs(yaw_accel_deg)))
+        all_max_pitch_accel.append(np.max(np.abs(pitch_accel_deg)))
+        all_median_yaw_accel.append(np.median(np.abs(yaw_accel_deg)))
+        all_median_pitch_accel.append(np.median(np.abs(pitch_accel_deg)))
+    
+    # Print results
+    print("\n" + "="*60)
+    print("ANGULAR ACCELERATION ANALYSIS RESULTS")
+    print("="*60)
+    print(f"\nYaw Angular Acceleration (deg/s²):")
+    print(f"  Max across all simulations:    {np.max(all_max_yaw_accel):.2f}")
+    print(f"  Median of max values:          {np.median(all_max_yaw_accel):.2f}")
+    print(f"  Median of median values:       {np.median(all_median_yaw_accel):.2f}")
+    
+    print(f"\nPitch Angular Acceleration (deg/s²):")
+    print(f"  Max across all simulations:    {np.max(all_max_pitch_accel):.2f}")
+    print(f"  Median of max values:          {np.median(all_max_pitch_accel):.2f}")
+    print(f"  Median of median values:       {np.median(all_median_pitch_accel):.2f}")
+    print("="*60)
 
 if __name__ == "__main__":
     main()
-         
+
          
 
 

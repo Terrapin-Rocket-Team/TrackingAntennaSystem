@@ -195,8 +195,24 @@ def main():
         "measured_a_z": [z[2] for z in measured_accelerations]
     }
 
-    manager = pm.PlotManager(data)
 
+  # === Compute how long rocket sustains near-max acceleration ===
+    accel_magnitudes = np.sqrt(np.array(a_x)**2 + np.array(a_y)**2 + np.array(a_z)**2)
+    max_accel = np.max(accel_magnitudes)
+
+    # Define a tolerance window (e.g., within 2% of max)
+    tolerance = 0.02 * max_accel
+    near_max_mask = np.abs(accel_magnitudes - max_accel) <= tolerance
+
+    # Convert that mask into total sustained time (seconds)
+    # assumes uniform time step (which it is from generator)
+    dt = np.mean(np.diff(time_data))
+    sustained_time = np.sum(near_max_mask) * dt
+
+    print(f"🚀 Maximum Rocket Acceleration: {max_accel:.3f} m/s²")
+    print(f"⏱️ Sustained near-max acceleration duration: {sustained_time:.3f} s")
+    
+    manager = pm.PlotManager(data)
     manager.add_plot("z_position", lambda: pm.plot_z_position(manager))
     # manager.add_plot("xyz_position", lambda: pm.plot_xyz_position(manager))
     # manager.add_plot("z_velocity", lambda: pm.plot_z_velocity(manager))
