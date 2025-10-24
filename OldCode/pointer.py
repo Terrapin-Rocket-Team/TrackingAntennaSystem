@@ -95,7 +95,7 @@ def compute_yaw_pitch(target_vec):
 
 
 def main():
-    num_simulations = 100
+    num_simulations = 10
     
     all_max_yaw_accel = []
     all_max_pitch_accel = []
