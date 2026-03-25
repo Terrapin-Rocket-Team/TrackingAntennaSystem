@@ -7,16 +7,12 @@
 #include <stdint.h>
 
 struct DataPoint { //using a struct since members are public by default 
-
     //copied from ASTRA 
     const char *fmt = nullptr;                          // printf format for this value
     const char *label = nullptr;                        // column label
     DataPoint *next = nullptr;                          // next in list
     const void *data = nullptr;                         // pointer to the value
 };
-
-
-
 
 #endif
 

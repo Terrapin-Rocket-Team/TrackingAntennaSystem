@@ -28,7 +28,7 @@
         return d;
     }
 
-     class DataReporter
+    class DataReporter
     {
     public:
         static int numReporters;
@@ -41,7 +41,7 @@
 
         int getNumColumns();
         DataPoint *getDataPoints();
-        DataPoint *getLastPoint() { return last; }
+        DataPoint *getLastPoint();
 
         // Initializes the reporter and sets up any necessary parameters (calls init() internally)
         // Returns 0 on success, library-specific error code on failure
@@ -52,15 +52,15 @@
         // Returns 0 on success, library-specific error code on failure
         virtual int update(double currentTime = -1) = 0;
 
-        virtual bool isInitialized() const { return initialized; } // Returns whether the reporter has been initialized or not
+        virtual bool isInitialized() const; // Returns whether the reporter has been initialized or not
 
-        virtual explicit operator bool() const { return initialized; } // Returns whether the reporter has been initialized or not
+        virtual explicit operator bool() const { return initialized }; // Returns whether the reporter has been initialized or not
 
 
         //Data reporters are automatically updated by the managing system. If another reporter owns this one, 
         //you can set this to false to prevent multiple updates per cycle.
-        virtual void setAutoUpdate(bool update) { autoUpdate = update; }
-        virtual bool getAutoUpdate() const { return autoUpdate; }
+        virtual void setAutoUpdate(bool update);
+        virtual bool getAutoUpdate() const;
 
     protected:
         uint8_t numColumns = 0;
