@@ -17,7 +17,8 @@ These values are intentionally simple and filter-facing:
 struct State
 {
     // Position in meters NEU from Tracking Antenna System
-    double posXM = 0.0;
+    double posXM = 0.0; //won't be using NEU frame, we will have our own local frame with the origin being our
+    //ATS and the x axis being latitude, and the y axis being longitude, and the z axis being altitude.
     double posYM = 0.0;
     double posZM = 0.0;
 };
