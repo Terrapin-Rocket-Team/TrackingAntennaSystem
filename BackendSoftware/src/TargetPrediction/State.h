@@ -10,17 +10,14 @@ This is the output of PredictStep.
 It stores the current best estimate of where the target will be after the
 prediction horizon has been applied.
 
-These values are intentionally simple and filter-facing:
-- latitude / longitude / altitude describe the predicted position
-- valid indicates whether the estimate is safe to use
+These values are intentionally simple
 */
 struct State
 {
-    // Position in meters NEU from Tracking Antenna System
-    double posXM = 0.0; //won't be using NEU frame, we will have our own local frame with the origin being our
-    //ATS and the x axis being latitude, and the y axis being longitude, and the z axis being altitude.
-    double posYM = 0.0;
-    double posZM = 0.0;
+    // Position in meters local frame with the origin at the Tracking Antenna System
+    double posXM = 0.0; //latitude = x-axis
+    double posYM = 0.0; //longitude = y-axis
+    double posZM = 0.0; //altitude = z-axis
 };
 
 #endif // STATE_H

@@ -15,11 +15,16 @@ PredictStep is responsible for:
 #include <stdint.h>
 #include <RadioMessage.h>
 #include "State.h"
-#include "RadioMeasurement.h"
 #include <Math/Matrix.h>
 
 //what is this class for? Is it not done?
+/*
+    This class will use the other methods to propagate the state forward
+    The propation logic is in Propagate.cpp, but we still have to convert the received telemetry
+    into the correct format.
 
+    This class integrates those other methods into a single method that can be used to calculate the actuator commands.
+*/
 class PredictStep {
     /*
         static method to take in telemetry and return a state with a postion prediction.
