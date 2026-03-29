@@ -1,5 +1,5 @@
 (fp_lib_table
   (version 7)
   (lib (name "SAM M10Q footprint")(type "KiCad")(uri "/Users/anthonyp/Downloads/ul_SAM-M10Q-00B/KiCADv6/footprints.pretty")(options "")(descr ""))
-  (lib (name "Teensy41")(type "KiCad")(uri "/Users/anthonyp/Downloads/Teensy41.pretty")(options "")(descr ""))
+  (lib (name "Teensy41")(type "KiCad")(uri "/Users/anthonyp/Downloads/TEENSY_4.1")(options "")(descr ""))
 )
