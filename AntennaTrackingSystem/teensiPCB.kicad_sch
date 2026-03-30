@@ -2599,6 +2599,16 @@
 		)
 		(uuid "4ad066ef-038c-461d-abac-4936ba08c288")
 	)
+	(text "I2C Address: 0x42"
+		(exclude_from_sim no)
+		(at 135.382 77.724 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "6e658eda-33c7-4bcd-8236-9567ddc6261e")
+	)
 	(text "3V3\nSDA\nSCL\nGND"
 		(exclude_from_sim no)
 		(at 17.272 95.504 0)
@@ -2748,10 +2758,6 @@
 		(uuid "86b84c91-8422-4cc0-a791-082d6e64dfaf")
 	)
 	(no_connect
-		(at 161.29 60.96)
-		(uuid "919f2139-705f-4aed-b1e7-9abf130c650d")
-	)
-	(no_connect
 		(at 55.88 81.28)
 		(uuid "94404f49-ca77-4800-857c-aa7f27c205b6")
 	)
@@ -2849,7 +2855,7 @@
 	)
 	(wire
 		(pts
-			(xy 49.53 73.66) (xy 49.53 76.2)
+			(xy 53.34 73.66) (xy 53.34 76.2)
 		)
 		(stroke
 			(width 0)
@@ -2989,7 +2995,7 @@
 	)
 	(wire
 		(pts
-			(xy 49.53 76.2) (xy 55.88 76.2)
+			(xy 53.34 76.2) (xy 55.88 76.2)
 		)
 		(stroke
 			(width 0)
@@ -3209,7 +3215,7 @@
 	)
 	(wire
 		(pts
-			(xy 26.67 73.66) (xy 49.53 73.66)
+			(xy 26.67 73.66) (xy 53.34 73.66)
 		)
 		(stroke
 			(width 0)
@@ -5217,6 +5223,73 @@
 			(project ""
 				(path "/ba786cef-8ef6-45a2-be74-19524883f146"
 					(reference "#PWR04")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 161.29 60.96 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "a6a0ebbc-fd39-4a5f-8b55-32213baf47de")
+		(property "Reference" "#PWR021"
+			(at 165.1 60.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 157.48 60.9599 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 161.29 60.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 161.29 60.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 161.29 60.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "f4e189d2-91e8-4283-8299-c0dfe53a4f36")
+		)
+		(instances
+			(project "teensiPCB"
+				(path "/ba786cef-8ef6-45a2-be74-19524883f146"
+					(reference "#PWR021")
 					(unit 1)
 				)
 			)
