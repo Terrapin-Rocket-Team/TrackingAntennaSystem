@@ -45,7 +45,8 @@ class SimpleDataReporter : DataReporter
 
 
    private:
-       // our instance fields expect pointer references to methoda
+       // our instance fields expect pointer references to method
+       // these methods get passed in when the class is instantiated 
        BeginFuncCB _beginFunc;
        UpdateFuncCB _updateFunc;
        T loggedVariable; // except for this generic field
