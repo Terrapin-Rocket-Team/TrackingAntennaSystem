@@ -4,6 +4,9 @@
 #include "DataPoint.h"
 #include "DataReporter.h"
 
+// putting column associated methods in inline folder
+// what's the reason for this? 
+
 template <typename T>
 void DataReporter::insertColumn(int place, const char *fmt, T *variable, const char *label) 
 {
@@ -48,4 +51,57 @@ void DataReporter::insertColumn(int place, const char *fmt, T *variable, const c
     }
     
     ++numColumns;
+}
+
+template<typename T>
+void DataReporter::addColumn(const char *fmt, T *variable, const char *label)
+{
+    insertColumn<T>(-1, fmt, variable, label);
+}
+
+void DataReporter::removeColumn(const char *label)
+{
+    if (first == nullptr)
+    {
+        return;
+    }
+    if (strcmp(first->label, label) == 0)
+    {
+        auto toDel = first;
+        first = first->next;
+        if (first == nullptr)
+            last = nullptr;
+        delete toDel;
+        numColumns--;
+        return;
+    }
+
+    auto t = first;
+    while (t->next != nullptr)
+    {
+        if (strcmp(t->next->label, label) == 0)
+        {
+            auto toDel = t->next;
+            t->next = t->next->next;
+            if (t->next == nullptr)
+                last = t;
+            delete toDel;
+            numColumns--;
+            return;
+        }
+        t = t->next;
+    }
+}
+
+void DataReporter::clearColumns() 
+{
+    while (first != nullptr)
+    {
+        DataPoint *next = first->next;
+        delete first;
+        first = next;
+    }
+
+    last = nullptr;
+    numColumns = 0;
 }
