@@ -104,4 +104,4 @@ void DataReporter::clearColumns()
 
     last = nullptr;
     numColumns = 0;
-}
+} //endif missing

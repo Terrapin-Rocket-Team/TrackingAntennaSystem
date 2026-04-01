@@ -62,7 +62,7 @@
         virtual void setAutoUpdate(bool update);
         virtual bool getAutoUpdate() const;
 
-    protected:
+    protected: //why are these protected? would like them to be public 
         uint8_t numColumns = 0;
         DataPoint *first = nullptr, *last = nullptr;
 
