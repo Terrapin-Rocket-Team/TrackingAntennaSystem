@@ -1,6 +1,6 @@
 // serial_compat.h
 #pragma once
-#include <Arduino.h>
+#include <Arduino.h> //don't need most of these different environemnts, take them out
 
 // ---------- Teensy (Teensyduino) ----------
 #if defined(TEENSYDUINO)

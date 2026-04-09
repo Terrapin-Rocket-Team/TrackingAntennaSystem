@@ -1,7 +1,7 @@
 class CircBufferLog : public ILogSink
 {
     public:
-        CircBufferLog(int size, bool prefix = false)
+        CircBufferLog(int size, bool prefix = false) //why is there a circ buffer log? I thought we were just going to log to the sd card, is this for testing purposes?
         : size(size), prefix(prefix) {} // this class also doesn't need a super long IL
 
         // basic logging overrides

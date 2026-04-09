@@ -2,7 +2,7 @@
 #include "DataReporter.h"
 
 // i havent added the stdout override for printing
-// i didnt think we needed that since were not really even using std out
+// i didnt think we needed that since were not really even using std out, that's fine we really aren't
 bool DataLogger::init()
 {
     bool any = false;
@@ -22,7 +22,7 @@ bool DataLogger::appendLine()
         return false;
     }
 
-    #ifdef NATIVE
+    #ifdef NATIVE //check this
     // if this build is native, we must handle it seperately
     #ifndef NATIVE_NO_STDOUT_DATA
         if (_countReporters > 0 && _reporterRegistry[0]->getNumColumns() > 0)

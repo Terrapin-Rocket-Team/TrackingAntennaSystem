@@ -1,7 +1,9 @@
 class EventLogger
 {
     public:
-        EventLogger(ILogSink **sinks, uint8_t count, int maxMsgLen = 500);
+        EventLogger(ILogSink **sinks, uint8_t count, int maxMsgLen = 500); //describe what this event logger is for,
+        //im assuming its to log bad events. In what cases in ou rsystem would we have bad events though?
+        //i know its astra its mainly for sensors that don't end up working, but we only have one sensor.
 
         bool init();
         bool info(const char *fmt, ...);

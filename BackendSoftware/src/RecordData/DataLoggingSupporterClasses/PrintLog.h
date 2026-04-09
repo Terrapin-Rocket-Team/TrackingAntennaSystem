@@ -1,7 +1,8 @@
 class PrintLog : public ILogSink
 {
     public:
-        PrintLog(Print &p, bool prefix = false)
+        PrintLog(Print &p, bool prefix = false) //why is there a print log? I thought we were just going to log to the sd card, is this for testing purposes?
+        //is this for logging print statements?
         : p(p), prefix(prefix) {} // fewer fields need to be initialized for print logging
 
         // logging methods to override

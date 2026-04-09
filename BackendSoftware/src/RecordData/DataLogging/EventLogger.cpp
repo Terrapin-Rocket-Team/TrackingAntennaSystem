@@ -1,6 +1,6 @@
 #include "EventLogger.h"
 
-EventLogger EventLogger::_global{nullptr, 0};
+EventLogger EventLogger::_global{nullptr, 0}; 
 
 EventLogger::EventLogger(ILogSink **sinks, uint8_t count, int maxMsgLen)
 : _count(count), _maxMsgLen(maxMsgLen)
@@ -29,7 +29,7 @@ bool EventLogger::init()
 
 bool EventLogger::info(const char *fmt, ...)
 {
-    #if defined(NATIVE) && defined(NOLOGI) // based on type of deployment environment
+    #if defined(NATIVE) && defined(NOLOGI) // based on type of deployment environment why do we need this?
     return false;
     #endif
     va_list ap;
