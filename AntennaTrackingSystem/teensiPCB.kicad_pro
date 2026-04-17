@@ -642,7 +642,7 @@
       {
         "filename": "teensiPCB.kicad_sch",
         "name": "teensiPCB",
-        "uuid": "00000000-0000-0000-0000-000000000000"
+        "uuid": "ba786cef-8ef6-45a2-be74-19524883f146"
       }
     ],
     "used_designators": "Ue1",
@@ -651,7 +651,7 @@
   "sheets": [
     [
       "ba786cef-8ef6-45a2-be74-19524883f146",
-      "Root"
+      "teensiPCB"
     ]
   ],
   "text_variables": {},
