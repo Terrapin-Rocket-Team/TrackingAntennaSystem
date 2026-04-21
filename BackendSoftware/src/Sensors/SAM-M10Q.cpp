@@ -7,6 +7,7 @@ GPS::GPS() {
 }
 
 GPS::GPS(String name, TwoWire &wirePort, u_int8_t address) {
+    DataReporter(name);
     this->wire = &wirePort;
     this->address = address = 0x42; //default i2c address for SAM-M10Q
 }

@@ -6,24 +6,65 @@
 #include <SparkFun_u-blox_GNSS_v3.h>
 #include <Wire.h>
 #include "Math/Vector.h"
+#include "RecordData/DataReporter/DataReporter.h"
 
-class GPS {
+class GPS : public DataReporter { //a gps is an object that can report data, so it inherits from DataReporter
     public: 
-        SFE_UBLOX_GNSS_SUPER sam_m10q; //gps object has-a relation w/ sam-m10q
-        TwoWire *wire; //i2c bus 
-        u_int8_t address; //i2c address of the gps module (0x42 for SAM-M10Q)
-
-
         GPS(); //default constructor
         GPS(String name, TwoWire &wirePort, u_int8_t address); //constructor with parameters
         ~GPS(); //destructor
 
-        Vector<3> position(); //holds the position of the gps module in 3D space (x, y, z)
-        
 
 
         bool begin(); //initializes the gps module, returns true if successful
         bool update(); //updates the gps data, returns true if successful
+        
+        // Distance-related calculations
+        void calcInitialValuesForDistance();
+        double kx, ky;
+        double wrapLongitude(double val) const;
+        void findTimeZone();
+
+
+        void updateHealth(int readErr, double currentTime) override;
+
+        Vector<3> getPos() const;
+        Vector<3> getVel() const; // NED frame
+        int getFixQual() const;
+        double getHeading() const;
+        bool getHasFix() const;
+        
+        Vector<3> getDisplacement(Vector<3> origin) const;
+
+        const char *getTimeOfDay() const;
+
+        int8_t getHour() const;
+        int8_t getMinute() const;
+        int8_t getSecond() const;
+        uint8_t getDay() const;
+        uint8_t getMonth() const;
+        uint16_t getYear() const;
+
+        private:
+
+
+        Vector<3> position; // latitude, longitude, alt(m)
+        Vector<3> velocity; // vN (m/s), vE (m/s), vD (m/s)
+
+        int fixQual = 0;    // number of satellite connections
+        bool hasFix;        // whether or not GPS is currently connected to >= 4 satellites
+        bool hasFirstFix;   // the first time it gets a fix
+        double heading = 0;
+
+        int8_t hr = 0, min = 0, sec = 0;
+        uint8_t day = 0, month = 0;
+        uint16_t year = 0;
+        int8_t hrOffset = 0;
+
+        SFE_UBLOX_GNSS_SUPER sam_m10q; //gps object has-a relation w/ sam-m10q
+        TwoWire *wire; //i2c bus 
+        u_int8_t address; //i2c address of the gps module (0x42 for SAM-M10Q)
+
 
 
 
