@@ -4717,7 +4717,7 @@
 				)
 			)
 		)
-		(property "Footprint" "avionicsKiCadLibrary:Teensy41"
+		(property "Footprint" "teensy:teensy"
 			(at 73.66 97.79 0)
 			(hide yes)
 			(show_name no)
