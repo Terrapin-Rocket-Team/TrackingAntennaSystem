@@ -9,7 +9,7 @@
 #include "RecordData/Logging/EventLogger.h"
 
 // namespace goes here
-{
+
     class Matrix
     {
     public:
@@ -81,5 +81,5 @@
         void luDecompositionWithPartialPivoting(double *A, int *pivot, int n) const;
         void solveLU(double *A, int *pivot, double *b, double *x, int n) const;
     };
-} // add namespace here as needed
+ // add namespace here as needed
 #endif

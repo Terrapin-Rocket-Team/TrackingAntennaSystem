@@ -16,8 +16,8 @@ class GPS : public DataReporter { //a gps is an object that can report data, so 
 
 
 
-        bool begin(); //initializes the gps module, returns true if successful
-        bool update(); //updates the gps data, returns true if successful
+        int begin() override; //initializes the gps module, returns true if successful
+        int update(double currentTime = -1) override; //updates the gps data, returns true if successful
         
         // Distance-related calculations
         void calcInitialValuesForDistance();
@@ -26,7 +26,7 @@ class GPS : public DataReporter { //a gps is an object that can report data, so 
         void findTimeZone();
 
 
-        void updateHealth(int readErr, double currentTime) override;
+        void updateHealth(int readErr, double currentTime);
 
         Vector<3> getPos() const;
         Vector<3> getVel() const; // NED frame

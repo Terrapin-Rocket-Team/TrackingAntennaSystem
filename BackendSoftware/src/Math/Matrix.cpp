@@ -1,7 +1,7 @@
 #include "Matrix.h"
 
 // namespace as needed
-{
+
 
     // Default constructor
     Matrix::Matrix() : rows(0), cols(0), array(nullptr) {}
@@ -342,4 +342,3 @@
         if (row < rows && col < cols) return array[row * cols + col];
         return array[0];
     }
-}

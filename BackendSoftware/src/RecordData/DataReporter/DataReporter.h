@@ -84,7 +84,7 @@
         char *name = nullptr;
 
         
-    }
+    };
 
 
 

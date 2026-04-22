@@ -50,5 +50,5 @@ class SimpleDataReporter : DataReporter
        BeginFuncCB _beginFunc;
        UpdateFuncCB _updateFunc;
        T loggedVariable; // except for this generic field
-}
+};
 #endif

@@ -1,4 +1,15 @@
 #include <Arduino.h>
+#include <Wire.h>
+#include "RecordData/DataReporter/DataReporter.h"
+#include "RecordData/DataReporter/SimpleDataReporter.h"
+#include <Astra.h>
+#include "Sensors/SensorManager/SensorManager.h"
+#include "Sensors/SAM-M10Q.h"
+#include "Math/Vector.h"
+
+
+
+
 
 // put function declarations here:
 int myFunction(int, int);
