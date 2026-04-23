@@ -65,5 +65,6 @@ template <typename T> void CircBuffer<T>::clear() { head = 0; tail = 0; count = 
 template <typename T> int CircBuffer<T>::getSize() { return size; }
 
 template<typename T> T& CircBuffer<T>::operator[](int index) { return buffer[(tail + index) % size]; }
-template<typename T> T CircBuffer<T>::operator[](int index) { return buffer[(tail + index) % size]; }
+template<typename T> T CircBuffer<T>::operator[](int index) const { 
+    return buffer[(tail + index) % size]; }
 

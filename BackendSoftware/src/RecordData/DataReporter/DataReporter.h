@@ -6,6 +6,8 @@
 #define DATAREPORTER_H
 
 #include "DataPoint.h"
+#include <stdint.h>
+#include "../../BackendSoftware/src/RecordData/DataLoggingSupporterClasses/ILogSink.h"
 
 // Templated helper to allocate & populate a node
     template <typename T>

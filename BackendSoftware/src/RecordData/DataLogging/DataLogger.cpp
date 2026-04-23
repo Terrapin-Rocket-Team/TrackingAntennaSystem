@@ -1,4 +1,3 @@
-#include "DataLogger.cpp"
 #include "DataReporter.h"
 
 // i havent added the stdout override for printing

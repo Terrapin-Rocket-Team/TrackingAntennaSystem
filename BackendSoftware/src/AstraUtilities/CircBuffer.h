@@ -4,7 +4,7 @@ class CircBuffer
     public:
         // constructors & destructors
         CircBuffer(int size);
-        ~CircBuffer(int size);
+        ~CircBuffer();
         CircBuffer(const CircBuffer &other); // we use this as a copy constructor
 
         // copy assignment operator
@@ -22,7 +22,7 @@ class CircBuffer
 
         // one liners
         T &operator[](int index); 
-        T operator[](int index);
+        T operator[](int index) const;
 
     private:
         // fields
@@ -32,4 +32,4 @@ class CircBuffer
         int tail = 0;
         int count = 0;
 
-}
+};

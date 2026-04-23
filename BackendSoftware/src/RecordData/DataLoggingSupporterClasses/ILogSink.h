@@ -1,4 +1,5 @@
-class ILogSink : public Print 
+class ILogSink : public Print //base level interface for writing to a log sink 
+
 {
     public:
         // these methods override the teensy read/write functionality
@@ -11,5 +12,5 @@ class ILogSink : public Print
         virtual bool wantsPrefix() const = 0;
         virtual size_t write(uint8_t) override = 0;
 
-        using Print::write;
+        using Print::write; //use the base print class write methods for strings and buffers
 };
