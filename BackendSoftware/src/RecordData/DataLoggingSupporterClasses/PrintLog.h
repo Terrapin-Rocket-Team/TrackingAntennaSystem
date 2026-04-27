@@ -1,9 +1,14 @@
+//printing log is a type of ILogSink 
+
+#ifndef PRINTLOG_H
+#define PRINTLOG_H
+#include "../DataLoggingSupporterClasses/ILogSink.h"
+
 class PrintLog : public ILogSink
 {
     public:
-        PrintLog(Print &p, bool prefix = false) //why is there a print log? I thought we were just going to log to the sd card, is this for testing purposes?
-        //is this for logging print statements?
-        : p(p), prefix(prefix) {} // fewer fields need to be initialized for print logging
+        PrintLog(Print &p, bool prefix); //why is there a print log? I thought we were just going to log to the sd card, is this for testing purposes?
+        //is this for logging print statements? // fewer fields need to be initialized for print logging
 
         // logging methods to override
         bool begin() override;
@@ -17,3 +22,5 @@ class PrintLog : public ILogSink
         bool prefix;
         bool rdy;
 };
+
+#endif // PRINTLOG_H

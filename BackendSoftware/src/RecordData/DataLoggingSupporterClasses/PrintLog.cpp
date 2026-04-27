@@ -1,17 +1,29 @@
 #include "PrintLog.h"
 
-//these methods rely on the rdy boolean to set logging status
-bool PrintLog::begin() override
+
+PrintLog::PrintLog(Print &p, bool prefix) : p(p), prefix(prefix), rdy(false) {
+}
+
+bool PrintLog::begin() 
 {
     return rdy = true; 
 }
 
-bool PrintLog::begin() override
+bool PrintLog::end() 
 {
     rdy = false;
     return true;
 }
 
-bool PrintLog::wantsPrefix() const override { return prefix; }
-bool PrintLog::ok() const override { return rdy; }
-size_t PrintLog::write(uint8_t b) override { return p.write(b); }
+
+
+bool PrintLog::wantsPrefix() const {
+    return prefix; }
+
+
+bool PrintLog::ok() const { 
+    return rdy; }
+
+
+size_t PrintLog::write(uint8_t b)
+ { return p.write(b); }

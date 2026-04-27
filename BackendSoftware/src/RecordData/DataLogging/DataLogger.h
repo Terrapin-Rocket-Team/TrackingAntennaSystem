@@ -1,4 +1,4 @@
-#include "./DataReporter/DataReporter.h"
+#include "../DataReporter/DataReporter.h"
 
 class DataLogger
 {
@@ -17,7 +17,7 @@ class DataLogger
 
         // getters/setters
         DataReporter *const *getReporters() const;
-        uint8_t getNumReporters() const
+        uint8_t getNumReporters() const;
 
         // class-tied methods
         // these are all static as a result

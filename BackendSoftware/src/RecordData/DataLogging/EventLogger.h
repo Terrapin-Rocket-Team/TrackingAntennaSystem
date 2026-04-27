@@ -3,6 +3,7 @@
 
 #include <new>
 #include "../DataLoggingSupporterClasses/ILogSink.h"
+#include <Arduino.h>
 
 class EventLogger //believe this is a Singleton class, we only want one instance of this, and it will be used globally.
 {
@@ -21,6 +22,12 @@ class EventLogger //believe this is a Singleton class, we only want one instance
         static EventLogger &instance();
         static bool available();
 
+        EventLogger(const EventLogger&) = delete; //copy contructor 
+        EventLogger& operator=(const EventLogger&) = delete; //assignment operator
+        
+        bool vrecord(const char *lvl, const char *fmt, va_list ap); // helper method to record a log message with a va_list
+        int min(int a, int b); // helper method to get the minimum of two integers
+
     private:
         // these are our fields
         ILogSink **_sinks = nullptr; //sinks for data (SD card, File, Serial, etc.)
@@ -28,8 +35,6 @@ class EventLogger //believe this is a Singleton class, we only want one instance
         bool _ok = false;
         int _maxMsgLen = 0;
         static EventLogger _global; //shared global instance of the event logger, this is what will be used by the static methods
-        EventLogger(const EventLogger&) = delete; //copy contructor 
-        EventLogger& operator=(const EventLogger&) = delete; //assignment operator
 };
 
 #endif // EVENTLOGGER_H
