@@ -1,4 +1,6 @@
-#include "DataReporter.h"
+#include "DataLogger.h"
+
+DataLogger DataLogger::_global;
 
 // i havent added the stdout override for printing
 // i didnt think we needed that since were not really even using std out, that's fine we really aren't
@@ -169,7 +171,5 @@ void DataLogger::reset()
 // one liner methods
 DataReporter *const *DataLogger::getReporters() const { return _reporterRegistry; }
 uint8_t DataLogger::getNumReporters() const { return _countReporters; }
-
-
 
 

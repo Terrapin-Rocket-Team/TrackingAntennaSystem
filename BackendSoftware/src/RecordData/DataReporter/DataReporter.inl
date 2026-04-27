@@ -28,7 +28,7 @@ void DataReporter::insertColumn(int place, const char *fmt, T *variable, const c
     else if (place < 0 || place >= numColumns)
     {
         // insert at tail
-        packedInfo->next
+        packedInfo->next = nullptr;
         last->next = packedInfo;
         last = packedInfo;
     }
@@ -47,7 +47,7 @@ void DataReporter::insertColumn(int place, const char *fmt, T *variable, const c
         
         packedInfo->next = current->next;
         current->next = packedInfo;
-        if (packedInfo->next == nullptr) {last = packedInfo}; // set tail as needed
+        if (packedInfo->next == nullptr) { last = packedInfo; } // set tail as needed
     }
     
     ++numColumns;
@@ -59,7 +59,7 @@ void DataReporter::addColumn(const char *fmt, T *variable, const char *label)
     insertColumn<T>(-1, fmt, variable, label);
 }
 
-void DataReporter::removeColumn(const char *label)
+inline void DataReporter::removeColumn(const char *label)
 {
     if (first == nullptr)
     {
@@ -93,7 +93,7 @@ void DataReporter::removeColumn(const char *label)
     }
 }
 
-void DataReporter::clearColumns() 
+inline void DataReporter::clearColumns()
 {
     while (first != nullptr)
     {
@@ -105,3 +105,5 @@ void DataReporter::clearColumns()
     last = nullptr;
     numColumns = 0;
 } //endif missing
+
+#endif // DATA_REPORTER_INL

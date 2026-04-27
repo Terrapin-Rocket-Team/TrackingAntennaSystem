@@ -1,3 +1,9 @@
+#ifndef CIRCBUFFERLOG_H
+#define CIRCBUFFERLOG_H
+
+#include "../../AstraUtilities/CircBuffer.h"
+#include "ILogSink.h"
+
 class CircBufferLog : public ILogSink
 {
     public:
@@ -21,4 +27,6 @@ class CircBufferLog : public ILogSink
         int size;
         bool prefix;
         bool rdy = false;
-};
+    };
+
+#endif // CIRCBUFFERLOG_H

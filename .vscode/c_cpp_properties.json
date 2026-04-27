@@ -1,0 +1,42 @@
+//
+// !!! WARNING !!! AUTO-GENERATED FILE!
+// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
+// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+//
+{
+    "configurations": [
+        {
+            "name": "PlatformIO",
+            "includePath": [
+                "/Users/isaruslu/Desktop/TrackingAntennaSystem/include",
+                "/Users/isaruslu/Desktop/TrackingAntennaSystem/src",
+                "/Users/isaruslu/Desktop/TrackingAntennaSystem/.pio/libdeps/native/MS5611",
+                "/Users/isaruslu/Desktop/TrackingAntennaSystem/.pio/libdeps/native/AstraSupportNativeMocks/native-support/include",
+                "/Users/isaruslu/Desktop/TrackingAntennaSystem/.pio/libdeps/native/AstraSupportNativeMocks/native-support/src",
+                "/Users/isaruslu/Desktop/TrackingAntennaSystem/.pio/libdeps/native/TRT-Astra/src",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "/Users/isaruslu/Desktop/TrackingAntennaSystem/include",
+                    "/Users/isaruslu/Desktop/TrackingAntennaSystem/src",
+                    "/Users/isaruslu/Desktop/TrackingAntennaSystem/.pio/libdeps/native/MS5611",
+                    "/Users/isaruslu/Desktop/TrackingAntennaSystem/.pio/libdeps/native/AstraSupportNativeMocks/native-support/include",
+                    "/Users/isaruslu/Desktop/TrackingAntennaSystem/.pio/libdeps/native/AstraSupportNativeMocks/native-support/src",
+                    "/Users/isaruslu/Desktop/TrackingAntennaSystem/.pio/libdeps/native/TRT-Astra/src",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=60119",
+                ""
+            ],
+            "compilerPath": "/usr/bin/gcc",
+            "compilerArgs": [
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}

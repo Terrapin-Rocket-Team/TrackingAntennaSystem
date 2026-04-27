@@ -1,6 +1,7 @@
 #ifndef SIMPLE_DATA_REPORTER_H
 #define SIMPLE_DATA_REPORTER_H
 #include "DataReporter.h"
+#include "../DataLogging/EventLogger.h"
 
 /**
 * @brief A simplified DataReporter that uses function callbacks for initialization and updates.
@@ -10,7 +11,7 @@
 */
 
 template <typename T>
-class SimpleDataReporter : DataReporter
+class SimpleDataReporter : public DataReporter
 {
    // This class can work with Generic datatypes. It is a child of Data Reporter.
    public:
@@ -40,8 +41,30 @@ class SimpleDataReporter : DataReporter
 
 
        // basic methods that get autocalled
-       int begin() override;
-       int update(double currentTime = -1) override;
+       int begin() override
+       {
+           if (_beginFunc != nullptr)
+           {
+               initialized = _beginFunc();
+               return initialized ? 0 : 1;
+           }
+
+           LOGE("Data Reporter %s was not given an init function", getName());
+           return -1;
+       }
+
+       int update(double currentTime = -1) override
+       {
+           (void)currentTime;
+           if (_updateFunc == nullptr)
+           {
+               LOGE("Data Reporter %s was not given an update function", getName());
+               return -1;
+           }
+
+           loggedVariable = _updateFunc();
+           return 0;
+       }
 
 
    private:

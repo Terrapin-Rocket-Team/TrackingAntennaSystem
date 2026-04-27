@@ -1,18 +1,18 @@
-#include "CircBuffer.h"
+#include "CircBufferLog.h"
 
 // these circ buffer methods are dependent on utility classes
-bool CircBuffer::begin() override
+bool CircBufferLog::begin()
 {
     if (rdy == true) {return true;} // if logging is setup, were good to go
 
     buf = new CircBuffer<uint8_t>(size); // if a successful utilities/buffer is created, we return so
 
-    if (buff != nullptr) {return rdy = true;}
+    if (buf != nullptr) {return rdy = true;}
 
     return false; // otherwise, return false
 }
 
-bool CircBuffer::end() override
+bool CircBufferLog::end()
 {
     // destroys the relevant buffer classes
     // returns to affirm it is gones
@@ -22,7 +22,11 @@ bool CircBuffer::end() override
     return true;
 }
 
-size_t CircBuffer::write(uint8_t b) override
+bool CircBufferLog::wantsPrefix() const { return prefix; }
+
+bool CircBufferLog::ok() const { return rdy; }
+
+size_t CircBufferLog::write(uint8_t b)
 {
     if (rdy)
     {
@@ -30,10 +34,10 @@ size_t CircBuffer::write(uint8_t b) override
         return 1; // error code
     } 
 
-    return 0
+    return 0;
 }
 
-bool CircBuffer::transfer(ILogSink &other)
+bool CircBufferLog::transfer(ILogSink &other)
 {
     // operating our buffer based on our boolean for logging verification
     if (!rdy || buf->isEmpty())

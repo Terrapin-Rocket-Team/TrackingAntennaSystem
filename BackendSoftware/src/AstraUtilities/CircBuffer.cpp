@@ -1,4 +1,5 @@
 #include "CircBuffer.h"
+#include <stdint.h>
 
 template <typename T>
 CircBuffer<T>::CircBuffer(int size)
@@ -68,3 +69,4 @@ template<typename T> T& CircBuffer<T>::operator[](int index) { return buffer[(ta
 template<typename T> T CircBuffer<T>::operator[](int index) const { 
     return buffer[(tail + index) % size]; }
 
+template class CircBuffer<uint8_t>;

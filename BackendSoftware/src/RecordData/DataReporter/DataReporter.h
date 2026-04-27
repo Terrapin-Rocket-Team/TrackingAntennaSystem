@@ -6,8 +6,10 @@
 #define DATAREPORTER_H
 
 #include "DataPoint.h"
+#include <cstdio>
+#include <cstring>
 #include <stdint.h>
-#include "../../BackendSoftware/src/RecordData/DataLoggingSupporterClasses/ILogSink.h"
+#include "../DataLoggingSupporterClasses/ILogSink.h"
 
 // Templated helper to allocate & populate a node
     template <typename T>
@@ -56,7 +58,7 @@
 
         virtual bool isInitialized() const; // Returns whether the reporter has been initialized or not
 
-        virtual explicit operator bool() const { return initialized }; // Returns whether the reporter has been initialized or not
+        virtual explicit operator bool() const { return initialized; } // Returns whether the reporter has been initialized or not
 
 
         //Data reporters are automatically updated by the managing system. If another reporter owns this one, 
@@ -88,10 +90,6 @@
         
     };
 
-
-
-
-
-
+#include "DataReporter.inl"
 
 #endif

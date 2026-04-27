@@ -3,7 +3,12 @@
 
 #include <new>
 #include "../DataLoggingSupporterClasses/ILogSink.h"
+#include <stdarg.h>
+#include <stdint.h>
+
+#ifndef NATIVE
 #include <Arduino.h>
+#endif
 
 class EventLogger //believe this is a Singleton class, we only want one instance of this, and it will be used globally.
 {
@@ -36,5 +41,10 @@ class EventLogger //believe this is a Singleton class, we only want one instance
         int _maxMsgLen = 0;
         static EventLogger _global; //shared global instance of the event logger, this is what will be used by the static methods
 };
+
+#define LOGI(...) EventLogger::instance().info(__VA_ARGS__)
+#define LOGW(...) EventLogger::instance().warn(__VA_ARGS__)
+#define LOGE(...) EventLogger::instance().err(__VA_ARGS__)
+#define LOGD(...) EventLogger::instance().dbg(__VA_ARGS__)
 
 #endif // EVENTLOGGER_H

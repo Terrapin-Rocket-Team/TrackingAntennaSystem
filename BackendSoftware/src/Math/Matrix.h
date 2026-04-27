@@ -6,7 +6,7 @@
 #include <cstdio>
 #include <cstring> // For memcpy
 #include <stdint.h>
-#include "RecordData/Logging/EventLogger.h"
+#include "RecordData/DataLogging/EventLogger.h"
 
 // namespace goes here
 

@@ -1,8 +1,14 @@
 #include "EventLogger.h"
+#include <cstdio>
+#include <cstring>
 
 
 #ifdef NATIVE
 #include <stdio.h>
+static unsigned long millis()
+{
+    return 0;
+}
 #endif
 
 

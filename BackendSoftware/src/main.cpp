@@ -1,12 +1,12 @@
-#include <Arduino.h>
-#include <Wire.h>
 #include "RecordData/DataReporter/DataReporter.h"
 #include "RecordData/DataReporter/SimpleDataReporter.h"
-#include <Astra.h>
-#include "Sensors/SensorManager/SensorManager.h"
-#include "Sensors/SAM-M10Q.h"
 #include "Math/Vector.h"
 
+#ifndef NATIVE
+#include <Arduino.h>
+#include <Wire.h>
+#include "Sensors/SAM-M10Q.h"
+#endif
 
 
 
@@ -22,6 +22,14 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
 }
+
+#ifdef NATIVE
+int main() {
+  setup();
+  loop();
+  return 0;
+}
+#endif
 
 // put function definitions here:
 int myFunction(int x, int y) {

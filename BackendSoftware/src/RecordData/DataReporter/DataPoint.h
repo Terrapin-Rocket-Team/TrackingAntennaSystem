@@ -6,13 +6,15 @@
 #define DATAPOINT_H
 #include <stdint.h>
 
+class Print;
+
 struct DataPoint { //using a struct since members are public by default 
     //copied from ASTRA 
     const char *fmt = nullptr;                          // printf format for this value
     const char *label = nullptr;                        // column label
     DataPoint *next = nullptr;                          // next in list
     const void *data = nullptr;                         // pointer to the value
+    void (*emit)(Print *s, const DataPoint *self) = nullptr;
 };
 
 #endif
-

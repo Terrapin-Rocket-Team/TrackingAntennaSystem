@@ -1,4 +1,5 @@
-#include "ILogSink.h"
+#include "../ILogSink.h"
+#include "FileLogSink.h"
 
 // Helper function to find next available filename
 // this is not specific to the object or class
