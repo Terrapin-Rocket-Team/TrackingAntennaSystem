@@ -1,5 +1,11 @@
 #include "EventLogger.h"
 
+
+#ifdef NATIVE
+#include <stdio.h>
+#endif
+
+
 EventLogger EventLogger::_global{nullptr, 0}; 
 
 EventLogger::EventLogger(ILogSink **sinks, uint8_t count, int maxMsgLen)
@@ -79,7 +85,7 @@ bool EventLogger::dbg(const char *fmt, ...)
 // more global methods w/ similar implementation as data logger
 void EventLogger::configure(ILogSink **sinks, uint8_t count)
 {
-    _global = EventLogger(sinks, count);
+    new (&_global) EventLogger(sinks, count);
     _global.init();
 }
 

@@ -1,3 +1,11 @@
+#ifndef ILOGSINK_H
+#define ILOGSINK_H
+
+#include <Print.h>
+#include <stdint.h>
+
+
+
 class ILogSink : public Print //base level interface for writing to a log sink 
 
 {
@@ -14,3 +22,5 @@ class ILogSink : public Print //base level interface for writing to a log sink
 
         using Print::write; //use the base print class write methods for strings and buffers
 };
+
+#endif // ILOGSINK_H

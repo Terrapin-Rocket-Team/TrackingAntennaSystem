@@ -38,4 +38,5 @@ class DataLogger
         DataReporter *_reporterRegistry[MAX_REPORTERS];
         bool _ok = false;
         static DataLogger _global;
+        bool vrecord(const char *lvl, const char *fmt, va_list ap);
 };

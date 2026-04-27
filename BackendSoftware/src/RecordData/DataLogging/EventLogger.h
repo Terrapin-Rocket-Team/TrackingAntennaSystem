@@ -1,4 +1,10 @@
-class EventLogger
+#ifndef EVENTLOGGER_H
+#define EVENTLOGGER_H
+
+#include <new>
+#include "../DataLoggingSupporterClasses/ILogSink.h"
+
+class EventLogger //believe this is a Singleton class, we only want one instance of this, and it will be used globally.
 {
     public:
         EventLogger(ILogSink **sinks, uint8_t count, int maxMsgLen = 500); //describe what this event logger is for,
@@ -17,9 +23,13 @@ class EventLogger
 
     private:
         // these are our fields
-        ILogSink **_sinks = nullptr;
+        ILogSink **_sinks = nullptr; //sinks for data (SD card, File, Serial, etc.)
         uint8_t _count = 0;
         bool _ok = false;
         int _maxMsgLen = 0;
-        static EventLogger _global;
+        static EventLogger _global; //shared global instance of the event logger, this is what will be used by the static methods
+        EventLogger(const EventLogger&) = delete; //copy contructor 
+        EventLogger& operator=(const EventLogger&) = delete; //assignment operator
 };
+
+#endif // EVENTLOGGER_H
