@@ -16,6 +16,7 @@ class PrintLog : public ILogSink
         bool wantsPrefix() const override;
         bool ok() const override;
         size_t write(uint8_t b) override;
+        void flush() override;
 
     private: // needs the same fields as the other logging classes
         Print &p; // requires teensy library to create this object

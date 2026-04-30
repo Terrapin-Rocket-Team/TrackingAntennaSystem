@@ -26,4 +26,9 @@ bool PrintLog::ok() const {
 
 
 size_t PrintLog::write(uint8_t b)
- { return p.write(b); }
+	 { return p.write(b); }
+
+void PrintLog::flush()
+{
+    p.flush();
+}
