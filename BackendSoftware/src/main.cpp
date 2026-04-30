@@ -10,7 +10,7 @@ TerminalPrint terminal;
 PrintLog terminalLog(terminal, true);
 ILogSink *sinks[] = { &terminalLog };
 
-TerminalReporter terminalReporter;
+TerminalReporter terminalReporter; //sensor is datareporter, don't need 
 
 static std::chrono::steady_clock::time_point startTime;
 
