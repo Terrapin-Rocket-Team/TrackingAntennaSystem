@@ -52,8 +52,9 @@ class GPS : public DataReporter { //a gps is an object that can report data, so 
         Vector<3> velocity; // vN (m/s), vE (m/s), vD (m/s)
 
         int fixQual = 0;    // number of satellite connections
-        bool hasFix;        // whether or not GPS is currently connected to >= 4 satellites
-        bool hasFirstFix;   // the first time it gets a fix
+        bool hasFix = false;        // whether or not GPS is currently connected to >= 4 satellites
+        bool hasFirstFix = false;   // the first time it gets a fix
+        bool initialized = false;
         double heading = 0;
 
         int8_t hr = 0, min = 0, sec = 0;
@@ -69,16 +70,6 @@ class GPS : public DataReporter { //a gps is an object that can report data, so 
 
 
 }
-
-
-
-
-
-
-
-
-
-
 
 
 #endif //SAM_M10Q_H
