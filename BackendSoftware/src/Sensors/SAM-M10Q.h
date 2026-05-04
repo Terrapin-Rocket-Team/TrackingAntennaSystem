@@ -12,7 +12,8 @@ class GPS : public DataReporter { //a gps is an object that can report data, so 
     public: 
         GPS(); //default constructor
         GPS(String name, TwoWire &wirePort, u_int8_t address); //constructor with parameters
-        ~GPS(); //destructor
+        GPS(String name, TwoWire &wirePort, double hz); //constructor with parameters, default address, diff update address 
+        //I WILL DO THIS ONE, do not implement this one yet, just add it to the header file. 
 
 
 
@@ -46,7 +47,8 @@ class GPS : public DataReporter { //a gps is an object that can report data, so 
         uint16_t getYear() const;
 
         private:
-
+        
+        bool isHealthy = false; // whether or not the gps is healthy (if init and update/read functions work)
 
         Vector<3> position; // latitude, longitude, alt(m)
         Vector<3> velocity; // vN (m/s), vE (m/s), vD (m/s)
