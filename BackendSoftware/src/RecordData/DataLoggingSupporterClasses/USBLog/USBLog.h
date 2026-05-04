@@ -1,3 +1,9 @@
+#ifndef USBLOG_H
+#define USBLOG_H
+
+#include "../ILogSink.h"
+#include "../SerialCompat.h"
+
 class USBLog : public ILogSink
 {
     public:
@@ -20,4 +26,6 @@ class USBLog : public ILogSink
 
         // this field is for usb only. gives error types
         SerialUSB_t &s;
-};
+    };
+
+#endif // USBLOG_H

@@ -1,3 +1,9 @@
+#ifndef UARTLOG_H
+#define UARTLOG_H
+
+#include "../ILogSink.h"
+#include "../SerialCompat.h"
+
 class UARTLog : public ILogSink
 {
     public:
@@ -18,4 +24,6 @@ class UARTLog : public ILogSink
         int baud;
         bool prefix;
         bool rdy = false; // default of false
-};
+    };
+
+#endif // UARTLOG_H

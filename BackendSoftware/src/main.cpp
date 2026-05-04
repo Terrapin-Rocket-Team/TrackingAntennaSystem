@@ -1,49 +1,34 @@
-#include <chrono>
-#include <thread>
+#include <Arduino.h>
 
-#include "TerminalPrint.h"
-#include "TerminalReporter.h"
+#include "FakeSensors/Fake-SAM-M10Q.h"
 #include "RecordData/DataLogging/DataLogger.h"
 #include "RecordData/DataLoggingSupporterClasses/PrintLog.h"
 
-TerminalPrint terminal;
-PrintLog terminalLog(terminal, true);
-ILogSink *sinks[] = { &terminalLog };
+PrintLog serialLog(Serial, true);
+ILogSink *sinks[] = { &serialLog };
 
-TerminalReporter terminalReporter; //sensor is datareporter, don't need 
+FakeSAM_M10Q gpsReporter;
 
-static std::chrono::steady_clock::time_point startTime;
+static unsigned long startTimeMs = 0;
 
 void setup()
 {
-    startTime = std::chrono::steady_clock::now(); // find our initial time to log
+    Serial.begin(9600);
+    while (!Serial && millis() < 3000) {}
 
-    terminalReporter.begin(); // sends handshake
-    DataLogger::registerReporter(&terminalReporter); // setup our datalogger child appropriately
-    DataLogger::configure(sinks, 1); 
+    startTimeMs = millis();
+
+    gpsReporter.begin();
+    DataLogger::registerReporter(&gpsReporter);
+    DataLogger::configure(sinks, 1);
 }
 
-void loop() 
+void loop()
 {
-    auto now = std::chrono::steady_clock::now(); // get a new time
-    double elapsedSec = std::chrono::duration<double>(now - startTime).count();
+    double elapsedSec = (millis() - startTimeMs) / 1000.0;
 
-    terminalReporter.update(elapsedSec); // update w/ new time
-    DataLogger::instance().appendLine(); // "write" it
+    gpsReporter.update(elapsedSec);
+    DataLogger::instance().appendLine();
+
+    delay(100);
 }
-
-// in this environment, we must use it. in hardware implementations, this will probably get more complicated
-#ifdef NATIVE
-int main()
-{
-    setup();
-
-    while (true)
-    {
-        loop();
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
-
-    return 0;
-}
-#endif

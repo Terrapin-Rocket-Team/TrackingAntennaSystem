@@ -1,6 +1,6 @@
 #include "USBLog.h"
 
-bool USBLog::begin() override
+bool USBLog::begin()
 {
     if (!ok()) // calls prefix checker
     {
@@ -10,7 +10,7 @@ bool USBLog::begin() override
     return rdy = true;
 }
 
-bool USBLog::end() override
+bool USBLog::end()
 {
     s.end(); // end autologging
     rdy = false;
@@ -18,6 +18,6 @@ bool USBLog::end() override
 }
 
 // getters and setters
-bool USBLog::wantsPrefix() const override { return prefix; }
-bool USBLog::ok() const override { return rdy; }
-size_t USBLog::write(uint8_t b) override { return s.write(b); }
+bool USBLog::wantsPrefix() const { return prefix; }
+bool USBLog::ok() const { return rdy; }
+size_t USBLog::write(uint8_t b) { return s.write(b); }
