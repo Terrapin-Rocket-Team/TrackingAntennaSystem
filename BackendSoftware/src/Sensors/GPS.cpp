@@ -21,12 +21,6 @@ GPS::GPS(const char *name, TwoWire &wirePort, u_int8_t address) : DataReporter(n
     addColumn("%0.2f", &velocity.z(), "VelD (m/s)");
 
     addColumn("%d", &fixQual, "SIV");
-    addColumn("%d", &hr, "Hour"); //the timing things dont need a seperate column, remove them 
-    addColumn("%d", &min, "Min");
-    addColumn("%d", &sec, "Sec");
-    addColumn("%d", &day, "Day");
-    addColumn("%d", &month, "Month");
-    addColumn("%d", &year, "Year");
 }
 
 GPS::~GPS(){
@@ -89,13 +83,14 @@ int GPS::update(double currentTime){
         calcInitialValuesForDistance(); // for kx/ky
     }
 
-    //format the time componenet nicely too using this: if (hasFix) {
-//     hr += hrOffset;
-//     hr = (hr % 24 + 24) % 24; // handles negative wrap in cpp
-//     min = min % 60;
-//     sec = sec % 60;
-//     snprintf(tod, 12, "%02d:%02d:%02d", hr, min, sec);
-// }
+    //format the time componenet nicely too using this: 
+    if (hasFix) {
+        hr += hrOffset;
+        hr = (hr % 24 + 24) % 24; // handles negative wrap in cpp
+        min = min % 60;
+        sec = sec % 60;
+        snprintf(tod, 12, "%02d:%02d:%02d", hr, min, sec);
+    }
 
     return 0;
 }
@@ -104,31 +99,21 @@ int GPS::update(double currentTime){
 
 //meters per degree scalers at current altitude
 void GPS::calcInitialValuesForDistance(){ 
-    double latRad = position.x() * M_PI / 180.0; 
+    //this is the correct code:  
+    constexpr auto EARTH_RAD = 6378.137e3;               // meters
+    constexpr auto RAD = 3.14159265358979323846 / 180.0; // lol
 
-    const double a = 6378137.0; // semi major axis
-    const double b = 6356752.3; //semi minor axis
+    constexpr auto EARTH_FLAT = 1.0 / 298.257223563; // flattening of the earth. IDK what this means
 
-    // meters per degree of latitude
-    ky = (M_PI / 180.0) * (pow(a*b, 2) / pow(pow(a * cos(latRad), 2) + pow(b * sin(latRad), 2), 1.5));
+    constexpr auto ECC_SQRD = EARTH_FLAT * (2.0 - EARTH_FLAT); // eccentricity squared. IDK what this means
 
-    //meters per degree of longitude
-    kx = (M_PI / 180.0) * (pow(a, 2) / sqrt(pow(a * cos(latRad), 2) + pow(b * sin(latRad), 2))) * cos(latRad);
-    
-    //this is the correct code:  constexpr auto EARTH_RAD = 6378.137e3;               // meters
-    // constexpr auto RAD = 3.14159265358979323846 / 180.0; // lol
+    constexpr auto m = RAD * EARTH_RAD;
+    const auto coslat = cos(position.x() * RAD);
+    const auto w2 = 1.0 / (1.0 - ECC_SQRD * (1.0 - coslat * coslat)); // IDK what this means
+    const auto w = sqrt(w2);                                          // IDK what this means
 
-    // constexpr auto EARTH_FLAT = 1.0 / 298.257223563; // flattening of the earth. IDK what this means
-
-    // constexpr auto ECC_SQRD = EARTH_FLAT * (2.0 - EARTH_FLAT); // eccentricity squared. IDK what this means
-
-    // constexpr auto m = RAD * EARTH_RAD;
-    // const auto coslat = cos(position.x() * RAD);
-    // const auto w2 = 1.0 / (1.0 - ECC_SQRD * (1.0 - coslat * coslat)); // IDK what this means
-    // const auto w = sqrt(w2);                                          // IDK what this means
-
-    // ky = m * w * coslat;                // IDK what this means
-    // kx = m * w * w2 * (1.0 - ECC_SQRD); // IDK what this means
+    ky = m * w * coslat;                // IDK what this means
+    kx = m * w * w2 * (1.0 - ECC_SQRD); // IDK what this means
 
 }
 
