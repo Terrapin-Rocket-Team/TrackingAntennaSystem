@@ -11,8 +11,8 @@
 class GPS : public DataReporter { //a gps is an object that can report data, so it inherits from DataReporter
     public: 
         GPS(); //default constructor
-        GPS(String name, TwoWire &wirePort, u_int8_t address); //constructor with parameters
-        GPS(String name, TwoWire &wirePort, double hz); //constructor with parameters, default address, diff update address 
+        GPS(const char *name, TwoWire &wirePort, u_int8_t address); //constructor with parameters
+        GPS(const char *name, TwoWire &wirePort, double hz); //constructor with parameters, default address, diff update address 
         //I WILL DO THIS ONE, do not implement this one yet, just add it to the header file. 
 
 
@@ -71,7 +71,7 @@ class GPS : public DataReporter { //a gps is an object that can report data, so 
 
 
 
-}
+};
 
 
 #endif //SAM_M10Q_H

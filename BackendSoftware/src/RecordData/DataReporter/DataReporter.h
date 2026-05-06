@@ -38,6 +38,7 @@
         static int numReporters;
 
         DataReporter(const char *name = nullptr);
+    
         virtual ~DataReporter();
 
         virtual const char *getName() const;
