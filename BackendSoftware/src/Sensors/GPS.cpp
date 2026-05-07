@@ -6,22 +6,38 @@ GPS::GPS() {
     //default constructor  
 }
 
-GPS::GPS(const char *name, TwoWire &wirePort, u_int8_t address) : DataReporter(name) {
+GPS::GPS(const char *name, TwoWire &wirePort, uint8_t address) : DataReporter(name) {
     this->wire = &wirePort;
-    this->address = address = 0x42; //default i2c address for SAM-M10Q is 0x42
+    this->address = address; // use the passed address, not hardcoded
+    this->hz = 10.0;         // default frequency
 
-
-    // registering all vals that sam reports
     addColumn("%0.7f", &position.x(), "Lat (deg)");
     addColumn("%0.7f", &position.y(), "Lon (deg)");
     addColumn("%0.2f", &position.z(), "Alt (m)");
-    
     addColumn("%0.2f", &velocity.x(), "VelN (m/s)");
     addColumn("%0.2f", &velocity.y(), "VelE (m/s)");
     addColumn("%0.2f", &velocity.z(), "VelD (m/s)");
-
     addColumn("%d", &fixQual, "SIV");
 }
+
+GPS::GPS(const char *name, TwoWire &wirePort, double hz) : DataReporter(name) {
+    this->wire = &wirePort;
+    this->address = 0x42; // default I2C address for SAM-M10Q
+
+    // clamp to SAM-M10Q supported range (0.1 - 10 Hz)
+    if (hz < 0.1) hz = 0.1;
+    if (hz > 10.0) hz = 10.0;
+    this->hz = hz;
+
+    addColumn("%0.7f", &position.x(), "Lat (deg)");
+    addColumn("%0.7f", &position.y(), "Lon (deg)");
+    addColumn("%0.2f", &position.z(), "Alt (m)");
+    addColumn("%0.2f", &velocity.x(), "VelN (m/s)");
+    addColumn("%0.2f", &velocity.y(), "VelE (m/s)");
+    addColumn("%0.2f", &velocity.z(), "VelD (m/s)");
+    addColumn("%d", &fixQual, "SIV");
+}
+
 
 GPS::~GPS(){
     // no memory to clean
@@ -29,23 +45,28 @@ GPS::~GPS(){
 
 
 
+
 int GPS::begin(){
-    if (!sam_m10q.begin(*wire, address)){ // try to initialize SAM over i2c
+    if (!sam_m10q.begin(*wire, address)){
         initialized = false;
         isHealthy = false;
         return -1;
     }
 
-    sam_m10q.setI2COutput(COM_TYPE_UBX);
-    sam_m10q.setNavigationFrequency(10);
+    uint16_t measIntervalMs = (uint16_t)(1000.0 / this->hz); // convert Hz to ms interval
+
+    sam_m10q.setI2COutput(COM_TYPE_UBX, VAL_LAYER_RAM);
+    sam_m10q.setMeasurementRate(measIntervalMs, VAL_LAYER_RAM);
+    sam_m10q.setNavigationRate(1, VAL_LAYER_RAM);        // solve every measurement
     sam_m10q.setDynamicModel(DYN_MODEL_AIRBORNE4g);
-    sam_m10q.setAutoPVT(true);
-    sam_m10q.saveConfiguration();
+    sam_m10q.setAutoPVTrate(1, VAL_LAYER_RAM);           // push PVT every cycle
 
     initialized = true;
     isHealthy = true;
     return 0;
 }
+
+
 
 
 

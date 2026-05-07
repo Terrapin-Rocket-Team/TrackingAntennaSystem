@@ -58,6 +58,7 @@ class GPS : public DataReporter { //a gps is an object that can report data, so 
         bool hasFirstFix = false;   // the first time it gets a fix
         bool initialized = false;
         double heading = 0;
+        double hz; //data rate frequency 
 
         int8_t hr = 0, min = 0, sec = 0;
         uint8_t day = 0, month = 0;
