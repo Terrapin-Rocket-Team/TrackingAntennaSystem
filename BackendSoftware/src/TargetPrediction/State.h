@@ -1,5 +1,4 @@
 //Created by Jack Yeulenski 3/24/26
-
 #ifndef PREDICTEDTARGETSTATE_H
 #define PREDICTEDTARGETSTATE_H
 

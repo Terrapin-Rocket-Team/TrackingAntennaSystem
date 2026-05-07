@@ -5,15 +5,13 @@
 */
 
 #include "Propagate.h"
+#include "Math/Matrix.h"
 
-using astra::Matrix;
-
-State Propagate::propagate(const Matrix& curState, double dt) {
+State Propagate::propagate(const Matrix& curState, double dt, const State *state) {
     //note that we will not be using an NEU frame, we will have our own local frame
     //with the origin being our ATS and the x axis being latitude, and the y axis being longitude, and the z axis being altitude. 
     //This is because we will be using a Kalman filter that assumes a local frame, and it will be easier to work with a local frame 
     //than to convert back and forth between NEU and ECEF.
-    State predicted;
 
     /*
     curState is a 9x1 matrix with the following format:

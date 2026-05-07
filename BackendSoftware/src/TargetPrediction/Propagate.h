@@ -8,12 +8,12 @@
 #define PROPAGATE_H
 
 #include "State.h"
-#include <Math/Matrix.h>
+#include "Math/Matrix.h"
 
 class Propagate
 {
 public:
-    static State propagate(const astra::Matrix& curState, double dt);
+    static State propagate(const Matrix& curState, double dt, const State *state);
 };
 
 #endif // PROPAGATE_H
