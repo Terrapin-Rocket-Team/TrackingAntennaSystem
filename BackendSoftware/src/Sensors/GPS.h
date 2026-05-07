@@ -63,6 +63,7 @@ class GPS : public DataReporter { //a gps is an object that can report data, so 
         uint8_t day = 0, month = 0;
         uint16_t year = 0;
         int8_t hrOffset = 0;
+        char tod[9];
 
         SFE_UBLOX_GNSS_SUPER sam_m10q; //gps object has-a relation w/ sam-m10q
         TwoWire *wire; //i2c bus 
