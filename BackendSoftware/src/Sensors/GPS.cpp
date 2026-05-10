@@ -39,12 +39,6 @@ GPS::GPS(const char *name, TwoWire &wirePort, double hz) : DataReporter(name) {
 }
 
 
-GPS::~GPS(){
-    // no memory to clean
-}
-
-
-
 
 int GPS::begin(){
     if (!sam_m10q.begin(*wire, address)){

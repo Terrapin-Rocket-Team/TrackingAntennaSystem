@@ -1,3 +1,6 @@
+#ifndef NATIVE 
+
+
 #include <Arduino.h>
 #include <SD.h>
 
@@ -58,3 +61,6 @@ void loop()
 
     delay(100);
 }
+
+
+#endif // SDLOG_H
