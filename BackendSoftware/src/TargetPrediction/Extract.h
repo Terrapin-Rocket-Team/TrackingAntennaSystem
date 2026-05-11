@@ -25,7 +25,17 @@ PredictStep is responsible for:
 
     This class integrates those other methods into a single method that can be used to calculate the actuator commands.
 */
-class PredictStep {
+class Extract {
+
+    public: 
+
+    Extract(APRSTextMessage message);
+
+    state ExtractTelemetry(const uint8_t* telemetryBytes, size_t length, double dt);
+
+    private:
+
+
     /*
         static method to take in telemetry and return a state with a postion prediction.
         Need 2 methods:
