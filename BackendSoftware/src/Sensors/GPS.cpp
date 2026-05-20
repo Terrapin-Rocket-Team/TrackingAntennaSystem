@@ -18,6 +18,7 @@ GPS::GPS(const char *name, TwoWire &wirePort, uint8_t address) : DataReporter(na
     addColumn("%0.2f", &velocity.y(), "VelE (m/s)");
     addColumn("%0.2f", &velocity.z(), "VelD (m/s)");
     addColumn("%d", &fixQual, "SIV");
+
 }
 
 GPS::GPS(const char *name, TwoWire &wirePort, double hz) : DataReporter(name) {
@@ -41,6 +42,9 @@ GPS::GPS(const char *name, TwoWire &wirePort, double hz) : DataReporter(name) {
 
 
 int GPS::begin(){
+
+    this->wire->begin(); // start the I2C bus
+
     if (!sam_m10q.begin(*wire, address)){
         initialized = false;
         isHealthy = false;
