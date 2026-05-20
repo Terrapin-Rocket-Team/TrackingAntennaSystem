@@ -12,9 +12,9 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "/Users/isaruslu/Desktop/TrackingAntennaSystem/.pio/build/native/program",
+            "executable": "C:/Users/mattm/Documents/GitHub/TrackingAntennaSystem/Teensy_Test/.pio/build/native/program.exe",
             "projectEnvName": "native",
-            "toolchainBinDir": "/usr/bin",
+            "toolchainBinDir": "",
             "internalConsoleOptions": "openOnSessionStart",
             "preLaunchTask": {
                 "type": "PlatformIO",
@@ -25,18 +25,18 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "/Users/isaruslu/Desktop/TrackingAntennaSystem/.pio/build/native/program",
+            "executable": "C:/Users/mattm/Documents/GitHub/TrackingAntennaSystem/Teensy_Test/.pio/build/native/program.exe",
             "projectEnvName": "native",
-            "toolchainBinDir": "/usr/bin",
+            "toolchainBinDir": "",
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (without uploading)",
-            "executable": "/Users/isaruslu/Desktop/TrackingAntennaSystem/.pio/build/native/program",
+            "executable": "C:/Users/mattm/Documents/GitHub/TrackingAntennaSystem/Teensy_Test/.pio/build/native/program.exe",
             "projectEnvName": "native",
-            "toolchainBinDir": "/usr/bin",
+            "toolchainBinDir": "",
             "internalConsoleOptions": "openOnSessionStart",
             "loadMode": "manual"
         }

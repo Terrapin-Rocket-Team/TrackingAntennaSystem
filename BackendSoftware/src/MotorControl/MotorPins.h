@@ -33,6 +33,13 @@ constexpr bool MOTOR_DIR_CW  = HIGH;
 constexpr bool MOTOR_DIR_CCW = LOW;
 
 // -----------------------------------------------------------------------------
+// Angle constants
+// -----------------------------------------------------------------------------
+
+static float motor1_angle = 0.0f;
+// static float motor2_angle = 0.0f;
+
+// -----------------------------------------------------------------------------
 // Timing constants (microseconds)
 // All values exceed datasheet minimums with small margin
 // -----------------------------------------------------------------------------
@@ -137,5 +144,24 @@ inline void motor2_step(bool dir, uint32_t steps, float rpm, uint32_t stepsPerRe
         delayMicroseconds(lowUs);
     }
 }
+
+
+/// Function to drive motor to a certain angle by converting degrees to steps and revolutions
+inline void motor1_set_anngle(float theta, float rpm = 10.0f, uint32_t stepsPerRev = 1600) {
+    float delta = theta - motor1_angle;
+    if (delta == 0) return;
+
+    bool dir = (delta > 0) ? MOTOR_DIR_CW : MOTOR_DIR_CCW;
+
+    uint32_t steps = (uint32_t)(fabsf(delta) / 360.0f * (float)stepsPerRev);
+
+    if (steps == 0) return;
+
+    motor1_step(dir, steps, rpm, stepsPerRev);
+    motor1_angle = theta;
+}
+
+// can copy over final set_angle function for motor 2
+// TODO - set angle of motor during initialization
 
 #endif // MOTORPINS_H
