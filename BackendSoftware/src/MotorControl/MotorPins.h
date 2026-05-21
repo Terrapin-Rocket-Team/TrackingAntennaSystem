@@ -4,6 +4,12 @@
 #define MOTORPINS_H
 #include <Arduino.h>
 
+//first, don't write any code here. Create a cpp file called MotorPins.cpp and write all the code there. 
+//Then, include the function prototypes here in the header file. 
+//This way, we can keep the implementation separate from the interface, which is a good practice in C++ programming.
+
+
+
 // =============================================================================
 // MotorPins.h
 // Motor Control — PUL/DIR pin definitions and signal helpers
@@ -11,7 +17,7 @@
 //
 // ENA is NC (not connected) on both drivers.
 // Timing rules from driver datasheet:
-//   t1: ENA ahead of DIR by >5µs  — N/A (ENA not connected)
+//   t1: ENA ahead of DIR by >5µs  — N/A (ENA not connected) we did not connect enable pin, so we can ignore t1
 //   t2: DIR must settle >5µs before first PUL edge
 //   t3: PUL HIGH width >2.5µs
 //   t4: PUL LOW width >2.5µs
@@ -37,7 +43,7 @@ constexpr bool MOTOR_DIR_CCW = LOW;
 // -----------------------------------------------------------------------------
 
 static float motor1_angle = 0.0f;
-// static float motor2_angle = 0.0f;
+// static float motor2_angle = 0.0f; why is this commented out? we need to keep track of the angle of both motors, so we should have a global variable for each motor's angle. we can initialize them to 0, and then update them whenever we call set_angle. this way, we can always calculate the delta angle correctly.
 
 // -----------------------------------------------------------------------------
 // Timing constants (microseconds)
@@ -60,8 +66,8 @@ inline void motorPins_init()
     // Default both motors to CW, idle pulse line LOW
     digitalWriteFast(MOTOR1_DIR, MOTOR_DIR_CW);
     digitalWriteFast(MOTOR2_DIR, MOTOR_DIR_CW);
-    digitalWriteFast(MOTOR1_PUL, LOW);
-    digitalWriteFast(MOTOR2_PUL, LOW);
+    digitalWriteFast(MOTOR1_PUL, LOW); //change this to high. REMEMBER, LOW = TURNS ON. HIGH = TURNS OFF. WE ARE USING LOW ACTIVE ENABLE
+    digitalWriteFast(MOTOR2_PUL, LOW); //change this to high 
 
     // t2: let DIR settle after init before any pulse can arrive
     delayMicroseconds(T2_DIR_SETUP_US);
@@ -88,7 +94,7 @@ inline void motor2_setDir(bool dir)
 // Send a single step pulse on the given PUL pin
 // Caller must have already set direction and waited t2.
 // -----------------------------------------------------------------------------
-inline void motor1_pulse()
+inline void motor1_pulse() //this funciton is wrong, need to change it because LOW = active 
 {
     digitalWriteFast(MOTOR1_PUL, HIGH);
     delayMicroseconds(T3_PUL_HIGH_US);    // t3: HIGH >2.5µs
@@ -96,7 +102,7 @@ inline void motor1_pulse()
     delayMicroseconds(T4_PUL_LOW_US);     // t4: LOW >2.5µs
 }
 
-inline void motor2_pulse()
+inline void motor2_pulse() //same issue with this 
 {
     digitalWriteFast(MOTOR2_PUL, HIGH);
     delayMicroseconds(T3_PUL_HIGH_US);
@@ -110,12 +116,17 @@ inline void motor2_pulse()
 // rpm       : motor speed in RPM
 // stepsPerRev: full steps per revolution × microstep setting (e.g. 1600)
 // -----------------------------------------------------------------------------
-inline void motor1_step(bool dir, uint32_t steps, float rpm, uint32_t stepsPerRev = 1600)
+
+//this funciton is not helpful
+//its hard to calculate the number of steps needed to move a certain angle, so instead we can just have a function that takes in the 
+//desired angle and calculates the steps needed to get there. We can also have a global variable 
+//that keeps track of the current angle of the motor, so we can calculate the delta angle and convert that to steps. This way, we can just call set_angle with the desired angle and it will take care of the rest.
+inline void motor1_step(bool dir, uint32_t steps, float rpm, uint32_t stepsPerRev = 1600) //change the default steps per rev, our two diff motors have diff gear ratios 
 {
     motor1_setDir(dir);                    // sets DIR + waits t2
 
     // Period between pulses in µs, minus the fixed HIGH+LOW time already spent
-    uint32_t periodUs = (uint32_t)(60000000.0f / (rpm * stepsPerRev));
+    uint32_t periodUs = (uint32_t)(60000000.0f / (rpm * stepsPerRev)); 
     uint32_t lowUs    = (periodUs > T3_PUL_HIGH_US) ? (periodUs - T3_PUL_HIGH_US) : T4_PUL_LOW_US;
     if (lowUs < T4_PUL_LOW_US) lowUs = T4_PUL_LOW_US;  // never violate t4
 
@@ -128,6 +139,8 @@ inline void motor1_step(bool dir, uint32_t steps, float rpm, uint32_t stepsPerRe
     }
 }
 
+
+//same issue with this 
 inline void motor2_step(bool dir, uint32_t steps, float rpm, uint32_t stepsPerRev = 1600)
 {
     motor2_setDir(dir);
@@ -147,7 +160,10 @@ inline void motor2_step(bool dir, uint32_t steps, float rpm, uint32_t stepsPerRe
 
 
 /// Function to drive motor to a certain angle by converting degrees to steps and revolutions
-inline void motor1_set_anngle(float theta, float rpm = 10.0f, uint32_t stepsPerRev = 1600) {
+inline void motor1_set_anngle(float theta, float rpm = 10.0f, uint32_t stepsPerRev = 1600) { //why is the rpm a default value?
+    //need to also take into account the 10:1/50:1 gear ratio which means that the 
+    //motor shaft needs to turn 10/50 times more than the output shaft, so we need to multiply 
+    //the steps per revolution by the gear ratio.
     float delta = theta - motor1_angle;
     if (delta == 0) return;
 
