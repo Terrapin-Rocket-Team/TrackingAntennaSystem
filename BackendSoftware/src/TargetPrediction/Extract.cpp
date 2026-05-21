@@ -10,14 +10,19 @@ and extrapolating the future position of the target based on that data.
  
 // WGS84 constants
 static constexpr double EARTH_RAD   = 6378.137e3;                      // meters
-static constexpr double RAD         = 3.14159265358979323846 / 180.0;
+static constexpr double RAD         = 3.14159265358979323846 / 180.0; //from angles in degrees to radians
 static constexpr double EARTH_FLAT  = 1.0 / 298.257223563;
 static constexpr double ECC_SQRD    = EARTH_FLAT * (2.0 - EARTH_FLAT);
 static constexpr double M           = RAD * EARTH_RAD;
  
 // Conversion factors
-static constexpr double FT_TO_M     = 0.3048;
-static constexpr double KNOTS_TO_MS = 0.514444;
+static constexpr double FT_TO_M     = 0.3048; //feet to meters
+static constexpr double KNOTS_TO_MS = 0.514444; //meters per second in one knot
+
+ 
+// Burn phase constants, used to calculate altitude during the burn (first 6 seconds after launch)
+static constexpr double BURN_ACCEL_MS2  = 98.1;  // 10g vertical acceleration during burn (m/s^2)
+static constexpr double BURN_DURATION_S = 6.0;    // burn phase duration (seconds)
  
 // ----------------------------------------------------------------------------
 // Constructor
@@ -30,7 +35,7 @@ Extract::Extract(APRSData* message)
 // ----------------------------------------------------------------------------
 // ExtractTelemetry
 // ----------------------------------------------------------------------------
-State Extract::ExtractTelemetry(const uint8_t* telemetryBytes, size_t length, double dt)
+State Extract::ExtractTelemetry(const uint8_t* telemetryBytes, size_t length, double dt, double timeSinceLaunch)
 {
     // 1. Decode bytes into the APRSData subclass via polymorphism
     _message->decode(const_cast<uint8_t*>(telemetryBytes), static_cast<uint16_t>(length));
@@ -47,13 +52,38 @@ State Extract::ExtractTelemetry(const uint8_t* telemetryBytes, size_t length, do
     // 4. Decompose speed + heading into ENU velocity (m/s)
     //    heading is degrees CW from North
     //    velX = East, velY = North, velZ = Up (zeroed, no climb rate)
-    double speedMS = telem->spd * KNOTS_TO_MS;
-    double hdgRad  = telem->hdg * RAD;
+    double speedMS = telem->spd * KNOTS_TO_MS; //meters per second 
+    double hdgRad  = telem->hdg * RAD; //measured from north clockwise, converted to radians
     double velX    =  speedMS * std::sin(hdgRad);  // East
     double velY    =  speedMS * std::cos(hdgRad);  // North
-    double velZ    =  0.0;                          // Up — not available in APRSTelem
+    
+
+    // 5. Estimate vertical velocity (velZ)
+    //
+    //    During burn phase (first 6 seconds): integrate constant 10g upward acceleration.
+    //        velZ = a * t
+    //    After burnout: estimate from consecutive altitude readings.
+    //        velZ = (alt_now - alt_prev) / dtPacket
+    //
+    double velZ = 0.0;
+    double altM = telem->alt * FT_TO_M;  // current altitude in meters
  
-    // 5. Populate and return State
+    if (timeSinceLaunch <= BURN_DURATION_S)
+    {
+        // Burn phase — integrate constant vertical acceleration
+        velZ = BURN_ACCEL_MS2 * timeSinceLaunch;
+    }
+    else if (_hasPrevAlt && dt > 0.0)
+    {
+        // Post-burnout — estimate from altitude delta between packets
+        velZ = (altM - _prevAltM) / dt;
+    }
+ 
+    // Store altitude for next packet
+    _prevAltM   = altM;
+    _hasPrevAlt = true;
+ 
+    // 6. Populate and return State
     State state;
     state.setPosition(east, north, up);
     state.setVelocity(velX, velY, velZ);
@@ -77,7 +107,7 @@ void Extract::llaToENU(double lat,       double lng,       double altFt,
     const double kx = M * w * w2 * (1.0 - ECC_SQRD); // meters per degree latitude
     const double ky = M * w * coslat;                 // meters per degree longitude
  
-    north = (lat - originLat) * kx;
+    north = (lat - originLat) * kx; //figuring out north component of rocket from ATS in meters
     east  = (lng - originLng) * ky;
     up    = (altFt - originAltFt) * FT_TO_M;
 }

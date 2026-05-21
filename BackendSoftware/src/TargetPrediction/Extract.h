@@ -44,10 +44,11 @@ class Extract {
    public:
  
     // Origin of the local ENU frame (Tracking Antenna System location).
-    // Must be set before calling ExtractTelemetry.
-    double originLatDeg = 0.0;  // TAS latitude  (decimal degrees)
-    double originLngDeg = 0.0;  // TAS longitude (decimal degrees)
-    double originAltFt  = 0.0;  // TAS altitude  (feet)
+    // Must be set before calling ExtractTelemetry. We are using the ATS
+    //as the origin and fidnign the state of the rocket relative to the ATS 
+    double originLatDeg = 0.0;  // ATS latitude  (decimal degrees)
+    double originLngDeg = 0.0;  // ATS longitude (decimal degrees)
+    double originAltFt  = 0.0;  // ATS altitude  (feet)
  
     /*
         Constructor
@@ -73,12 +74,16 @@ class Extract {
             State with position (m, ENU) and velocity (m/s, ENU) populated.
             Acceleration is left at zero — not available in APRSTelem.
     */
-    State ExtractTelemetry(const uint8_t* telemetryBytes, size_t length, double dt);
+    State ExtractTelemetry(const uint8_t* telemetryBytes, size_t length, double dt, double timeSinceLaunch);
  
 private:
  
     // Pointer to any APRSData subclass — decode() resolved via polymorphism.
     APRSData* _message;
+
+    // Previous altitude in meters — used to estimate velZ post-burnout.
+    double _prevAltM = 0.0;
+    bool   _hasPrevAlt = false;
  
     /*
         llaToENU

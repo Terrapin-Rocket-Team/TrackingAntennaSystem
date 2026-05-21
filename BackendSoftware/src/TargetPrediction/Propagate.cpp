@@ -27,7 +27,7 @@ void Propagate::propagate(double dt)
         Ay_new = Ay                             (= 0)
         Az_new = Az                             (= 0)
     */
-    double Fdata[] = {
+    double fdata[] = {
         1, 0, 0, dt, 0,  0,  0.5*dt*dt, 0,        0,
         0, 1, 0, 0,  dt, 0,  0,         0.5*dt*dt, 0,
         0, 0, 1, 0,  0,  dt, 0,         0,         0.5*dt*dt,
@@ -39,7 +39,7 @@ void Propagate::propagate(double dt)
         0, 0, 0, 0,  0,  0,  0,         0,         1
     };
 
-    Matrix F(9, 9, Fdata);
+    Matrix f(9, 9, fdata);
 
     double xData[] = {
         state.getPosX(),
@@ -55,7 +55,7 @@ void Propagate::propagate(double dt)
 
     Matrix x(9, 1, xData);
 
-    Matrix xPred = F * x;
+    Matrix xPred = f * x;
 
     state.setPosition    (xPred(0, 0), xPred(1, 0), xPred(2, 0));
     state.setVelocity    (xPred(3, 0), xPred(4, 0), xPred(5, 0));
