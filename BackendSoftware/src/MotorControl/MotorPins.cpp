@@ -10,7 +10,9 @@ MotorPins::MotorPins(){
     // default constructor
 }
 
-MotorPins::MotorPins(int motor_pul, int motor_dir){
+MotorPins::MotorPins(int motor_pul, int motor_dir, int gear, int micro){
+    gearRatio = gear;
+    microSteps = micro;
     pinMode(motor_pul, OUTPUT);
     pinMode(motor_dir, OUTPUT);
     //pinMode(MOTOR2_PUL, OUTPUT);
@@ -21,7 +23,7 @@ MotorPins::MotorPins(int motor_pul, int motor_dir){
     //digitalWriteFast(MOTOR2_DIR, MOTOR_DIR_CW);
     digitalWriteFast(motor_pul, LOW); //change this to high. REMEMBER, LOW = TURNS ON. HIGH = TURNS OFF. WE ARE USING LOW ACTIVE ENABLE
     //digitalWriteFast(MOTOR2_PUL, LOW); //change this to high 
-    
+
     // t2: let DIR settle after init before any pulse can arrive
     delayMicroseconds(T2_DIR_SETUP_US);
 }
@@ -74,7 +76,7 @@ inline void MotorPins::motor10(float theta, float rpm, uint32_t stepsPerRev = 16
 
     bool dir = (delta > 0) ? MOTOR_DIR_CW : MOTOR_DIR_CCW;
 
-    uint32_t steps = (uint32_t)(fabsf(delta) / 360.0f * (float)stepsPerRev * MOTOR1_RATIO);
+    uint32_t steps = (uint32_t)(fabsf(delta) / 360.0f * (float)stepsPerRev * gearRatio);
 
     if (steps == 0) return;
 

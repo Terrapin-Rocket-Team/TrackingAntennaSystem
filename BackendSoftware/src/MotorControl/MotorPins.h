@@ -24,7 +24,7 @@ class MotorPins
 {
 public:
     MotorPins();    
-    MotorPins(int motor_pul, int motor_dir);   
+    MotorPins(int motor_pul, int motor_dir, int gear, int micro);   
     // -----------------------------------------------------------------------------
     // Initialisation — call once in setup()
     // -----------------------------------------------------------------------------
@@ -57,7 +57,7 @@ private:
 
     const int MOTOR2_PUL = 24;
     const int MOTOR2_DIR = 25;
-
+     // Not sure we need these anymore
     // -----------------------------------------------------------------------------
     // Direction constants
     // -----------------------------------------------------------------------------
@@ -75,8 +75,9 @@ private:
     // -----------------------------------------------------------------------------
     // Gear Ratio constants
     // -----------------------------------------------------------------------------
-    const int MOTOR1_RATIO = 10;
-    const int MOTOR2_RATIO = 50;
+    int gearRatio;
+    const int steps = 200;
+    int microSteps;
 
     // -----------------------------------------------------------------------------
     // Timing constants (microseconds)
