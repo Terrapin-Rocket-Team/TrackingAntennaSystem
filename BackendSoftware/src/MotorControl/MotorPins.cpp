@@ -63,7 +63,7 @@ inline void motor2_pulse() //same issue with this
 
 
 /// Function to drive motor to a certain angle by converting degrees to steps and revolutions
-inline void motor1_set_angle(float theta, float rpm, uint32_t stepsPerRev = 1600) { //why is the rpm a default value?
+inline void motor50(float theta, float rpm, uint32_t stepsPerRev = 1600) { //why is the rpm a default value?
     //need to also take into account the 10:1/50:1 gear ratio which means that the 
     //motor shaft needs to turn 10/50 times more than the output shaft, so we need to multiply 
     //the steps per revolution by the gear ratio.
