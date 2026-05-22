@@ -1,14 +1,12 @@
-//Created By Divyansh Srivastava on 5/10/2026, this file will defien the hardware
-//level pin assignments and timing rules for the stepper motors, as well as helper functions to send pulses and set direction.
+// Created By Divyansh Srivastava on 5/10/2026, this file will defien the hardware
+// level pin assignments and timing rules for the stepper motors, as well as helper functions to send pulses and set direction.
 #ifndef MOTORPINS_H
 #define MOTORPINS_H
 #include <Arduino.h>
 
-//first, don't write any code here. Create a cpp file called MotorPins.cpp and write all the code there. 
-//Then, include the function prototypes here in the header file. 
-//This way, we can keep the implementation separate from the interface, which is a good practice in C++ programming.
-
-
+// first, don't write any code here. Create a cpp file called MotorPins.cpp and write all the code there.
+// Then, include the function prototypes here in the header file.
+// This way, we can keep the implementation separate from the interface, which is a good practice in C++ programming.
 
 // =============================================================================
 // MotorPins.h
@@ -22,68 +20,73 @@
 //   t3: PUL HIGH width >2.5µs
 //   t4: PUL LOW width >2.5µs
 // =============================================================================
+class MotorPins
+{
+public:
+    MotorPins();    
+    MotorPins(int motor_pul, int motor_dir);   
+    // -----------------------------------------------------------------------------
+    // Initialisation — call once in setup()
+    // -----------------------------------------------------------------------------
+    inline void motorPins_init();
 
-// -----------------------------------------------------------------------------
-// Pin assignments
-// -----------------------------------------------------------------------------
-constexpr int MOTOR1_PUL = 8;
-constexpr int MOTOR1_DIR = 9;
+    // -----------------------------------------------------------------------------
+    // Set direction for a motor
+    // Always call this before stepping if direction has changed.
+    // Includes t2 settling delay so caller does not need to.
+    // -----------------------------------------------------------------------------
+    inline void motor1_setDir(bool dir);
+    inline void motor2_setDir(bool dir);
 
-constexpr int MOTOR2_PUL = 24;
-constexpr int MOTOR2_DIR = 25;
+    // -----------------------------------------------------------------------------
+    // Send a single step pulse on the given PUL pin
+    // Caller must have already set direction and waited t2.
+    // -----------------------------------------------------------------------------
+    inline void motor1_pulse();
+    inline void motor2_pulse();
 
-// -----------------------------------------------------------------------------
-// Direction constants
-// -----------------------------------------------------------------------------
-constexpr bool MOTOR_DIR_CW  = HIGH;
-constexpr bool MOTOR_DIR_CCW = LOW;
+    /// Function to drive motor to a certain angle by converting degrees to steps and revolutions
+    inline void motor10(float theta, float rpm, uint32_t stepsPerRev = 1600);
 
-// -----------------------------------------------------------------------------
-// Angle constants
-// -----------------------------------------------------------------------------
+private:
+    // -----------------------------------------------------------------------------
+    // Pin assignments
+    // -----------------------------------------------------------------------------
+    const int MOTOR1_PUL = 8;
+    const int MOTOR1_DIR = 9;
 
-static float motor1_angle = 0.0f;
-static float motor2_angle = 0.0f; // why is this commented out? we need to keep track of the angle of both motors, so we should have a global variable for each motor's angle. we can initialize them to 0, and then update them whenever we call set_angle. this way, we can always calculate the delta angle correctly.
-// commented it out because I didn't define motor2_set_angle and didn't want to cause any problems until you checked over my work and said it was good.
+    const int MOTOR2_PUL = 24;
+    const int MOTOR2_DIR = 25;
 
-// -----------------------------------------------------------------------------
-// Gear Ratio constants
-// -----------------------------------------------------------------------------
-constexpr int MOTOR1_RATIO = 10;
-constexpr int MOTOR2_RATIO = 50;
+    // -----------------------------------------------------------------------------
+    // Direction constants
+    // -----------------------------------------------------------------------------
+    const bool MOTOR_DIR_CW = HIGH;
+    const bool MOTOR_DIR_CCW = LOW;
 
-// -----------------------------------------------------------------------------
-// Timing constants (microseconds)
-// All values exceed datasheet minimums with small margin
-// -----------------------------------------------------------------------------
-constexpr uint32_t T2_DIR_SETUP_US = 6;   // DIR settle before PUL  (min 5µs)
-constexpr uint32_t T3_PUL_HIGH_US  = 3;   // PUL HIGH width         (min 2.5µs)
-constexpr uint32_t T4_PUL_LOW_US   = 3;   // PUL LOW width          (min 2.5µs)
+    // -----------------------------------------------------------------------------
+    // Angle constants
+    // -----------------------------------------------------------------------------
 
-// -----------------------------------------------------------------------------
-// Initialisation — call once in setup()
-// -----------------------------------------------------------------------------
-inline void motorPins_init();
+    static float motor1_angle;
+    static float motor2_angle; // why is this commented out? we need to keep track of the angle of both motors, so we should have a global variable for each motor's angle. we can initialize them to 0, and then update them whenever we call set_angle. this way, we can always calculate the delta angle correctly.
+    // commented it out because I didn't define motor2_set_angle and didn't want to cause any problems until you checked over my work and said it was good.
 
-// -----------------------------------------------------------------------------
-// Set direction for a motor
-// Always call this before stepping if direction has changed.
-// Includes t2 settling delay so caller does not need to.
-// -----------------------------------------------------------------------------
-inline void motor1_setDir(bool dir);
-inline void motor2_setDir(bool dir);
+    // -----------------------------------------------------------------------------
+    // Gear Ratio constants
+    // -----------------------------------------------------------------------------
+    const int MOTOR1_RATIO = 10;
+    const int MOTOR2_RATIO = 50;
 
+    // -----------------------------------------------------------------------------
+    // Timing constants (microseconds)
+    // All values exceed datasheet minimums with small margin
+    // -----------------------------------------------------------------------------
+    const uint32_t T2_DIR_SETUP_US = 6; // DIR settle before PUL  (min 5µs)
+    const uint32_t T3_PUL_HIGH_US = 3;  // PUL HIGH width         (min 2.5µs)
+    const uint32_t T4_PUL_LOW_US = 3;   // PUL LOW width          (min 2.5µs)
 
-// -----------------------------------------------------------------------------
-// Send a single step pulse on the given PUL pin
-// Caller must have already set direction and waited t2.
-// -----------------------------------------------------------------------------
-inline void motor1_pulse();
-inline void motor2_pulse();
-
-/// Function to drive motor to a certain angle by converting degrees to steps and revolutions
-inline void motor1_set_angle(float theta, float rpm, uint32_t stepsPerRev = 1600);
-
+};
 
 // can copy over final set_angle function for motor 2
 // TODO - set angle of motor during initialization
@@ -100,15 +103,15 @@ inline void motor1_set_angle(float theta, float rpm, uint32_t stepsPerRev = 1600
 // -----------------------------------------------------------------------------
 
 //this funciton is not helpful
-//its hard to calculate the number of steps needed to move a certain angle, so instead we can just have a function that takes in the 
-//desired angle and calculates the steps needed to get there. We can also have a global variable 
+//its hard to calculate the number of steps needed to move a certain angle, so instead we can just have a function that takes in the
+//desired angle and calculates the steps needed to get there. We can also have a global variable
 //that keeps track of the current angle of the motor, so we can calculate the delta angle and convert that to steps. This way, we can just call set_angle with the desired angle and it will take care of the rest.
-inline void motor1_step(bool dir, uint32_t steps, float rpm, uint32_t stepsPerRev = 1600) //change the default steps per rev, our two diff motors have diff gear ratios 
+inline void motor1_step(bool dir, uint32_t steps, float rpm, uint32_t stepsPerRev = 1600) //change the default steps per rev, our two diff motors have diff gear ratios
 {
     motor1_setDir(dir);                    // sets DIR + waits t2
 
     // Period between pulses in µs, minus the fixed HIGH+LOW time already spent
-    uint32_t periodUs = (uint32_t)(60000000.0f / (rpm * stepsPerRev)); 
+    uint32_t periodUs = (uint32_t)(60000000.0f / (rpm * stepsPerRev));
     uint32_t lowUs    = (periodUs > T3_PUL_HIGH_US) ? (periodUs - T3_PUL_HIGH_US) : T4_PUL_LOW_US;
     if (lowUs < T4_PUL_LOW_US) lowUs = T4_PUL_LOW_US;  // never violate t4
 
@@ -122,7 +125,7 @@ inline void motor1_step(bool dir, uint32_t steps, float rpm, uint32_t stepsPerRe
 }
 
 
-//same issue with this 
+//same issue with this
 inline void motor2_step(bool dir, uint32_t steps, float rpm, uint32_t stepsPerRev = 1600)
 {
     motor2_setDir(dir);
