@@ -58,31 +58,32 @@ State Extract::ExtractTelemetry(const uint8_t* telemetryBytes, size_t length, do
     double velY    =  speedMS * std::cos(hdgRad);  // North
     
 
-    // 5. Estimate vertical velocity (velZ)
+   // 5. Estimate vertical velocity (velZ)
     //
-    //    During burn phase (first 6 seconds): integrate constant 10g upward acceleration.
-    //        velZ = a * t
-    //    After burnout: estimate from consecutive altitude readings.
+    //    First packet after launch: no previous altitude reading yet, use dynamic
+    //    model (constant 10g acceleration) to estimate velZ.
+    //    All subsequent packets: estimate from consecutive altitude readings.
     //        velZ = (alt_now - alt_prev) / dtPacket
     //
     double velZ = 0.0;
     double altM = telem->alt * FT_TO_M;  // current altitude in meters
- 
-    if (timeSinceLaunch <= BURN_DURATION_S)
+
+    if (!_hasPrevAlt) // First packet — use dynamic model until next packet arrives
     {
-        // Burn phase — integrate constant vertical acceleration
+
         velZ = BURN_ACCEL_MS2 * timeSinceLaunch;
     }
-    else if (_hasPrevAlt && dt > 0.0)
+    else if (dt > 0.0 && _hasPrevAlt) // sanity check to avoid division by zero
     {
-        // Post-burnout — estimate from altitude delta between packets
+        // Subsequent packets — estimate from altitude delta
         velZ = (altM - _prevAltM) / dt;
     }
- 
+
     // Store altitude for next packet
     _prevAltM   = altM;
     _hasPrevAlt = true;
- 
+
+
     // 6. Populate and return State
     State state;
     state.setPosition(east, north, up);

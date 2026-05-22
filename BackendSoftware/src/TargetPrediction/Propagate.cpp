@@ -4,11 +4,10 @@
 
 #include "Propagate.h"
 
-void Propagate::update(double posX, double posY, double posZ,
-                       double velX, double velY, double velZ)
+void Propagate::update(const State& newState)
 {
-    state.setPosition(posX, posY, posZ);
-    state.setVelocity(velX, velY, velZ);
+    state.setPosition(newState.getPosX(), newState.getPosY(), newState.getPosZ());
+    state.setVelocity(newState.getVelX(), newState.getVelY(), newState.getVelZ());
     state.setAcceleration(0.0, 0.0, 0.0);
 }
 

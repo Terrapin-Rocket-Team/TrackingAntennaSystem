@@ -3,7 +3,7 @@
 #define PREDICTEDTARGETSTATE_H
 
 /*
-PredictedTargetState
+State
 
 This is the output of PredictStep.
 It stores the current best estimate of where the target will be after the

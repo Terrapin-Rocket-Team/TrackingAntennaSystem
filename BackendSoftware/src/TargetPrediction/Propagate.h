@@ -31,14 +31,13 @@ public:
         update
 
         Called each time a new telemetry packet arrives.
-        Seeds position and velocity from Extract. Acceleration stays zero.
+        Resets the position and velocity components of the state to 
+        whatever we read in the next telemetry packet. 
 
         Parameters:
-            posX, posY, posZ — ENU position (meters)
-            velX, velY, velZ — ENU velocity (m/s)
+            old state
     */
-    void update(double posX, double posY, double posZ,
-                double velX, double velY, double velZ);
+    void update(const State& newState);
 
     /*
         propagate
