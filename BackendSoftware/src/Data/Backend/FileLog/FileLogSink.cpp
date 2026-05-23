@@ -58,13 +58,6 @@ static char *findNextFilename(IStorage *backend, const char *baseFilename)
     return nullptr;
 }
 
-// Constructor with automatic backend creation - using initializer list
-FileLogSink::FileLogSink(const char *filename, StorageBackend type, bool prefix)
-: _file(nullptr), _filename(filename), _ownsBackend(true), _prefix(prefix)
-{
-
-    _backend = StorageFactory::create(type);
-}
 
 // Constructor with provided backend - using an initializer list
 FileLogSink::FileLogSink(const char *filename, IStorage *backend, bool prefix)

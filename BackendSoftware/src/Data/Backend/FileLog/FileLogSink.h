@@ -1,14 +1,14 @@
+
+#ifndef FILE_LOG_SINK_H
+#define FILE_LOG_SINK_H
+
+#include "../../Storage/IStorage.h"
+#include "../../Storage/IFile.h"
+
 class FileLogSink : public ILogSink
 {
     public:
-        /**
-         * @brief Construct FileLogSink with automatic backend creation
-         * @param filename Path to log file
-         * @param type Storage backend type (EMMC, SD_CARD, etc.)
-         * @param prefix Whether to add prefixes to log messages
-         */
-        FileLogSink(const char *filename, StorageBackend type, bool prefix = false);
-
+       
         /**
          * @brief Construct FileLogSink with provided backend (advanced usage)
          * @param filename Path to log file
@@ -40,3 +40,5 @@ class FileLogSink : public ILogSink
         bool _ownsBackend;
         bool _prefix;
 };
+
+#endif // FILE_LOG_SINK_H

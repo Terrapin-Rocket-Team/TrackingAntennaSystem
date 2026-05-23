@@ -1,3 +1,8 @@
+#ifndef FILE_READER_H
+#define FILE_READER_H
+
+#include "../Storage/IStorage.h"
+
 class FileReader
 {
     public:
@@ -48,3 +53,5 @@ class FileReader
         void handleCommands();
 
 };
+
+#endif // FILE_READER_H
