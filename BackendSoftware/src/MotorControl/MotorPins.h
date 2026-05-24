@@ -24,7 +24,7 @@ class MotorPins
 {
 public:
     MotorPins();    
-    MotorPins(int motor_pul, int motor_dir, int gear, int micro);  //what is the micro for? If it's for microstepping, that is something
+    MotorPins(int motor_pul, int motor_dir, int gear, int micro);  //what is the micro for? If it's for microstepping, that is something // its for the microstepping as a constant, wasn't sure if we were going to change that in code and physically so i just set it as a constant we can set
     //we physically change, not something we can set in code.  
     // -----------------------------------------------------------------------------
     // Initialisation — call once in setup()
@@ -36,19 +36,21 @@ public:
     // Always call this before stepping if direction has changed.
     // Includes t2 settling delay so caller does not need to.
     // -----------------------------------------------------------------------------
-    inline void motor1_setDir(bool dir);
-    inline void motor2_setDir(bool dir);
+    inline void motor_setDir(bool dir);
 
     // -----------------------------------------------------------------------------
     // Send a single step pulse on the given PUL pin
     // Caller must have already set direction and waited t2.
     // -----------------------------------------------------------------------------
-    inline void motor1_pulse();
-    inline void motor2_pulse();
+    inline void motor_pulse();
 
     /// Function to drive motor to a certain angle by converting degrees to steps and revolutions
-    inline void motor10(float theta, float rpm, uint32_t stepsPerRev = 1600);
+    inline void motor_set_angle(float theta, float rpm, uint32_t stepsPerRev = 1600);
 
+    //getter functions
+    float get_motor_angle();
+    int get_gear_ratio();
+    int get_micro_steps();
 private:
     // -----------------------------------------------------------------------------
     // Pin assignments
@@ -58,7 +60,7 @@ private:
 
     const int MOTOR2_PUL = 24;
     const int MOTOR2_DIR = 25;
-     // Not sure we need these anymore, we still do, pin assignments are important 
+
     // -----------------------------------------------------------------------------
     // Direction constants
     // -----------------------------------------------------------------------------
@@ -69,8 +71,7 @@ private:
     // Angle constants
     // -----------------------------------------------------------------------------
 
-    static float motor1_angle;
-    static float motor2_angle;
+    static float motor_angle;
     // -----------------------------------------------------------------------------
     // Gear Ratio constants
     // -----------------------------------------------------------------------------
@@ -87,9 +88,6 @@ private:
     const uint32_t T4_PUL_LOW_US = 3;   // PUL LOW width          (min 2.5µs)
 
 };
-
-// can copy over final set_angle function for motor 2
-// TODO - set angle of motor during initialization
 
 #endif // MOTORPINS_H
 

@@ -15,50 +15,34 @@ MotorPins::MotorPins(int motor_pul, int motor_dir, int gear, int micro){
     microSteps = micro;
     pinMode(motor_pul, OUTPUT);
     pinMode(motor_dir, OUTPUT);
-    //pinMode(MOTOR2_PUL, OUTPUT);
-    //pinMode(MOTOR2_DIR, OUTPUT);
 
     // Default both motors to CW, idle pulse line LOW
     digitalWriteFast(motor_dir, MOTOR_DIR_CW);
-    //digitalWriteFast(MOTOR2_DIR, MOTOR_DIR_CW);
     digitalWriteFast(motor_pul, HIGH); //change this to high. REMEMBER, LOW = TURNS ON. HIGH = TURNS OFF. WE ARE USING LOW ACTIVE ENABLE
-    //digitalWriteFast(MOTOR2_PUL, LOW); //change this to high 
 
     // t2: let DIR settle after init before any pulse can arrive
     delayMicroseconds(T2_DIR_SETUP_US);
 }
+
 // -----------------------------------------------------------------------------
 // Set direction for a motor
 // Always call this before stepping if direction has changed.
 // Includes t2 settling delay so caller does not need to.
-
-//I don't think you need two setDir functions, you just ned one that the two different instances will use. 
-
-
 // -----------------------------------------------------------------------------
-inline void MotorPins::motor1_setDir(bool dir)
+inline void MotorPins::motor_setDir(bool dir)
 {
     digitalWriteFast(MOTOR1_DIR, dir);
     delayMicroseconds(T2_DIR_SETUP_US);   // t2: DIR must settle >5µs before PUL
 }
 
-inline void MotorPins::motor2_setDir(bool dir)
-{
-    digitalWriteFast(MOTOR2_DIR, dir);
-    delayMicroseconds(T2_DIR_SETUP_US);   // t2
-}
 
 
 // -----------------------------------------------------------------------------
 // Send a single step pulse on the given PUL pin
 // Caller must have already set direction and waited t2.
-
-//don't need two different pulse functions, we can just have one that the two different instances will use.
-
-
 // -----------------------------------------------------------------------------
-inline void MotorPins::motor1_pulse() //this funciton is wrong, need to change it because LOW = active 
-{       // at every pulse, we have to add our angle which we can calculate by taking the steps we just sent,
+inline void MotorPins::motor_pulse() 
+{   // at every pulse, we have to add our angle which we can calculate by taking the steps we just sent,
     // dividing by the steps per revolution, and multiplying by 360.
     // then we can add that to our global angle variable. 
     // this way, we can keep track of the current angle of the motor and use that to calculate the delta angle for the next set_angle call.
@@ -68,39 +52,41 @@ inline void MotorPins::motor1_pulse() //this funciton is wrong, need to change i
     delayMicroseconds(T4_PUL_LOW_US);     // t4: LOW >2.5µs
 }
 
-inline void MotorPins::motor2_pulse() //same issue with this 
-{
-    digitalWriteFast(MOTOR2_PUL, LOW);
-    delayMicroseconds(T3_PUL_HIGH_US);
-    digitalWriteFast(MOTOR2_PUL, HIGH);
-    delayMicroseconds(T4_PUL_LOW_US);
-}
-
-
 /// Function to drive motor to a certain angle by converting degrees to steps and revolutions
-inline void MotorPins::motor10(float theta, float rpm, uint32_t stepsPerRev = 1600) { //why is the rpm a default value?
+inline void MotorPins::motor_set_angle(float theta, float rpm, uint32_t stepsPerRev = 1600) {
     //need to also take into account the 10:1/50:1 gear ratio which means that the 
     //motor shaft needs to turn 10/50 times more than the output shaft, so we need to multiply 
     //the steps per revolution by the gear ratio.
-    float delta = theta - motor1_angle;
+    float delta = theta - motor_angle;
     if (delta == 0) return;
 
     bool dir = (delta > 0) ? MOTOR_DIR_CW : MOTOR_DIR_CCW;
 
-    uint32_t steps = (uint32_t)(fabsf(delta) / 360.0f * (float)stepsPerRev * gearRatio);
+    uint32_t steps = (uint32_t)(fabsf(delta) / 360.0f * (float)stepsPerRev * (float)gearRatio);
 
     if (steps == 0) return;
 
-    motor1_setDir(dir);
+    motor_setDir(dir);
     uint32_t periodUs = (uint32_t)(60000000.0f / (rpm * stepsPerRev)); 
     uint32_t lowUs    = (periodUs > T3_PUL_HIGH_US) ? (periodUs - T3_PUL_HIGH_US) : T4_PUL_LOW_US;
     if (lowUs < T4_PUL_LOW_US) lowUs = T4_PUL_LOW_US;  // never violate t4
     for (uint32_t i = 0; i < steps; i++)
     {
-        motor1_pulse();
+        motor_pulse();
+        motor_angle += ((dir) ? 1.80f/((float)microSteps*(float)gearRatio) : -1.0f * 1.80f/((float)microSteps*(float)gearRatio)); // changed angle per microstep depends on the formula -> angle_per_step*step/microstep*1/Gear_ratio
     }
 
-    motor1_angle = theta;
+    //motor_angle = theta;
 }
 
-//NEED GETTERS/SETTERS FOR ANGLE, GEAR RATIO, MICROSTEPPING. 
+float MotorPins::get_motor_angle(){
+    return motor_angle;
+}
+
+int MotorPins::get_gear_ratio(){
+    return gearRatio;
+}
+
+int MotorPins::get_micro_steps(){
+    return microSteps;
+}
