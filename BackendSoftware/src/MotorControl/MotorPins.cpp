@@ -1,7 +1,7 @@
 /// Created by Matt Urban 5/21/26
 /// Utilizes MotorPins.h and executes motor functions
 #include "MotorPins.h"
-#include <Arduino.h>
+
 
 // -----------------------------------------------------------------------------
 // Initialisation — call once in setup()
@@ -21,7 +21,7 @@ MotorPins::MotorPins(int motor_pul, int motor_dir, int gear, int micro){
     // Default both motors to CW, idle pulse line LOW
     digitalWriteFast(motor_dir, MOTOR_DIR_CW);
     //digitalWriteFast(MOTOR2_DIR, MOTOR_DIR_CW);
-    digitalWriteFast(motor_pul, LOW); //change this to high. REMEMBER, LOW = TURNS ON. HIGH = TURNS OFF. WE ARE USING LOW ACTIVE ENABLE
+    digitalWriteFast(motor_pul, HIGH); //change this to high. REMEMBER, LOW = TURNS ON. HIGH = TURNS OFF. WE ARE USING LOW ACTIVE ENABLE
     //digitalWriteFast(MOTOR2_PUL, LOW); //change this to high 
 
     // t2: let DIR settle after init before any pulse can arrive
@@ -31,6 +31,10 @@ MotorPins::MotorPins(int motor_pul, int motor_dir, int gear, int micro){
 // Set direction for a motor
 // Always call this before stepping if direction has changed.
 // Includes t2 settling delay so caller does not need to.
+
+//I don't think you need two setDir functions, you just ned one that the two different instances will use. 
+
+
 // -----------------------------------------------------------------------------
 inline void MotorPins::motor1_setDir(bool dir)
 {
@@ -48,9 +52,16 @@ inline void MotorPins::motor2_setDir(bool dir)
 // -----------------------------------------------------------------------------
 // Send a single step pulse on the given PUL pin
 // Caller must have already set direction and waited t2.
+
+//don't need two different pulse functions, we can just have one that the two different instances will use.
+
+
 // -----------------------------------------------------------------------------
 inline void MotorPins::motor1_pulse() //this funciton is wrong, need to change it because LOW = active 
-{
+{       // at every pulse, we have to add our angle which we can calculate by taking the steps we just sent,
+    // dividing by the steps per revolution, and multiplying by 360.
+    // then we can add that to our global angle variable. 
+    // this way, we can keep track of the current angle of the motor and use that to calculate the delta angle for the next set_angle call.
     digitalWriteFast(MOTOR1_PUL, LOW);
     delayMicroseconds(T3_PUL_HIGH_US);    // t3: HIGH >2.5µs
     digitalWriteFast(MOTOR1_PUL, HIGH);
@@ -91,3 +102,5 @@ inline void MotorPins::motor10(float theta, float rpm, uint32_t stepsPerRev = 16
 
     motor1_angle = theta;
 }
+
+//NEED GETTERS/SETTERS FOR ANGLE, GEAR RATIO, MICROSTEPPING. 

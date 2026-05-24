@@ -24,7 +24,8 @@ class MotorPins
 {
 public:
     MotorPins();    
-    MotorPins(int motor_pul, int motor_dir, int gear, int micro);   
+    MotorPins(int motor_pul, int motor_dir, int gear, int micro);  //what is the micro for? If it's for microstepping, that is something
+    //we physically change, not something we can set in code.  
     // -----------------------------------------------------------------------------
     // Initialisation — call once in setup()
     // -----------------------------------------------------------------------------
@@ -57,11 +58,11 @@ private:
 
     const int MOTOR2_PUL = 24;
     const int MOTOR2_DIR = 25;
-     // Not sure we need these anymore
+     // Not sure we need these anymore, we still do, pin assignments are important 
     // -----------------------------------------------------------------------------
     // Direction constants
     // -----------------------------------------------------------------------------
-    const bool MOTOR_DIR_CW = HIGH;
+    const bool MOTOR_DIR_CW = HIGH; //these are constants we are physically going to have to check 
     const bool MOTOR_DIR_CCW = LOW;
 
     // -----------------------------------------------------------------------------
@@ -69,9 +70,7 @@ private:
     // -----------------------------------------------------------------------------
 
     static float motor1_angle;
-    static float motor2_angle; // why is this commented out? we need to keep track of the angle of both motors, so we should have a global variable for each motor's angle. we can initialize them to 0, and then update them whenever we call set_angle. this way, we can always calculate the delta angle correctly.
-    // commented it out because I didn't define motor2_set_angle and didn't want to cause any problems until you checked over my work and said it was good.
-
+    static float motor2_angle;
     // -----------------------------------------------------------------------------
     // Gear Ratio constants
     // -----------------------------------------------------------------------------
