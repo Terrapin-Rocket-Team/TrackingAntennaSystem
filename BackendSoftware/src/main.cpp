@@ -1,9 +1,9 @@
 #include <Arduino.h>
 #include <SD.h>
 
-#include "FakeSensors/Fake-SAM-M10Q.h"
-#include "RecordData/DataLogging/DataLogger.h"
-#include "RecordData/DataLoggingSupporterClasses/PrintLog.h"
+#include "Sensors/GPS.h"
+#include "Data/DataLogging/DataLogger.h"
+#include "Data/Backend/PrintLog.h"
 
 File csvFile;
 
@@ -15,7 +15,7 @@ ILogSink *serialOnly[] = { &serialLog };
 ILogSink *serialAndSd[] = { &serialLog, &sdLog };
 
 // convert to the appropriate logging framework, after testing w/ hardware
-FakeSAM_M10Q gpsReporter;
+GPS gpsReporter;
 
 static unsigned long startTimeMs = 0;
 

@@ -6,7 +6,7 @@
 #include <SparkFun_u-blox_GNSS_v3.h>
 #include <Wire.h>
 #include "Math/Vector.h"
-#include "RecordData/DataReporter/DataReporter.h"
+#include "../Data/DataReporter/DataReporter.h"
 
 class GPS : public DataReporter { //a gps is an object that can report data, so it inherits from DataReporter
     public: 

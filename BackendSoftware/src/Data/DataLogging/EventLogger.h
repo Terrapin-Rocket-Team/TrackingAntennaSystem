@@ -2,7 +2,7 @@
 #define EVENTLOGGER_H
 
 #include <new>
-#include "../DataLoggingSupporterClasses/ILogSink.h"
+#include "../Backend/ILogSink.h"
 #include <stdarg.h>
 #include <stdint.h>
 

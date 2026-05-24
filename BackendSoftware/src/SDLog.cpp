@@ -1,12 +1,12 @@
-#ifndef NATIVE 
+#if NATIVE
 
 
 #include <Arduino.h>
 #include <SD.h>
 
 #include "FakeSensors/Fake-SAM-M10Q.h"
-#include "RecordData/DataLogging/DataLogger.h"
-#include "RecordData/DataLoggingSupporterClasses/PrintLog.h"
+#include "Data/DataLogging/DataLogger.h"
+#include "Data/Backend/PrintLog.h"
 
 File csvFile;
 

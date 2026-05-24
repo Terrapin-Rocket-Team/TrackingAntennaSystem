@@ -9,7 +9,7 @@
 #include <cstdio>
 #include <cstring>
 #include <stdint.h>
-#include "../DataLoggingSupporterClasses/ILogSink.h"
+#include "../Backend/ILogSink.h"
 
 // Templated helper to allocate & populate a node
     template <typename T>
