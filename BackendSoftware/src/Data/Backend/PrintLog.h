@@ -2,7 +2,7 @@
 
 #ifndef PRINTLOG_H
 #define PRINTLOG_H
-#include "../DataLoggingSupporterClasses/ILogSink.h"
+#include "ILogSink.h"
 
 class PrintLog : public ILogSink
 {

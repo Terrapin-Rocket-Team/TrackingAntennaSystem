@@ -2,6 +2,8 @@
 #define FILE_READER_H
 
 #include "../Storage/IStorage.h"
+#include "../Storage/IFile.h"
+#include <Arduino.h>
 
 class FileReader
 {
@@ -41,17 +43,11 @@ class FileReader
         */
         bool deleteFile(const char *filename);
 
-        /**
-        * @brief Interactive command-line interface
-        *
-        * Commands:
-        * - cmd/sf <filename> : Show file contents
-        * - cmd/rm <filename> : Remove file
-        * - cmd/help : Show help
-        * - cmd/quit : Exit
-        */
-        void handleCommands();
 
+    private:
+        IStorage *_backend;
+        static constexpr size_t READ_BUFFER_SIZE = 1024;
+        static constexpr size_t LINE_BUFFER_SIZE = 1024;
 };
 
 #endif // FILE_READER_H

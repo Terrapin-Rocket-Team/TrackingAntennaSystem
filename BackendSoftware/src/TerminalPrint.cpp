@@ -2,8 +2,7 @@
 #include <thread>
 #include <chrono>
 
-#include "RecordData/DataLogging/DataLogger.h"
-#include "RecordData/DataLoggingSupporterClasses/PrintLog.h"
+
 #include "TerminalPrint.h"
 
 // all of these implementations just make calls to printing systems in the standard cpp library

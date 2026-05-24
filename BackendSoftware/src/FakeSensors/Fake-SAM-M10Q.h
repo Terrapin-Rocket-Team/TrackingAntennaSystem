@@ -1,5 +1,7 @@
-#ifndef FAKE_SAM_M10Q_H
-#define FAKE_SAM_M10Q_H
+
+#if NATIVE
+
+ 
 
 #include "RecordData/DataReporter/DataReporter.h"
 

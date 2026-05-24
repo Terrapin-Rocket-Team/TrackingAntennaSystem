@@ -1,4 +1,4 @@
-#include "RecordData/DataReporter/DataReporter.h"
+#include "Data/DataReporter/DataReporter.h"
 
 // TerminalReporter class will be an implementation of DataReporter to be used in the terminal
 class TerminalReporter : public DataReporter {

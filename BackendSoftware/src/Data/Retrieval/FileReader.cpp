@@ -1,3 +1,6 @@
+// This File reader is a higher level layer of the IFile interface. IFIel reads and writes specific bytes while
+//this can read and write whole lines along with delete whole files and stuff 
+
 #include "FileReader.h"
 
 bool FileReader::printFile(const char *filename)
@@ -100,55 +103,3 @@ bool FileReader::deleteFile(const char *filename)
     return _backend->remove(filename); // call object-specific method
 }
 
-void FileReader::handleCommands()
-{
-    // routes commands
-    // prints errors and issues
-    if (Serial.available())
-    {
-        String command = Serial.readStringUntil('\n');
-        command.trim();
-
-        if (command == "cmd/quit")
-        {
-            Serial.println("Exiting...");
-            break;
-        }
-        else if (command == "cmd/help")
-        {
-            Serial.println("Commands:");
-            Serial.println("  cmd/sf <filename> - Show file");
-            Serial.println("  cmd/rm <filename> - Remove file");
-            Serial.println("  cmd/help - Show this help");
-            Serial.println("  cmd/quit - Exit");
-        }
-        else if (command.startsWith("cmd/sf "))
-        {
-            String filename = command.substring(7);
-            filename.trim();
-            printFile(filename.c_str());
-        }
-        else if (command.startsWith("cmd/rm "))
-        {
-            String filename = command.substring(7);
-            filename.trim();
-
-            if (deleteFile(filename.c_str()))
-            {
-                Serial.print("Deleted: ");
-                Serial.println(filename);
-            }
-            else
-            {
-                Serial.print("Failed to delete: ");
-                Serial.println(filename);
-            }
-        }
-        else
-        {
-            Serial.print("Unknown command: ");
-            Serial.println(command);
-            Serial.println("Type 'cmd/help' for available commands");
-        }
-    }
-}

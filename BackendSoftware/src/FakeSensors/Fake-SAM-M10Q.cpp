@@ -1,3 +1,4 @@
+#if NATIVE
 #include "Fake-SAM-M10Q.h"
 
 FakeSAM_M10Q::FakeSAM_M10Q() : DataReporter("Fake SAM-M10Q")
@@ -41,3 +42,5 @@ double FakeSAM_M10Q::getAltitudeMeters() const { return altitudeMeters; }
 double FakeSAM_M10Q::getHeadingDegrees() const { return headingDegrees; }
 int FakeSAM_M10Q::getFixQual() const { return fixQual; }
 bool FakeSAM_M10Q::getHasFix() const { return hasFix != 0; }
+
+#endif // FAKE_SAM_M10Q_CPP
