@@ -41,7 +41,8 @@ inline void MotorPins::motor_setDir(bool dir)
 // Send a single step pulse on the given PUL pin
 // Caller must have already set direction and waited t2.
 // -----------------------------------------------------------------------------
-inline void MotorPins::motor_pulse() 
+inline void MotorPins::motor_pulse() //add the angle stuff here, also i'd like you to return a bool for whether the pulse was successful or not, so we can use that in our 
+//set angle function to make sure we only update the angle if the pulse was successful.
 {   // at every pulse, we have to add our angle which we can calculate by taking the steps we just sent,
     // dividing by the steps per revolution, and multiplying by 360.
     // then we can add that to our global angle variable. 
@@ -73,20 +74,23 @@ inline void MotorPins::motor_set_angle(float theta, float rpm, uint32_t stepsPer
     for (uint32_t i = 0; i < steps; i++)
     {
         motor_pulse();
-        motor_angle += ((dir) ? 1.80f/((float)microSteps*(float)gearRatio) : -1.0f * 1.80f/((float)microSteps*(float)gearRatio)); // changed angle per microstep depends on the formula -> angle_per_step*step/microstep*1/Gear_ratio
+        motor_angle += ((dir) ? 1.80f/((float)microSteps*(float)gearRatio) : -1.0f * 1.80f/((float)microSteps*(float)gearRatio)); 
+        //Have this logic ^ in the pulse function, we want ot know the angle the motor itself has turnt, not the motor + 
+        //gearbox setup
+        // changed angle per microstep depends on the formula -> angle_per_step*step/microstep*1/Gear_ratio
     }
 
     //motor_angle = theta;
 }
 
-float MotorPins::get_motor_angle(){
+float MotorPins::get_motor_angle(){ //no need
     return motor_angle;
 }
 
-int MotorPins::get_gear_ratio(){
+int MotorPins::get_gear_ratio(){//no need
     return gearRatio;
 }
 
-int MotorPins::get_micro_steps(){
+int MotorPins::get_micro_steps(){ //no need
     return microSteps;
 }

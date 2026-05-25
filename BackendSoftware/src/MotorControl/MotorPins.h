@@ -24,8 +24,7 @@ class MotorPins
 {
 public:
     MotorPins();    
-    MotorPins(int motor_pul, int motor_dir, int gear, int micro);  //what is the micro for? If it's for microstepping, that is something // its for the microstepping as a constant, wasn't sure if we were going to change that in code and physically so i just set it as a constant we can set
-    //we physically change, not something we can set in code.  
+    MotorPins(int motor_pul, int motor_dir, int gear, int micro);  //remove micro 
     // -----------------------------------------------------------------------------
     // Initialisation — call once in setup()
     // -----------------------------------------------------------------------------
@@ -49,13 +48,13 @@ public:
 
     //getter functions
     float get_motor_angle();
-    int get_gear_ratio();
-    int get_micro_steps();
+    int get_gear_ratio(); //we can't chaneg gear ratio, just have it as a constant no point in having a setter/getter
+    int get_micro_steps(); //we can't change microsteps either, just have it as a constant no point in having a setter/getter
 private:
     // -----------------------------------------------------------------------------
     // Pin assignments
     // -----------------------------------------------------------------------------
-    const int MOTOR1_PUL = 8;
+    const int MOTOR1_PUL = 8; //each motor oject will have its own motor pins, only have one pul pin and one dir pin 
     const int MOTOR1_DIR = 9;
 
     const int MOTOR2_PUL = 24;
@@ -75,9 +74,9 @@ private:
     // -----------------------------------------------------------------------------
     // Gear Ratio constants
     // -----------------------------------------------------------------------------
-    int gearRatio;
+    int gearRatio; 
     const int steps = 200;
-    int microSteps;
+    int microSteps; //we cannot change microsteps, just have it as a constant no point in having a it as a field 
 
     // -----------------------------------------------------------------------------
     // Timing constants (microseconds)
