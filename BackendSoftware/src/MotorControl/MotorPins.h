@@ -24,7 +24,7 @@ class MotorPins
 {
 public:
     MotorPins();    
-    MotorPins(int motor_pul, int motor_dir, int gear, int micro);  //remove micro 
+    MotorPins(int motor_pul, int motor_dir, int gear);  //remove micro 
     // -----------------------------------------------------------------------------
     // Initialisation — call once in setup()
     // -----------------------------------------------------------------------------
@@ -41,7 +41,7 @@ public:
     // Send a single step pulse on the given PUL pin
     // Caller must have already set direction and waited t2.
     // -----------------------------------------------------------------------------
-    inline void motor_pulse();
+    inline bool motor_pulse(bool dir);
 
     /// Function to drive motor to a certain angle by converting degrees to steps and revolutions
     inline void motor_set_angle(float theta, float rpm, uint32_t stepsPerRev = 1600);
@@ -76,7 +76,7 @@ private:
     // -----------------------------------------------------------------------------
     int gearRatio; 
     const int steps = 200;
-    int microSteps; //we cannot change microsteps, just have it as a constant no point in having a it as a field 
+    const int microSteps = 8; //we cannot change microsteps, just have it as a constant no point in having a it as a field 
 
     // -----------------------------------------------------------------------------
     // Timing constants (microseconds)

@@ -10,16 +10,14 @@ MotorPins::MotorPins(){
     // default constructor
 }
 
-MotorPins::MotorPins(int motor_pul, int motor_dir, int gear, int micro){
+MotorPins::MotorPins(int motor_pul, int motor_dir, int gear){
     gearRatio = gear;
-    microSteps = micro;
     pinMode(motor_pul, OUTPUT);
     pinMode(motor_dir, OUTPUT);
 
     // Default both motors to CW, idle pulse line LOW
     digitalWriteFast(motor_dir, MOTOR_DIR_CW);
-    digitalWriteFast(motor_pul, HIGH); //change this to high. REMEMBER, LOW = TURNS ON. HIGH = TURNS OFF. WE ARE USING LOW ACTIVE ENABLE
-
+    digitalWriteFast(motor_pul, HIGH);  
     // t2: let DIR settle after init before any pulse can arrive
     delayMicroseconds(T2_DIR_SETUP_US);
 }
@@ -41,7 +39,7 @@ inline void MotorPins::motor_setDir(bool dir)
 // Send a single step pulse on the given PUL pin
 // Caller must have already set direction and waited t2.
 // -----------------------------------------------------------------------------
-inline void MotorPins::motor_pulse() //add the angle stuff here, also i'd like you to return a bool for whether the pulse was successful or not, so we can use that in our 
+inline bool MotorPins::motor_pulse(bool dir) //add the angle stuff here, also i'd like you to return a bool for whether the pulse was successful or not, so we can use that in our 
 //set angle function to make sure we only update the angle if the pulse was successful.
 {   // at every pulse, we have to add our angle which we can calculate by taking the steps we just sent,
     // dividing by the steps per revolution, and multiplying by 360.
@@ -51,13 +49,12 @@ inline void MotorPins::motor_pulse() //add the angle stuff here, also i'd like y
     delayMicroseconds(T3_PUL_HIGH_US);    // t3: HIGH >2.5µs
     digitalWriteFast(MOTOR1_PUL, HIGH);
     delayMicroseconds(T4_PUL_LOW_US);     // t4: LOW >2.5µs
+    motor_angle += ((dir) ? 1.80f/((float)microSteps) : -1.0f * 1.80f/((float)microSteps));         // changed angle per microstep depends on the formula -> angle_per_step*step/microstep*1/Gear_ratio
+    return true;
 }
 
 /// Function to drive motor to a certain angle by converting degrees to steps and revolutions
 inline void MotorPins::motor_set_angle(float theta, float rpm, uint32_t stepsPerRev = 1600) {
-    //need to also take into account the 10:1/50:1 gear ratio which means that the 
-    //motor shaft needs to turn 10/50 times more than the output shaft, so we need to multiply 
-    //the steps per revolution by the gear ratio.
     float delta = theta - motor_angle;
     if (delta == 0) return;
 
@@ -73,24 +70,11 @@ inline void MotorPins::motor_set_angle(float theta, float rpm, uint32_t stepsPer
     if (lowUs < T4_PUL_LOW_US) lowUs = T4_PUL_LOW_US;  // never violate t4
     for (uint32_t i = 0; i < steps; i++)
     {
-        motor_pulse();
-        motor_angle += ((dir) ? 1.80f/((float)microSteps*(float)gearRatio) : -1.0f * 1.80f/((float)microSteps*(float)gearRatio)); 
+        motor_pulse(dir);
         //Have this logic ^ in the pulse function, we want ot know the angle the motor itself has turnt, not the motor + 
         //gearbox setup
-        // changed angle per microstep depends on the formula -> angle_per_step*step/microstep*1/Gear_ratio
     }
 
     //motor_angle = theta;
 }
 
-float MotorPins::get_motor_angle(){ //no need
-    return motor_angle;
-}
-
-int MotorPins::get_gear_ratio(){//no need
-    return gearRatio;
-}
-
-int MotorPins::get_micro_steps(){ //no need
-    return microSteps;
-}
