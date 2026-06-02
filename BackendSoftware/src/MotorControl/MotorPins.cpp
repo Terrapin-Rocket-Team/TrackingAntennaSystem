@@ -55,7 +55,7 @@ inline bool MotorPins::motor_pulse(bool dir) //add the angle stuff here, also i'
 
 /// Function to drive motor to a certain angle by converting degrees to steps and revolutions
 inline void MotorPins::motor_set_angle(float theta, float rpm, uint32_t stepsPerRev = 1600) {
-    float delta = theta - motor_angle; //what is this theta? the output gearbox shaft or the motor shaft? 
+    float delta = theta*gearRatio - motor_angle; //Theta refers to the gearbox angle. theta*gearRatio returns the desire angle for the motor to rotate to.
     if (delta == 0) return;
 
     bool dir = (delta > 0) ? MOTOR_DIR_CW : MOTOR_DIR_CCW;
@@ -71,8 +71,6 @@ inline void MotorPins::motor_set_angle(float theta, float rpm, uint32_t stepsPer
     for (uint32_t i = 0; i < steps; i++)
     {
         motor_pulse(dir);
-        //Have this logic ^ in the pulse function, we want ot know the angle the motor itself has turnt, not the motor + 
-        //gearbox setup
     }
 
     //motor_angle = theta;

@@ -48,8 +48,6 @@ public:
 
     //getter functions
     float get_motor_angle();
-    int get_gear_ratio(); //we can't chaneg gear ratio, just have it as a constant no point in having a setter/getter
-    int get_micro_steps(); //we can't change microsteps either, just have it as a constant no point in having a setter/getter
 private:
     // -----------------------------------------------------------------------------
     // Pin assignments
