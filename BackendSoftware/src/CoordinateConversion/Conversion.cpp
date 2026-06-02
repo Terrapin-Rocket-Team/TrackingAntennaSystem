@@ -1,5 +1,3 @@
-
-
 #include "Conversion.h"
 #include <cmath>
  
