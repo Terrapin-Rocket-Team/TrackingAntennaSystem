@@ -24,30 +24,30 @@ class MotorPins
 {
 public:
     MotorPins();    
-    MotorPins(int motor_pul, int motor_dir, int gear);  //remove micro 
+    MotorPins(int motor_pul, int motor_dir, int gear); 
     // -----------------------------------------------------------------------------
     // Initialisation — call once in setup()
     // -----------------------------------------------------------------------------
-    inline void motorPins_init();
+    void motor_init(int motor_pul, int motor_dir, int gear);
 
     // -----------------------------------------------------------------------------
     // Set direction for a motor
     // Always call this before stepping if direction has changed.
     // Includes t2 settling delay so caller does not need to.
     // -----------------------------------------------------------------------------
-    inline void motor_setDir(bool dir);
+    void motor_setDir(bool dir);
 
     // -----------------------------------------------------------------------------
     // Send a single step pulse on the given PUL pin
     // Caller must have already set direction and waited t2.
     // -----------------------------------------------------------------------------
-    inline bool motor_pulse(bool dir);
+    bool motor_pulse(bool dir);
 
     /// Function to drive motor to a certain angle by converting degrees to steps and revolutions
-    inline void motor_set_angle(float theta, float rpm, uint32_t stepsPerRev = 1600);
+    void motor_set_angle(float theta, float rpm, uint32_t stepsPerRev = 1600);
 
-    //getter functions
-    float get_motor_angle();
+    inline float get_motor_angle() { return motor_angle; }
+
 private:
     // -----------------------------------------------------------------------------
     // Pin assignments
@@ -87,54 +87,3 @@ private:
 };
 
 #endif // MOTORPINS_H
-
-/*
-
-// -----------------------------------------------------------------------------
-// Step N pulses at a given speed (RPM), with direction
-// steps     : number of step pulses to send
-// rpm       : motor speed in RPM
-// stepsPerRev: full steps per revolution × microstep setting (e.g. 1600)
-// -----------------------------------------------------------------------------
-
-//this funciton is not helpful
-//its hard to calculate the number of steps needed to move a certain angle, so instead we can just have a function that takes in the
-//desired angle and calculates the steps needed to get there. We can also have a global variable
-//that keeps track of the current angle of the motor, so we can calculate the delta angle and convert that to steps. This way, we can just call set_angle with the desired angle and it will take care of the rest.
-inline void motor1_step(bool dir, uint32_t steps, float rpm, uint32_t stepsPerRev = 1600) //change the default steps per rev, our two diff motors have diff gear ratios
-{
-    motor1_setDir(dir);                    // sets DIR + waits t2
-
-    // Period between pulses in µs, minus the fixed HIGH+LOW time already spent
-    uint32_t periodUs = (uint32_t)(60000000.0f / (rpm * stepsPerRev));
-    uint32_t lowUs    = (periodUs > T3_PUL_HIGH_US) ? (periodUs - T3_PUL_HIGH_US) : T4_PUL_LOW_US;
-    if (lowUs < T4_PUL_LOW_US) lowUs = T4_PUL_LOW_US;  // never violate t4
-
-    for (uint32_t i = 0; i < steps; i++)
-    {
-        digitalWriteFast(MOTOR1_PUL, HIGH);
-        delayMicroseconds(T3_PUL_HIGH_US);
-        digitalWriteFast(MOTOR1_PUL, LOW);
-        delayMicroseconds(lowUs);
-    }
-}
-
-
-//same issue with this
-inline void motor2_step(bool dir, uint32_t steps, float rpm, uint32_t stepsPerRev = 1600)
-{
-    motor2_setDir(dir);
-
-    uint32_t periodUs = (uint32_t)(60000000.0f / (rpm * stepsPerRev));
-    uint32_t lowUs    = (periodUs > T3_PUL_HIGH_US) ? (periodUs - T3_PUL_HIGH_US) : T4_PUL_LOW_US;
-    if (lowUs < T4_PUL_LOW_US) lowUs = T4_PUL_LOW_US;
-
-    for (uint32_t i = 0; i < steps; i++)
-    {
-        digitalWriteFast(MOTOR2_PUL, HIGH);
-        delayMicroseconds(T3_PUL_HIGH_US);
-        digitalWriteFast(MOTOR2_PUL, LOW);
-        delayMicroseconds(lowUs);
-    }
-}
-*/

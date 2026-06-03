@@ -2,6 +2,9 @@
 /// Utilizes MotorPins.h and executes motor functions
 #include "MotorPins.h"
 
+// Define static member declared in header
+float MotorPins::motor_angle = 0.0f;
+
 
 // -----------------------------------------------------------------------------
 // Initialisation — call once in setup()
@@ -22,12 +25,27 @@ MotorPins::MotorPins(int motor_pul, int motor_dir, int gear){
     delayMicroseconds(T2_DIR_SETUP_US);
 }
 
+
+void MotorPins::motor_init(int motor_pul, int motor_dir, int gear)
+{
+    gearRatio = gear;
+    pinMode(motor_pul, OUTPUT);
+    pinMode(motor_dir, OUTPUT);
+
+    // Default both motors to CW, idle pulse line LOW
+    digitalWriteFast(motor_dir, MOTOR_DIR_CW);
+    digitalWriteFast(motor_pul, HIGH);  
+    // t2: let DIR settle after init before any pulse can arrive
+    delayMicroseconds(T2_DIR_SETUP_US);
+}
+
+
 // -----------------------------------------------------------------------------
 // Set direction for a motor
 // Always call this before stepping if direction has changed.
 // Includes t2 settling delay so caller does not need to.
 // -----------------------------------------------------------------------------
-inline void MotorPins::motor_setDir(bool dir)
+void MotorPins::motor_setDir(bool dir)
 {
     digitalWriteFast(MOTOR1_DIR, dir);
     delayMicroseconds(T2_DIR_SETUP_US);   // t2: DIR must settle >5µs before PUL
@@ -39,7 +57,7 @@ inline void MotorPins::motor_setDir(bool dir)
 // Send a single step pulse on the given PUL pin
 // Caller must have already set direction and waited t2.
 // -----------------------------------------------------------------------------
-inline bool MotorPins::motor_pulse(bool dir) //add the angle stuff here, also i'd like you to return a bool for whether the pulse was successful or not, so we can use that in our 
+bool MotorPins::motor_pulse(bool dir) //add the angle stuff here, also i'd like you to return a bool for whether the pulse was successful or not, so we can use that in our 
 //set angle function to make sure we only update the angle if the pulse was successful.
 {   // at every pulse, we have to add our angle which we can calculate by taking the steps we just sent,
     // dividing by the steps per revolution, and multiplying by 360.
@@ -54,7 +72,7 @@ inline bool MotorPins::motor_pulse(bool dir) //add the angle stuff here, also i'
 }
 
 /// Function to drive motor to a certain angle by converting degrees to steps and revolutions
-inline void MotorPins::motor_set_angle(float theta, float rpm, uint32_t stepsPerRev = 1600) {
+void MotorPins::motor_set_angle(float theta, float rpm, uint32_t stepsPerRev = 1600) {
     float delta = theta*gearRatio - motor_angle; //Theta refers to the gearbox angle. theta*gearRatio returns the desire angle for the motor to rotate to.
     if (delta == 0) return;
 
