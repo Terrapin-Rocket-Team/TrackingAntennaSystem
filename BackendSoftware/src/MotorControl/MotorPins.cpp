@@ -46,6 +46,24 @@ void MotorPins::motor_init(int motor_pul, int motor_dir, int gear)
    // delay(T2_DIR_SETUP_US);
 }
 
+void MotorPins::motor_init(int motor_pul, int gear)
+{
+    gearRatio = gear;
+    MOTOR1_PUL = motor_pul;
+    //MOTOR1_DIR = motor_dir;
+    pinMode(motor_pul, OUTPUT);
+    //pinMode(motor_dir, OUTPUT);
+    //pinMode(MOTOR1_DIR, OUTPUT);
+    pinMode(MOTOR1_PUL, OUTPUT);
+
+    // Default both motors to CW, idle pulse line LOW
+
+    digitalWrite(MOTOR1_DIR, HIGH);
+    digitalWrite(MOTOR1_PUL, HIGH);  
+    // t2: let DIR settle after init before any pulse can arrive
+   // delay(T2_DIR_SETUP_US);
+}
+
 
 // -----------------------------------------------------------------------------
 // Set direction for a motor
