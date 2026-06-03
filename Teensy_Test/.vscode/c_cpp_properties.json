@@ -32,7 +32,7 @@
                 "PLATFORMIO=60119",
                 ""
             ],
-            "compilerPath": "gcc",
+            "compilerPath": "C:/msys64/mingw64/bin/gcc.exe",
             "compilerArgs": [
                 ""
             ]

@@ -227,23 +227,25 @@ static MotorPins azimuthMotor;
 
 void setup(){
     Serial.begin(115200);
-    Serial1.begin(9600);
+    //Serial1.begin(9600);
 
     Wire.begin();
-    elevationMotor.motor_init(ELEV_PUL_PIN, ELEV_DIR_PIN, 10);
-    azimuthMotor.motor_init(AZIM_PUL_PIN, AZIM_DIR_PIN, 50);
+    //elevationMotor.motor_init(ELEV_PUL_PIN, ELEV_DIR_PIN, 10);
+    azimuthMotor.motor_init(AZIM_PUL_PIN, AZIM_DIR_PIN, 1);
     Serial.println("Motors ready to test.");
 }
 
 void loop() {
-    while (true){
-    elevationMotor.motor_set_angle(45.0, 10.0, 1600);
-    delay(1000);
-    elevationMotor.motor_set_angle(-45.0, 10.0, 1600);
+    //elevationMotor.motor_set_angle(45.0, 10.0, 1600);
+    //delay(1000);
+    //elevationMotor.motor_set_angle(-45.0, 10.0, 1600);
+    Serial.printf("\nAzimuth at theta = %f\n", azimuthMotor.get_motor_angle());
     delay(1000);
     azimuthMotor.motor_set_angle(90.0, 20.0, 1600);
+    Serial.printf("\nAzimuth at theta = %f\n", azimuthMotor.get_motor_angle());
     delay(1000);
     azimuthMotor.motor_set_angle(-90.0, 20.0, 1600);
+    Serial.printf("\nAzimuth at theta = %f\n", azimuthMotor.get_motor_angle());
     delay(1000);
-    }
+    //azimuthMotor.motor_pulse(LOW);
 }

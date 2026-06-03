@@ -29,6 +29,8 @@ public:
     // Initialisation — call once in setup()
     // -----------------------------------------------------------------------------
     void motor_init(int motor_pul, int motor_dir, int gear);
+    void motor_init(int motor_pul, int gear);
+
 
     // -----------------------------------------------------------------------------
     // Set direction for a motor
@@ -44,25 +46,26 @@ public:
     bool motor_pulse(bool dir);
 
     /// Function to drive motor to a certain angle by converting degrees to steps and revolutions
-    void motor_set_angle(float theta, float rpm, uint32_t stepsPerRev = 1600);
+    void motor_set_angle(float theta, float rpm, long int stepsPerRev = 1600);
 
     inline float get_motor_angle() { return motor_angle; }
 
 private:
     // -----------------------------------------------------------------------------
     // Pin assignments
+    // MOTOR1_PUL -> LOW == CLOCKWISE, HIGH == CCW
+    // MOTOR1_DIR -> HIGH == ROTATE, LOW == DO NOT ROTATE
     // -----------------------------------------------------------------------------
-    const int MOTOR1_PUL = 8; //each motor oject will have its own motor pins, only have one pul pin and one dir pin 
-    const int MOTOR1_DIR = 9;
+    int MOTOR1_PUL; //each motor oject will have its own motor pins, only have one pul pin and one dir pin 
+    int MOTOR1_DIR;
 
-    const int MOTOR2_PUL = 24;
-    const int MOTOR2_DIR = 25;
+
 
     // -----------------------------------------------------------------------------
     // Direction constants
     // -----------------------------------------------------------------------------
-    const bool MOTOR_DIR_CW = HIGH; //these are constants we are physically going to have to check 
-    const bool MOTOR_DIR_CCW = LOW;
+    const bool MOTOR_DIR_CCW = LOW; //these are constants we are physically going to have to check 
+    const bool MOTOR_DIR_CW = HIGH;
 
     // -----------------------------------------------------------------------------
     // Angle constants
