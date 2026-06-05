@@ -28,7 +28,7 @@ public:
     // -----------------------------------------------------------------------------
     // Initialisation — call once in setup()
     // -----------------------------------------------------------------------------
-    void motor_init(int motor_pul, int motor_dir, int gear);
+    void motor_init(int motor_pul, int motor_dir, double motorangle, int gear);
     void motor_init(int motor_pul, int gear);
 
 
@@ -46,9 +46,14 @@ public:
     bool motor_pulse(bool dir);
 
     /// Function to drive motor to a certain angle by converting degrees to steps and revolutions
-    void motor_set_angle(float theta, float rpm, long int stepsPerRev = 1600);
+    void motor_set_angle(double theta, float rpm, long int stepsPerRev = 1600);
 
     inline float get_motor_angle() { return motor_angle; }
+
+    // Testing Functions
+    int returnSteps();
+    int returnStepsout();
+
 
 private:
     // -----------------------------------------------------------------------------
@@ -71,12 +76,11 @@ private:
     // Angle constants
     // -----------------------------------------------------------------------------
 
-    static float motor_angle;
+    double motor_angle;
     // -----------------------------------------------------------------------------
     // Gear Ratio constants
     // -----------------------------------------------------------------------------
     int gearRatio; 
-    const int steps = 200;
     const int microSteps = 8; //we cannot change microsteps, just have it as a constant no point in having a it as a field 
 
     // -----------------------------------------------------------------------------

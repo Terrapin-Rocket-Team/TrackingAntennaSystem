@@ -216,35 +216,40 @@
 //#include "TargetPrediction/CoordConvert.h"
 #include "MotorControl/MotorPins.h"
 
-#define ELEV_PUL_PIN    8
-#define ELEV_DIR_PIN    9
+#define ELEV_PUL_PIN    0
+#define ELEV_DIR_PIN    1
 #define AZIM_PUL_PIN    24
 #define AZIM_DIR_PIN    25
 
 static MotorPins elevationMotor;
 static MotorPins azimuthMotor;
-
+ 
 
 void setup(){
     Serial.begin(115200);
     //Serial1.begin(9600);
-
     Wire.begin();
-    //elevationMotor.motor_init(ELEV_PUL_PIN, ELEV_DIR_PIN, 10);
-    azimuthMotor.motor_init(AZIM_PUL_PIN, AZIM_DIR_PIN, 1);
+    elevationMotor.motor_init(ELEV_PUL_PIN, ELEV_DIR_PIN, 0.0, 1);
+    azimuthMotor.motor_init(AZIM_PUL_PIN, AZIM_DIR_PIN, 0.0, 1);
     Serial.println("Motors ready to test.");
 }
 
 void loop() {
-    //elevationMotor.motor_set_angle(45.0, 10.0, 1600);
-    //delay(1000);
-    //elevationMotor.motor_set_angle(-45.0, 10.0, 1600);
+    elevationMotor.motor_set_angle(90.0, 10.0, 1600);    
+    Serial.printf("\nSteps in: %d, steps out: %d\n", elevationMotor.returnSteps(), elevationMotor.returnStepsout());
+    Serial.printf("\nelevation at theta = %f\n", elevationMotor.get_motor_angle());
+    delay(1000);
+    elevationMotor.motor_set_angle(-90.0, 10.0, 1600);
+    Serial.printf("\nSteps in: %d, steps out: %d\n", elevationMotor.returnSteps(), elevationMotor.returnStepsout());
+    Serial.printf("\nelevation at theta = %f\n", elevationMotor.get_motor_angle());
     Serial.printf("\nAzimuth at theta = %f\n", azimuthMotor.get_motor_angle());
     delay(1000);
     azimuthMotor.motor_set_angle(90.0, 20.0, 1600);
+    Serial.printf("\nSteps in: %d, steps out: %d\n", elevationMotor.returnSteps(), azimuthMotor.returnStepsout());
     Serial.printf("\nAzimuth at theta = %f\n", azimuthMotor.get_motor_angle());
     delay(1000);
     azimuthMotor.motor_set_angle(-90.0, 20.0, 1600);
+    Serial.printf("\nSteps in: %d, steps out: %d\n", elevationMotor.returnSteps(), azimuthMotor.returnStepsout());
     Serial.printf("\nAzimuth at theta = %f\n", azimuthMotor.get_motor_angle());
     delay(1000);
     //azimuthMotor.motor_pulse(LOW);
