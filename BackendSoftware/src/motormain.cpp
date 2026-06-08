@@ -216,39 +216,45 @@
 //#include "TargetPrediction/CoordConvert.h"
 #include "MotorControl/MotorPins.h"
 
-#define ELEV_PUL_PIN    0
-#define ELEV_DIR_PIN    1
-#define AZIM_PUL_PIN    24
-#define AZIM_DIR_PIN    25
+#define ELEV_DIR_PIN    0
+#define ELEV_PUL_PIN    1
+#define AZIM_DIR_PIN    24
+#define AZIM_PUL_PIN    25
+#define MICROSTEPS      1600
+#define GEAR_RATIO10    10
+#define GEAR_RATIO50    50
 
 static MotorPins elevationMotor;
 static MotorPins azimuthMotor;
  
+    // ---------------------------
+    // IMPORTANT NOTE
+    // with a gear ratio of 1:10, the maximum rpm is 57.7 rpm before the motor fails.
+    // with a gear ratio of 1:50 the maximum rpm is 11.5 rpm before the motor fails.
+    // ---------------------------
 
 void setup(){
     Serial.begin(115200);
     //Serial1.begin(9600);
     Wire.begin();
-    elevationMotor.motor_init(ELEV_PUL_PIN, ELEV_DIR_PIN, 0.0, 1);
-    azimuthMotor.motor_init(AZIM_PUL_PIN, AZIM_DIR_PIN, 0.0, 1);
+    elevationMotor.motor_init(ELEV_DIR_PIN, ELEV_PUL_PIN, 0.0,  GEAR_RATIO10);
+    azimuthMotor.motor_init(AZIM_DIR_PIN, AZIM_PUL_PIN, 0.0, GEAR_RATIO50);
     Serial.println("Motors ready to test.");
 }
 
 void loop() {
-    elevationMotor.motor_set_angle(90.0, 10.0, 1600);    
+    elevationMotor.motor_set_angle(90.0, 57.0, MICROSTEPS);    
     Serial.printf("\nSteps in: %d, steps out: %d\n", elevationMotor.returnSteps(), elevationMotor.returnStepsout());
     Serial.printf("\nelevation at theta = %f\n", elevationMotor.get_motor_angle());
     delay(1000);
-    elevationMotor.motor_set_angle(-90.0, 10.0, 1600);
+    elevationMotor.motor_set_angle(-90.0, 57.0, MICROSTEPS);
     Serial.printf("\nSteps in: %d, steps out: %d\n", elevationMotor.returnSteps(), elevationMotor.returnStepsout());
     Serial.printf("\nelevation at theta = %f\n", elevationMotor.get_motor_angle());
-    Serial.printf("\nAzimuth at theta = %f\n", azimuthMotor.get_motor_angle());
-    delay(1000);
-    azimuthMotor.motor_set_angle(90.0, 20.0, 1600);
+    azimuthMotor.motor_set_angle(90.0, 11.0, MICROSTEPS);
     Serial.printf("\nSteps in: %d, steps out: %d\n", elevationMotor.returnSteps(), azimuthMotor.returnStepsout());
     Serial.printf("\nAzimuth at theta = %f\n", azimuthMotor.get_motor_angle());
     delay(1000);
-    azimuthMotor.motor_set_angle(-90.0, 20.0, 1600);
+    azimuthMotor.motor_set_angle(-90.0, 11.0, MICROSTEPS);
     Serial.printf("\nSteps in: %d, steps out: %d\n", elevationMotor.returnSteps(), azimuthMotor.returnStepsout());
     Serial.printf("\nAzimuth at theta = %f\n", azimuthMotor.get_motor_angle());
     delay(1000);

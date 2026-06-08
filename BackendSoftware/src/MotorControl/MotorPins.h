@@ -29,8 +29,6 @@ public:
     // Initialisation — call once in setup()
     // -----------------------------------------------------------------------------
     void motor_init(int motor_pul, int motor_dir, double motorangle, int gear);
-    void motor_init(int motor_pul, int gear);
-
 
     // -----------------------------------------------------------------------------
     // Set direction for a motor
@@ -61,8 +59,8 @@ private:
     // MOTOR1_PUL -> LOW == CLOCKWISE, HIGH == CCW
     // MOTOR1_DIR -> HIGH == ROTATE, LOW == DO NOT ROTATE
     // -----------------------------------------------------------------------------
-    int MOTOR1_PUL; //each motor oject will have its own motor pins, only have one pul pin and one dir pin 
-    int MOTOR1_DIR;
+    int MOTOR_PUL; //each motor oject will have its own motor pins, only have one pul pin and one dir pin 
+    int MOTOR_DIR;
 
 
 
@@ -88,9 +86,9 @@ private:
     // All values exceed datasheet minimums with small margin
     // -----------------------------------------------------------------------------
     const uint32_t T2_DIR_SETUP_US = 6; // DIR settle before PUL  (min 5µs)
-    const uint32_t T3_PUL_HIGH_US = 3;  // PUL HIGH width         (min 2.5µs)
-    const uint32_t T4_PUL_LOW_US = 3;   // PUL LOW width          (min 2.5µs)
-
+    const uint32_t T3_PUL_HIGH_US = 4;  // PUL HIGH width         (min 2.5µs)
+    const uint32_t T4_PUL_LOW_US = 60;   // PUL LOW width          (min 2.5µs)
+    unsigned long pulseTime = T3_PUL_HIGH_US + T4_PUL_LOW_US; // Pulse time for use with time intervals between pulses for RPM
 };
 
 #endif // MOTORPINS_H
