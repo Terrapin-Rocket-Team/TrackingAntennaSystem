@@ -111,7 +111,8 @@ void setup()
     // Serial1 — APRS radio UART
     Serial1.begin(9600);
 
-
+    // I2C for GPS
+    Wire.begin();
 
     // --- GPS init ---
     groundGPS.begin();
@@ -179,19 +180,17 @@ void loop()
         }
     }
 
-    // --- Process packet when buffer has data ---
-    // APRSTelem::decode() will consume what it needs and return bytes read
-    if (packetLen > 0)
+    // --- Process packet when buffer has data and Serial1 goes quiet (packet boundary) ---
+    // !Serial1.available() ensures we have the full packet before processing
+    if (packetLen > 0 && !Serial1.available())
     {
         unsigned long now = millis();
         double dt = (now - lastPacketMs) / 1000.0;
         lastPacketMs = now;
 
-        // Back-calculate timeSinceLaunch from altitude on first packet
         double altM = 0.0;
         double timeSinceLaunch = 0.0;
 
-        // Decode and convert to ENU state
         State measured = extract.ExtractTelemetry(packetBuf, packetLen, dt, timeSinceLaunch);
         packetLen = 0;
 
@@ -222,6 +221,5 @@ void loop()
         }
     }
 }
-
 
 #endif
