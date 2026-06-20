@@ -1,4 +1,6 @@
+#if NATIVE
 #include <iostream>
+
 #include <Arduino.h>
 
 
@@ -35,4 +37,6 @@ void loop() {
     Serial.println("LOW");
     delay(1000);
 }
+
+#endif
 
