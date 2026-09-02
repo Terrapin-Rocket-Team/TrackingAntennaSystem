@@ -1,0 +1,42 @@
+//
+// !!! WARNING !!! AUTO-GENERATED FILE!
+// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
+// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+//
+{
+    "configurations": [
+        {
+            "name": "PlatformIO",
+            "includePath": [
+                "C:/Users/mattm/Documents/GitHub/TrackingAntennaSystem/Teensy_Test/include",
+                "C:/Users/mattm/Documents/GitHub/TrackingAntennaSystem/Teensy_Test/src",
+                "C:/Users/mattm/Documents/GitHub/TrackingAntennaSystem/Teensy_Test/.pio/libdeps/native/MS5611",
+                "C:/Users/mattm/Documents/GitHub/TrackingAntennaSystem/Teensy_Test/.pio/libdeps/native/AstraSupportNativeMocks/native-support/include",
+                "C:/Users/mattm/Documents/GitHub/TrackingAntennaSystem/Teensy_Test/.pio/libdeps/native/AstraSupportNativeMocks/native-support/src",
+                "C:/Users/mattm/Documents/GitHub/TrackingAntennaSystem/Teensy_Test/.pio/libdeps/native/TRT-Astra/src",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "C:/Users/mattm/Documents/GitHub/TrackingAntennaSystem/Teensy_Test/include",
+                    "C:/Users/mattm/Documents/GitHub/TrackingAntennaSystem/Teensy_Test/src",
+                    "C:/Users/mattm/Documents/GitHub/TrackingAntennaSystem/Teensy_Test/.pio/libdeps/native/MS5611",
+                    "C:/Users/mattm/Documents/GitHub/TrackingAntennaSystem/Teensy_Test/.pio/libdeps/native/AstraSupportNativeMocks/native-support/include",
+                    "C:/Users/mattm/Documents/GitHub/TrackingAntennaSystem/Teensy_Test/.pio/libdeps/native/AstraSupportNativeMocks/native-support/src",
+                    "C:/Users/mattm/Documents/GitHub/TrackingAntennaSystem/Teensy_Test/.pio/libdeps/native/TRT-Astra/src",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=60119",
+                ""
+            ],
+            "compilerPath": "C:/msys64/mingw64/bin/gcc.exe",
+            "compilerArgs": [
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}
