@@ -96,6 +96,8 @@ def compute_yaw_pitch(target_vec):
 
 def main():
     num_simulations = 10
+    all_max_yaw_rate = []
+    all_max_pitch_rate = []
     
     all_max_yaw_accel = []
     all_max_pitch_accel = []
@@ -133,23 +135,15 @@ def main():
         r_x, r_y, r_z = sim_data["r_x"], sim_data["r_y"], sim_data["r_z"]
         v_x, v_y, v_z = sim_data["v_x"], sim_data["v_y"], sim_data["v_z"]
 
-        # 3. Convert to antenna frame
-        theta = random_angle(-60, 60, 1)
-        phi = random_angle(0, 20, 1)
-        distance = np.random.uniform(0.5, 1.5) * 1609.34
-        x = distance * np.cos(theta) * np.cos(phi)
-        y = distance * np.sin(theta) * np.cos(phi)
-        z = distance * np.sin(phi)
+        # 3. Fixed antenna location: half a mile from the launchpad,
+        # at the same altitude. The generator's origin is the launchpad.
+        # Subtracting this offset puts the rocket along antenna +X at launch,
+        # so initial azimuth and elevation are both zero.
+        distance = 0.5 * 1609.344  # meters
+        displacement = np.array([-distance, 0.0, 0.0])
 
-        displacement = np.array([x, y, z])
-
-        # Convert degrees to radians
-        yaw = np.radians(theta)
-        pitch = np.radians(phi)
-        roll = 0.0
-
-        q = euler_to_quaternion(roll, pitch, yaw)
-        rotation_matrix = quaternion_to_rotation_matrix(q)
+        # Level antenna frame aligned with the world axes: Z is vertical.
+        rotation_matrix = np.eye(3)
         
         antenna_positions = []
         antenna_velocities = []
@@ -175,6 +169,11 @@ def main():
         yaw_rate = np.gradient(antenna_yaw, dt_uniform)
         pitch_rate = np.gradient(antenna_pitch, dt_uniform)
 
+        # Required antenna/output-axis speeds, regardless of direction.
+        # Motor shaft speed additionally depends on the reduction ratio.
+        all_max_yaw_rate.append(np.max(np.abs(np.degrees(yaw_rate))))
+        all_max_pitch_rate.append(np.max(np.abs(np.degrees(pitch_rate))))
+
         # Compute angular accelerations (rad/s²)
         yaw_accel = np.gradient(yaw_rate, dt_uniform)
         pitch_accel = np.gradient(pitch_rate, dt_uniform)
@@ -189,6 +188,16 @@ def main():
         all_median_pitch_accel.append(np.median(np.abs(pitch_accel_deg)))
     
     # Print results
+    print("\n" + "="*60)
+    print("ANGULAR VELOCITY REQUIREMENTS (ANTENNA OUTPUT AXES)")
+    print("="*60)
+    for axis, peaks in (("Yaw / azimuth", all_max_yaw_rate),
+                        ("Pitch / elevation", all_max_pitch_rate)):
+        peak_deg_s = np.max(peaks)
+        print(f"{axis}: {peak_deg_s:.2f} deg/s ({peak_deg_s / 6.0:.2f} RPM)")
+    print("Peaks across sampled simulations, not guaranteed worst-case limits.")
+    print("Motor RPM = output RPM * reduction ratio (e.g. 10 for 10:1).")
+    print("No gearbox backlash, torque limits, or motor dynamics modeled.")
     print("\n" + "="*60)
     print("ANGULAR ACCELERATION ANALYSIS RESULTS")
     print("="*60)
