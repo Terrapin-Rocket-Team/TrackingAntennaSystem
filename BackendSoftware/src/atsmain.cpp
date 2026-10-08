@@ -2,7 +2,7 @@
 //this will be the main file for the antenna tracking system
 //responsible for: creatign the backend data base, initaitng the state,
 //starting the motors, adn continuosly tracking the rocket and updating the motors to point at the rocket
-#if NATIVE
+// #if NATIVE
 
 /*
     main.cpp — Ground Station Teensy 4.1
@@ -104,7 +104,7 @@ static constexpr double LAUNCH_THRESHOLD_M = 2.0 * 0.3048;  // 2 feet in meters
 static constexpr double LATENCY_S          = 1.0;            // worst case latency (seconds)
 
 // ----------------------------------------------------------------------------
-// Setup
+// Setup 
 // ----------------------------------------------------------------------------
 void setup()
 {
@@ -189,19 +189,19 @@ void loop()
         lastPacketMs = now;
 
         double altM = 0.0;
-        double timeSinceLaunch = 0.0;
+        double timeSinceLaunch = 0.0; // should be in setup?
 
-        State measured = extract.ExtractTelemetry(packetBuf, packetLen, dt, timeSinceLaunch);
+        State measured = extract.ExtractTelemetry(packetBuf, packetLen, dt, timeSinceLaunch); // Bug with timeSinceLaunch? Always set to 0, altitude 
         packetLen = 0;
 
-        // Launch detection — more than 2 feet above ATS
+        // Launch detection — TODO - work with GCS for launch detection through physical link
         if (!launched && measured.getPosZ() > LAUNCH_THRESHOLD_M)
         {
             launched = true;
 
             // Back-calculate timeSinceLaunch from altitude: h = 0.5*a*t^2 -> t = sqrt(2h/a)
             altM = measured.getPosZ();
-            timeSinceLaunch = sqrt(2.0 * altM / 98.1);
+            timeSinceLaunch = sqrt(2.0 * altM / 98.1); // Unused before getting reset to zero???
         }
 
         if (launched)
@@ -217,9 +217,9 @@ void loop()
 
             // Command motors
             azimuthMotor.motor_set_angle  ((double)coordConvert.azimuthDeg,   MOTOR_RPM);
-            elevationMotor.motor_set_angle((double)coordConvert.elevationDeg, MOTOR_RPM);
+            elevationMotor.motor_set_angle((double)coordConvert.elevationDeg, MOTOR_RPM); // non-corrective motor adjustment
         }
     }
 }
 
-#endif
+// #endif
