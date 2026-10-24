@@ -1,6 +1,7 @@
 /// Created by Matt Urban 5/21/26
 /// Utilizes MotorPins.h and executes motor functions
 #include "MotorPins.h"
+#include <math.h>
 
 // Define static member declared in header
 //float motor_angle = 0.0f;
@@ -33,19 +34,94 @@ MotorPins::MotorPins(int motor_dir, int motor_pul, int gear){
 }
 
 
-void MotorPins::motor_init(int motor_dir, int motor_pul, double motorangle, int gear)
+void MotorPins::motor_init(int dir_pin, int pulse_pin, double initialAntennaAngle, int gear)
 {
     gearRatio = gear;
-    MOTOR_DIR = motor_dir;
-    motor_angle = motorangle;
-    MOTOR_PUL = motor_pul;
-    pinMode(motor_pul, OUTPUT);
-    pinMode(motor_dir, OUTPUT);
-    pinMode(MOTOR_PUL, OUTPUT);
-    pinMode(MOTOR_DIR, OUTPUT);
+    MOTOR_DIR = dir_pin;
+    MOTOR_PUL = pulse_pin;
+
+    pinMode(pulse_pin, OUTPUT);
+    pinMode(dir_pin, OUTPUT);
+
+    currentSteps = static_cast<int32_t>(lround(initialAntennaAngle*gearRatio*stepsPerRev/360.0));
+
+    targetSteps = currentSteps;
+
+    pulseHigh = false;
+    directionPositive = true;
+
+    uint32_t nowUs = micros();
+
+    lastRiseUs = nowUs;
+    lastFallUs = nowUs;
+
+    directionChangedUs = nowUs;
+
+    initialized = true;
 
     // Default both motors to CW, idle pulse line LOW
 }
+
+void MotorPins::setTargetAngle(double degrees)
+{
+    if (!initialized || !isfinite(degrees))
+    {
+        return;
+    }
+
+    targetSteps = static_cast<int32_t>(lround(degrees*gearRatio*stepsPerRev/360.0));
+}
+
+void MotorPins::update(uint32_t nowUs)
+{
+    if (!initialized)
+    {
+        return;
+    }
+
+    //Finish an active pulse before pulsing another step
+    if (pulseHigh)
+    {
+        if (uint32_t(nowUs-lastRiseUs) >= T3_PUL_HIGH_US)
+        {
+            digitalWrite(MOTOR_PUL, LOW);
+            lastFallUs = micros();
+            pulseHigh = false;
+        }
+        return;
+    }
+
+    if (currentSteps == targetSteps) {
+        return;
+    }
+
+    bool nextDirectionPositive = targetSteps > currentSteps;
+
+    // Change direction only while step is low.
+    if (nextDirectionPositive != directionPositive)
+    {
+        directionPositive = nextDirectionPositive;
+
+        digitalWrite(MOTOR_DIR, directionPositive ? MOTOR_DIR_CW : MOTOR_DIR_CCW);
+
+        directionChangedUs = micros();
+        return;
+    }
+
+    if (uint32_t(nowUs - directionChangedUs) < T2_DIR_SETUP_US || 
+        uint32_t(nowUs - lastFallUs) < T4_PUL_LOW_US || 
+        uint32_t(nowUs - lastRiseUs) < stepIntervalUs) {
+            return;
+        }
+    digitalWrite(MOTOR_PUL, HIGH);
+    lastRiseUs = micros();
+    pulseHigh = true;
+
+    //track steps on the rising edge
+    currentSteps += directionPositive ? 1 : -1;
+}
+
+    
 
 // -----------------------------------------------------------------------------
 // Set direction for a motor 
@@ -78,7 +154,7 @@ bool MotorPins::motor_pulse(bool dir)
 }
 
 /// Function to drive motor to a certain angle by converting degrees to steps and revolutions
-void MotorPins::motor_set_angle(double theta, float rpm, long int stepsPerRev = 1600) {
+void MotorPins::motor_set_angle(double theta, float rpm, long int stepsPerRev) {
     double delta = (theta*((double)gearRatio)) - motor_angle; //Theta refers to the gearbox angle. theta*gearRatio returns the desire angle for the motor to rotate to.
     if (delta == 0) return;
 

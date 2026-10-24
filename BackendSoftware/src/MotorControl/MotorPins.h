@@ -24,11 +24,12 @@ class MotorPins
 {
 public:
     MotorPins();    
-    MotorPins(int motor_pul, int motor_dir, int gear); 
+    MotorPins(int motor_dir, int motor_pul, int gear); 
+
     // -----------------------------------------------------------------------------
     // Initialisation — call once in setup()
     // -----------------------------------------------------------------------------
-    void motor_init(int motor_pul, int motor_dir, double motorangle, int gear);
+    void motor_init(int dir_pin, int pulse_pin, double initialAntennaAngle, int gear);
 
     // -----------------------------------------------------------------------------
     // Set direction for a motor
@@ -42,6 +43,10 @@ public:
     // Caller must have already set direction and waited t2.
     // -----------------------------------------------------------------------------
     bool motor_pulse(bool dir);
+
+    void update(uint32_t nowUs);
+
+    void setTargetAngle(double degrees);
 
     /// Function to drive motor to a certain angle by converting degrees to steps and revolutions
     void motor_set_angle(double theta, float rpm, long int stepsPerRev = 1600);
@@ -62,7 +67,18 @@ private:
     int MOTOR_PUL; //each motor oject will have its own motor pins, only have one pul pin and one dir pin 
     int MOTOR_DIR;
 
+    int32_t currentSteps = 0;
+    int32_t targetSteps = 0;
+    const int32_t stepsPerRev = 1600;
 
+    uint32_t stepIntervalUs = 1000;
+    uint32_t lastRiseUs = 0;
+    uint32_t lastFallUs = 0;
+    uint32_t directionChangedUs = 0;
+    
+    bool pulseHigh = false;
+    bool directionPositive = true;
+    bool initialized = false;
 
     // -----------------------------------------------------------------------------
     // Direction constants
