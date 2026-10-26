@@ -43,6 +43,9 @@ void MotorPins::motor_init(int dir_pin, int pulse_pin, double initialAntennaAngl
     pinMode(pulse_pin, OUTPUT);
     pinMode(dir_pin, OUTPUT);
 
+    digitalWrite(MOTOR_PUL, LOW);
+    digitalWrite(MOTOR_DIR, MOTOR_DIR_CW);
+
     currentSteps = static_cast<int32_t>(lround(initialAntennaAngle*gearRatio*stepsPerRev/360.0));
 
     targetSteps = currentSteps;
@@ -69,7 +72,22 @@ void MotorPins::setTargetAngle(double degrees)
         return;
     }
 
-    targetSteps = static_cast<int32_t>(lround(degrees*gearRatio*stepsPerRev/360.0));
+    double currentDeg = static_cast<double>(currentSteps) *  360.0 / (static_cast<double>(gearRatio)*stepsPerRev);
+
+    double delta = fmod(degrees - currentDeg, 360.0);
+    if (delta > 180) delta -= 360.0;
+    if (delta < -180) delta += 360.0;
+
+    targetSteps = static_cast<int32_t>(lround(delta*gearRatio*stepsPerRev/360.0));
+}
+
+
+
+void MotorPins::setMaxSpeedDegPerSec(double degreesPerSecond)
+{
+    uint32_t stepsPerSecond = degreesPerSecond*gearRatio*stepsPerRev/360.0;
+
+    stepIntervalUs = 1000000.0/stepsPerSecond;
 }
 
 void MotorPins::update(uint32_t nowUs)
@@ -139,7 +157,7 @@ void MotorPins::motor_setDir(bool dir)
 // -----------------------------------------------------------------------------
 // Send a single step pulse on the given PUL pin
 // Caller must have already set direction and waited t2.
-// -----------------------------------------------------------------------------
+// // -----------------------------------------------------------------------------
 bool MotorPins::motor_pulse(bool dir)
 {   
     // Send one STEP pulse
@@ -148,14 +166,14 @@ bool MotorPins::motor_pulse(bool dir)
 
     digitalWriteFast(MOTOR_PUL, LOW);
     delayMicroseconds(T4_PUL_LOW_US);    // must meet driver minimum low time
-    motor_angle += ((dir) ? (1.80/((double)microSteps)) : (-1.80/((double)microSteps)));         // changed angle per microstep depends on the formula -> angle_per_step*step/microstep*1/Gear_ratio
+    currentDeg += ((dir) ? (1.80/((double)microSteps)) : (-1.80/((double)microSteps)));         // changed angle per microstep depends on the formula -> angle_per_step*step/microstep*1/Gear_ratio
     //stepsOut++; used for Debugging
     return true;
 }
 
 /// Function to drive motor to a certain angle by converting degrees to steps and revolutions
 void MotorPins::motor_set_angle(double theta, float rpm, long int stepsPerRev) {
-    double delta = (theta*((double)gearRatio)) - motor_angle; //Theta refers to the gearbox angle. theta*gearRatio returns the desire angle for the motor to rotate to.
+    double delta = (theta*((double)gearRatio)) - currentDeg; //Theta refers to the gearbox angle. theta*gearRatio returns the desire angle for the motor to rotate to.
     if (delta == 0) return;
 
     bool dir = (delta > 0.0) ? MOTOR_DIR_CW : MOTOR_DIR_CCW;

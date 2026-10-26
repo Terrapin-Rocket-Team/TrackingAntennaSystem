@@ -15,7 +15,7 @@
     5. Convert ENU to azimuth/elevation (CoordConvert)
     6. Command motors to point antenna at predicted rocket position
 */
-
+#if NATIVE
 #include <Arduino.h>
 #include <Wire.h>
 
@@ -23,6 +23,7 @@
 #include "Data/DataLogging/DataLogger.h"
 #include "Data/Backend/PrintLog.h"
 #include "Data/Storage/SDCardStorage.h"
+
 
 // Sensors
 #include "Sensors/GPS.h"
@@ -99,6 +100,8 @@ static size_t           packetLen = 0;
 // ----------------------------------------------------------------------------
 static unsigned long lastPacketMs = 0;
 static bool          launched     = false;
+static double        timeSinceLaunch = 0.0;
+
 
 static constexpr double LAUNCH_THRESHOLD_M = 2.0 * 0.3048;  // 2 feet in meters
 static constexpr double LATENCY_S          = 1.0;            // worst case latency (seconds)
@@ -171,6 +174,14 @@ void loop()
     DataLogger::instance().appendLine();
 
     // --- Read incoming APRS bytes from radio over Serial1 ---
+    /**     Serial1 Packet structure: 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     *  */      
     while (Serial1.available())
     {
         uint8_t b = (uint8_t)Serial1.read();
@@ -189,10 +200,15 @@ void loop()
         lastPacketMs = now;
 
         double altM = 0.0;
-        double timeSinceLaunch = 0.0; // should be in setup?
 
-        State measured = extract.ExtractTelemetry(packetBuf, packetLen, dt, timeSinceLaunch); // Bug with timeSinceLaunch? Always set to 0, altitude 
+
+
+        State measured = extract.ExtractTelemetry(packetBuf, packetLen, dt, timeSinceLaunch); //Bug with timeSinceLaunch? Always set to 0, altitude 
         packetLen = 0;
+
+        launched = (telemMessage.stateFlags.get() & 1u) != 0; // launched boolean is the last bit of the packet buffer in APRStelem packets
+        if (launched) timeSinceLaunch = now;
+
 
         // Launch detection — TODO - work with GCS for launch detection through physical link
         if (!launched && measured.getPosZ() > LAUNCH_THRESHOLD_M)
@@ -222,4 +238,4 @@ void loop()
     }
 }
 
-// #endif
+#endif

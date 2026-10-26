@@ -48,10 +48,15 @@ public:
 
     void setTargetAngle(double degrees);
 
+    void setMaxSpeedDegPerSec(double degreesPerSecond);
+
+    int32_t getCurrentSteps() const { return currentSteps; }
+    bool isMoving() const { return currentSteps != targetSteps || pulseHigh; }
+
     /// Function to drive motor to a certain angle by converting degrees to steps and revolutions
     void motor_set_angle(double theta, float rpm, long int stepsPerRev = 1600);
 
-    inline float get_motor_angle() { return motor_angle; }
+    inline float get_motor_angle() { return currentDeg; }
 
     // Testing Functions
     int returnSteps();
@@ -89,8 +94,8 @@ private:
     // -----------------------------------------------------------------------------
     // Angle constants
     // -----------------------------------------------------------------------------
+    int32_t currentDeg = 0;
 
-    double motor_angle;
     // -----------------------------------------------------------------------------
     // Gear Ratio constants
     // -----------------------------------------------------------------------------
