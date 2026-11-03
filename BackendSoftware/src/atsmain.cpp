@@ -15,15 +15,14 @@
     5. Convert ENU to azimuth/elevation (CoordConvert)
     6. Command motors to point antenna at predicted rocket position
 */
-#if NATIVE
+
 #include <Arduino.h>
 #include <Wire.h>
 
 // Data logging
 #include "Data/DataLogging/DataLogger.h"
 #include "Data/Backend/PrintLog.h"
-#include "Data/Storage/SDCardStorage.h"
-
+#include "Data/Storage/Teensy/SDCardStorage.h"
 
 // Sensors
 #include "Sensors/GPS.h"
@@ -34,13 +33,15 @@
 #include "TargetPrediction/State.h"
 
 // Coordinate conversion
-#include "CoordinateConversion/CoordConvert.h"
+#include "CoordinateConversion/Conversion.h"
 
 // Motor control
 #include "MotorControl/MotorPins.h"
 
 // APRS
-#include "APRSTelem.h"
+#include "APRS/APRSTelem.h"
+
+#include <GSInterface.h>
 
 // ----------------------------------------------------------------------------
 // Motor pin definitions — set to your actual Teensy pin numbers
@@ -99,20 +100,23 @@ static size_t           packetLen = 0;
 // Timing / launch state
 // ----------------------------------------------------------------------------
 static unsigned long lastPacketMs = 0;
+static unsigned long launchedMs = 0;
+static double timeSinceLaunch = 0.0;
 static bool          launched     = false;
-static double        timeSinceLaunch = 0.0;
-
+static int           LAUNCHED_MASK = 1 << 0;
 
 static constexpr double LAUNCH_THRESHOLD_M = 2.0 * 0.3048;  // 2 feet in meters
 static constexpr double LATENCY_S          = 1.0;            // worst case latency (seconds)
+
+static GSInterface gsi(115200);
 
 // ----------------------------------------------------------------------------
 // Setup 
 // ----------------------------------------------------------------------------
 void setup()
 {
-    // Serial1 — APRS radio UART
-    Serial1.begin(9600);
+    // // Serial1 — APRS radio UART
+    // Serial1.begin(9600);
 
     // I2C for GPS
     Wire.begin();
@@ -160,6 +164,15 @@ void setup()
     azimuthMotor.motor_init  (AZIM_PUL_PIN, AZIM_GEAR_RATIO);
 
     lastPacketMs = millis();
+
+    timeSinceLaunch = 0.0;
+
+    // gsi begin method actually starts sending data over serial
+    if (!gsi.begin( (HardwareSerial*)&Serial ))
+    {
+        Serial.print("serial couldnt send data");
+        return;
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -167,33 +180,33 @@ void setup()
 // ----------------------------------------------------------------------------
 void loop()
 {
+    bool received = false;
+
+    if (gsi.run())
+    {
+        if (gsi.input.dataType == APRSTelem::type)
+        {
+            received = gsi.readInput(&telemMessage);
+        }
+    }
+
     double elapsedSec = millis() / 1000.0;
 
     // --- Update GPS and log ---
     groundGPS.update(elapsedSec);
     DataLogger::instance().appendLine();
 
-    // --- Read incoming APRS bytes from radio over Serial1 ---
-    /**     Serial1 Packet structure: 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     *  */      
-    while (Serial1.available())
-    {
-        uint8_t b = (uint8_t)Serial1.read();
-        if (packetLen < PACKET_BUF_SIZE)
-        {
-            packetBuf[packetLen++] = b;
-        }
-    }
+    // // --- Read incoming APRS bytes from radio over Serial1 ---
+    // while (Serial1.available())
+    // {
+    //     uint8_t b = (uint8_t)Serial1.read();
+    //     if (packetLen < PACKET_BUF_SIZE)
+    //     {
+    //         packetBuf[packetLen++] = b;
+    //     }
+    // }
 
-    // --- Process packet when buffer has data and Serial1 goes quiet (packet boundary) ---
-    // !Serial1.available() ensures we have the full packet before processing
-    if (packetLen > 0 && !Serial1.available())
+    if (received)
     {
         unsigned long now = millis();
         double dt = (now - lastPacketMs) / 1000.0;
@@ -201,25 +214,18 @@ void loop()
 
         double altM = 0.0;
 
-
-
-        State measured = extract.ExtractTelemetry(packetBuf, packetLen, dt, timeSinceLaunch); //Bug with timeSinceLaunch? Always set to 0, altitude 
-        packetLen = 0;
-
-        launched = (telemMessage.stateFlags.get() & 1u) != 0; // launched boolean is the last bit of the packet buffer in APRStelem packets
-        if (launched) timeSinceLaunch = now;
-
-
-        // Launch detection — TODO - work with GCS for launch detection through physical link
-        if (!launched && measured.getPosZ() > LAUNCH_THRESHOLD_M)
+        launched = telemMessage.stateFlags.get() & LAUNCHED_MASK;
+        if (launched)
         {
-            launched = true;
-
-            // Back-calculate timeSinceLaunch from altitude: h = 0.5*a*t^2 -> t = sqrt(2h/a)
-            altM = measured.getPosZ();
-            timeSinceLaunch = sqrt(2.0 * altM / 98.1); // Unused before getting reset to zero???
+            if (timeSinceLaunch == 0.0)
+            {
+                launchedMs = now;
+            }
+            timeSinceLaunch = (now - launchedMs) / 1000.0;
         }
 
+        State measured = extract.ExtractTelemetry(&telemMessage, dt, timeSinceLaunch);
+        
         if (launched)
         {
             // Seed propagator with fresh measured state
@@ -236,6 +242,10 @@ void loop()
             elevationMotor.motor_set_angle((double)coordConvert.elevationDeg, MOTOR_RPM); // non-corrective motor adjustment
         }
     }
+    else
+    {
+        gsi.input.clear();
+    }
 }
 
-#endif
+// #endif
