@@ -2,7 +2,7 @@
 //this will be the main file for the antenna tracking system
 //responsible for: creatign the backend data base, initaitng the state,
 //starting the motors, adn continuosly tracking the rocket and updating the motors to point at the rocket
-// #if NATIVE
+#if NATIVE
 
 /*
     main.cpp — Ground Station Teensy 4.1
@@ -100,10 +100,9 @@ static size_t           packetLen = 0;
 // Timing / launch state
 // ----------------------------------------------------------------------------
 static unsigned long lastPacketMs = 0;
-static unsigned long launchedMs = 0;
-static double timeSinceLaunch = 0.0;
+static unsigned long launchedMs   = 0;
+static double timeSinceLaunch     = 0.0;
 static bool          launched     = false;
-static int           LAUNCHED_MASK = 1 << 0;
 
 static constexpr double LAUNCH_THRESHOLD_M = 2.0 * 0.3048;  // 2 feet in meters
 static constexpr double LATENCY_S          = 1.0;            // worst case latency (seconds)
@@ -214,7 +213,7 @@ void loop()
 
         double altM = 0.0;
 
-        launched = telemMessage.stateFlags.get() & LAUNCHED_MASK;
+        launched = telemMessage.stateFlags.get() & 1u;
         if (launched)
         {
             if (timeSinceLaunch == 0.0)
@@ -248,4 +247,4 @@ void loop()
     }
 }
 
-// #endif
+#endif
