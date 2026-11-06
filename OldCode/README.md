@@ -1,11 +1,145 @@
 # Running and interpreting the legacy simulations
 
-Reviewed against the Python source on 2026-11-01. These are standalone desktop
+Updated 2026-11-03. These are standalone desktop
 experiments, separate from the Teensy firmware and `platformio.ini`.
 
-For antenna tracking demand, start with `pointer.py`. For a repeatable single
+For PID tracking and pointing-error diagrams, start with `tracking_sim.py` below.
+For ideal antenna tracking demand, use `pointer.py`. For a repeatable single
 flight with rocket statistics, tracking statistics, and CSV output, use the new
 `flight_stats.py`. Read the model issues below before using either for sizing.
+
+## PID controller and 30,000-foot tracking scenario
+
+From `OldCode`, after installing requirements:
+
+```powershell
+& .\.venv\Scripts\python.exe -B tracking_sim.py
+```
+
+The script generates the corrected standard-drag trajectory, then adjusts the
+rocket's **thrust acceleration parameter** until sampled apogee is within 1 metre
+of **30,000 ft = 9,144 m above the launchpad**. It does not stretch altitude values.
+This is a calibrated tracking test case, not validation that the physical rocket
+will reach that height. An expected 30,000 ft MSL would require subtracting launch
+site elevation first. Calibration retains 60.8/40.8 kg full/empty mass, 4.83 s burn,
+3.835 m length, 0.1524 m diameter, legacy drag and still air. These assumptions
+need thrust-curve, aerodynamic or flight-data validation for real predictions.
+
+Your saved `results/flight/summary.json` reported 7,569.62 m using the old
+integration. After correcting mass timing and integration, the same inputs
+produce about 6,707 m at 20 Hz. The original `motorAccel=201.5` input therefore
+does not represent a 30,000-foot trajectory in this model. Existing saved results
+are not changed. `flight_stats.py`, `gen_main.py` and `pointer.py` use the corrected
+integrators but **do not calibrate automatically**.
+
+Files saved under `results/pid` (overwritten when that directory is reused):
+
+- **`trajectory.png`**: altitude in feet and the target apogee.
+- **`tracking.png`**: true direction, predicted command and actual PID pointing;
+  required/actual angular speed and acceleration with assumed limits; signed
+  azimuth/elevation pointing errors.
+- **`pointing_error.png`**: total boresight angular error for hold-last-position
+  versus velocity prediction, a beam threshold, telemetry age, and a link-status
+  panel. Red shading marks telemetry timeouts.
+- **`projected_actual_error.png`**: signed azimuth/elevation errors between the
+  projected command and actual antenna, and between the projected command and
+  true rocket direction. A boresight-error panel compares all three directions;
+  a link-status panel and red outage shading show communication loss/recovery.
+- **`history.csv`**: rocket position, telemetry age, commands, actual motion,
+  acceleration and errors for both strategies. Acceleration at row t acts over
+  the next control interval. The final acceleration is zero (no next interval).
+- **`summary.json`**: all settings, baseline and calibrated apogee, fitted rocket
+  acceleration parameter, peak/RMS/95th-percentile errors and fraction inside
+  the assumed half-power beam radius. Statistics cover flight only.
+- **`generator.log`**: original drag and angle-of-attack diagnostics from baseline
+  and calibration trials.
+
+The PID plant is angle/velocity feedback with acceleration output:
+
+```text
+acceleration_command = Kp * angle_error + Ki * integral(error) - Kd * actual_rate
+```
+
+Derivative on measured angle avoids setpoint derivative kick. Conditional
+integration limits windup at speed/acceleration saturation. Defaults are Kp=25
+s^-2, Ki=0.5 s^-3, Kd=10 s^-1, output speed limits 40/40 deg/s, output acceleration
+limits 100/100 deg/s² (azimuth/elevation), and a 100 Hz control loop. These gains
+and motor limits are experiment settings, not measured hardware capabilities.
+Motor shaft motion is output motion times 50 for azimuth and 10 for elevation.
+Rotor/gearbox dynamics, gravity imbalance, backlash, missed steps and electrical
+driver behavior are not simulated. Ideal angle/rate feedback is assumed; the
+real open-loop steppers do not provide that feedback automatically.
+
+Telemetry defaults: 5 Hz, 0.3 s latency, 0.05 s Gaussian latency jitter clipped at
+zero, 3 m position noise per axis, 1 m/s velocity noise per axis, no packet drops.
+Velocity is a synthetic measured input, not differentiated noisy position.
+Only arrived packets can influence commands. Late packets older than the latest
+measurement are ignored. Prediction uses measurement age, not fixed latency:
+`predicted_position = measured_position + measured_velocity * age`.
+Before any arrival, the antenna points to the known pad. Both strategies receive
+identical packets and use identical PID gains/limits. Packet loss, telemetry
+timing and noise are assumptions; measure them from radio logs when possible.
+
+The default flight is vertical: true azimuth demand is zero, so azimuth mainly
+responds to telemetry noise. `--launch-angle` (degrees) and `--heading` (radians)
+allow nonvertical cases, but the legacy approximate angular dynamics still need
+validation. A true overhead crossing makes azimuth ill-conditioned. No hard
+elevation stops or azimuth cable-wrap limits are modeled.
+
+Useful experiments (choose a separate output directory for each):
+
+```powershell
+# Change PID gains; compare against the default results.
+& .\.venv\Scripts\python.exe -B tracking_sim.py --kp 49 --ki 0.5 --kd 14 --output results/pid-faster
+# More telemetry lag, outages, and lower assumed acceleration.
+& .\.venv\Scripts\python.exe -B tracking_sim.py --latency 1 --drop-probability 0.1 --max-accel 50 50 --output results/pid-lag
+# Inspect the corrected uncalibrated rocket using the original thrust parameter.
+& .\.venv\Scripts\python.exe -B tracking_sim.py --target-apogee-ft 0 --output results/pid-original-inputs
+# Check sensitivity to trajectory sampling (calibration is repeated at this rate).
+& .\.venv\Scripts\python.exe -B tracking_sim.py --flight-hz 50 --output results/pid-50hz
+# Behavioral regression tests, without generating bytecode.
+& .\.venv\Scripts\python.exe -B -m unittest test_tracking_sim -v
+```
+
+The beamwidth default is **an assumed 20-degree full half-power beamwidth**;
+`--beamwidth` changes it. Error below 10 degrees therefore means inside this
+assumed half-power contour, not guaranteed radio reception. No covariance or
+statistical confidence band is claimed: the 95th percentile in the summary is
+over time in one flight. Repeated seeded runs would be needed for Monte Carlo
+bands; a validated estimator would be needed for covariance-based bands.
+
+### Communication indicator and forced outages
+
+The indicator reports **Receiving**, **Waiting** (initially), or **LOST**.
+`--comm-timeout 1` declares loss once one second passes without an arriving
+packet containing a newer measurement. After the first fresh packet arrives,
+status returns to Receiving. An out-of-order old packet does not renew freshness.
+Before any packet arrives, Waiting changes to LOST after the same timeout.
+The timeout uses **time since arrival**, while telemetry age uses **time since
+measurement**; a large radio latency is not itself a reception outage.
+
+This indicates the simulator's missing telemetry, not a measured RF link budget.
+The beam contour stays a separate alignment criterion: pointing outside it does
+not automatically discard packets. During an outage the PID continues following
+the available projection; the graph shows whether that projection becomes wrong.
+
+To see a clear loss and recovery on the graph:
+
+```powershell
+& .\.venv\Scripts\python.exe -B tracking_sim.py --blackout 2 5 --comm-timeout 1 --output results/pid-outage
+```
+
+`--blackout START END` suppresses packet **arrivals** from START (inclusive) to END
+(exclusive), in seconds since launch. With the one-second timeout, the LOST
+indicator begins after the last arrival has aged a second, rather than exactly
+at blackout start. It clears on the next fresh arrival. The graph can show no
+loss under normal defaults; use this option or packet drops to test outages.
+
+`history.csv` now also records signed projected-minus-actual and projected-minus-
+true angles, their boresight errors, reception age and `communication_status`
+(`1` receiving, `0` waiting, `-1` lost). `summary.json` records flight-time outage
+intervals, total timed-out duration and projected/actual error peaks. Radio
+status is shared by both controllers because they receive the same packets.
 
 ## Setup on Windows
 
@@ -48,6 +182,7 @@ own environment. Select `OldCode/.venv/Scripts/python.exe` in the IDE as well.
 | `pointer.py` | Ten randomized low-drag flights; ideal antenna yaw/pitch speed and acceleration peaks | `& .\.venv\Scripts\python.exe pointer.py` |
 | `filter_main.py` | Standard-drag flight, synthetic GPS/barometer/IMU/quaternion measurements, six-state EKF, altitude plot and rocket acceleration printout | Experimental; known errors below. `& .\.venv\Scripts\python.exe filter_main.py` |
 | `flight_stats.py` | One fixed flight, selectable legacy drag model, rocket/tracking peaks and motor-ratio conversion; exports JSON, CSV and generator diagnostics | Commands below |
+| `tracking_sim.py` | Calibrated 30,000-foot scenario, delayed/noisy telemetry, PID motion, error metrics and saved plots | PID section above |
 | `gear_calculations/gear_analysis.py` | Prints dimensions/tooth counts for one planetary configuration | `& .\.venv\Scripts\python.exe gear_calculations/gear_analysis.py` |
 | `gear_calculations/gear_analysis_old.py` | Torque/speed ratio estimate and discrete two-stage planetary search | `& .\.venv\Scripts\python.exe gear_calculations/gear_analysis_old.py` |
 | `models/rocket.py` | Dimensions, mass depletion, thrust acceleration parameter, CoG/CoP, projected areas | Shared model; edit parameters in the entry point |
@@ -105,15 +240,15 @@ Each output directory contains:
   acceleration peaks, and motor-shaft demands after reduction. Each peak records
   its time relative to launch. Peak speed and peak acceleration may occur at
   different times.
-- `history.csv`: all samples, including prelaunch and the final below-ground
-  sample; trajectory, net acceleration, still-air Mach and pointing derivatives.
-  Statistics exclude prelaunch and below-ground samples. Derivatives are calculated
+- `history.csv`: all above-ground samples, including prelaunch; trajectory,
+  net acceleration, still-air Mach and pointing derivatives.
+  Statistics exclude prelaunch. Derivatives are calculated
   over the complete series, so boundary samples can still influence peaks.
 - `generator.log`: the legacy generator's drag diagnostics and angle-of-attack
   warnings. Review it before accepting the numbers.
 
 Reuse of an output directory overwrites those three files. Choose distinct paths
-for different cases. This runner preserves the original physics and adds no
+for different cases. This runner uses the corrected integrators and adds no
 filter, motor capability model, control loop, recovery system or design margin.
 
 ## The original pointing sweep
@@ -170,25 +305,28 @@ old torque/speed assumptions do not establish which motors you will use.
 
 ## Model issues that affect interpretation
 
-1. **Mass timing is inconsistent in both generators.** Force calculation uses
-   `get_current_mass(time - pre_launch_delay)`, but acceleration and inertia use
+1. **Fixed 2026-11-03: mass timing was inconsistent in both generators.** Force calculation used
+   `get_current_mass(time - pre_launch_delay)`, but acceleration and inertia used
    `get_current_mass(time)`. With a 10 s delay exceeding burn time, the launch
-   force uses full mass while division uses empty mass. For a vertical still-air
+   force used full mass while division used empty mass. For a vertical still-air
    launch, the initial legacy acceleration is approximately
    `(motorAccel - 9.80665) * 60.8 / 40.8`, rather than `motorAccel - 9.80665`.
-   Do not interpret `motorAccel` itself as the resulting peak net acceleration.
-2. **Position integration adds too much acceleration displacement.** Velocity is
-   updated first, then position uses the updated velocity plus `0.5*a*dt^2`.
-   Relative to the old velocity this adds `1.5*a*dt^2`. Flight samples also store
+   Both now use time since launch. Prelaunch mass is clamped to full mass.
+   `motorAccel` remains thrust acceleration, not net acceleration including drag/gravity.
+2. **Fixed 2026-11-03: position integration added too much displacement.** Velocity was
+   updated first, then position used the updated velocity plus `0.5*a*dt^2`.
+   Relative to the old velocity this added `1.5*a*dt^2`. Flight samples also stored
    the updated state under the start-of-step timestamp. These affect geometry,
-   timing, and numerical angular acceleration.
+   timing, and numerical angular acceleration. Position now advances from the old
+   velocity, and state/acceleration samples match their timestamps. The first
+   underground state is no longer stored. There is a 600-second flight guard.
 3. **The pointer generator uses fixed Cd=0.1.** Standard generation uses a variable
    coefficient. The low-drag case is an exploratory assumption, not a validated
    bound. No parachute/recovery is simulated; flight continues until ground
-   crossing and records the first below-ground state.
+   crossing and retains only above-ground samples.
 4. **Flight acceleration is net inertial acceleration including gravity.** It is
-   not IMU specific force. Prelaunch acceleration is initialized to -9.81 m/s^2
-   despite stationary position/velocity. The original filter acceleration summary
+   not IMU specific force. Prelaunch net acceleration is now zero, matching
+   stationary position/velocity. The original filter acceleration summary
    includes these samples; its near-max duration is total qualifying sample count
    times dt, not necessarily a contiguous interval.
 5. **Rigid-body dynamics are approximate.** The code solves inertia against world
@@ -201,12 +339,13 @@ old torque/speed assumptions do not establish which motors you will use.
    Repeat fixed-input cases at 20, 50 and 100 Hz and inspect CSV histories for
    convergence. Changing Hz in the random sweep also changes the wind draws;
    a shared seed alone does not preserve the same physical wind history.
-7. **Wind API implementation differs from its annotation.** Generators call
-   `wind_affector(t)` unconditionally; supply a callable even for zero or constant
-   wind. `None` and a bare vector fail despite being advertised as supported.
+7. **Fixed 2026-11-03: wind API implementation differed from its annotation.** Generators called
+   `wind_affector(t)` unconditionally and required a callable even for zero or
+   constant wind. Both now accept `None`, a constant vector, or a callable.
 
-Fixing these changes historical results. The new runner deliberately leaves
-them intact so reproduction can be distinguished from future model corrections.
+These corrections change historical results. Old saved summaries are historical;
+new runs use corrected integration. Remaining aerodynamic/rotation limitations
+are retained and apply to the PID trajectory, including calibrated scenarios.
 Ten random flights do not establish a global maximum. Sweep realistic launch
 tilt/heading, minimum antenna distance, trajectory and wind assumptions, inspect
 peak cases, then apply an explicit engineering margin.
@@ -247,7 +386,7 @@ your mechanism and motor torque-speed data; torque times ratio alone does not
 check acceleration or motor torque loss with speed. Its import executes the
 example search immediately.
 
-## What was verified in this review
+## Original review verification (2026-11-01)
 
 All 19 pre-existing Python source files parsed successfully with Python 3.11.7.
 Both gear scripts ran: the old search chose rings `[88, 88]`, output 8.57 RPM and
@@ -255,3 +394,21 @@ Both gear scripts ran: the old search chose rings `[88, 88]`, output 8.57 RPM an
 runner were not executed: NumPy, Matplotlib and Ambiance are absent from the
 available interpreter. No numerical flight or motor-demand result is claimed
 as verified by this review.
+
+## PID verification (2026-11-03)
+
+The existing Python 3.13 environment now has the required packages. All eight
+behavioral regression tests passed, and the full PID run generated its CSV,
+summary and three PNG plots. With default settings, fitted `motorAccel` was
+312.5837707519531 m/s² and sampled apogee was 9,144.623 m (30,002.04 ft).
+Hold-last-position PID had 20.155-degree peak / 3.546-degree RMS error;
+velocity-predicted PID had 11.419-degree peak / 1.938-degree RMS error. These
+results are for this specific assumed telemetry/controller scenario, not hardware
+measurements. Plot inspection confirmed the largest error occurs during early
+ascent, with additional lag during the unmodeled-recovery ballistic descent.
+
+Keeping that fitted thrust parameter fixed and increasing trajectory sampling
+from 20 to 100 Hz gave 9,130.691 m apogee, a 13.93 m (0.15%) difference. The
+one-metre calibration tolerance describes fitting at a chosen timestep; it does
+not represent physical or numerical accuracy. Use separate output directories
+for sampling studies. Existing `results/flight` remains the historical run.

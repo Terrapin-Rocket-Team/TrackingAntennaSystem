@@ -1,0 +1,80 @@
+{
+  "settings": {
+    "output": "results\\pid-outage",
+    "target_apogee_ft": 30000,
+    "motor_accel": 201.5,
+    "flight_hz": 20,
+    "control_hz": 100,
+    "launch_angle": 0,
+    "heading": 0,
+    "distance": 804.672,
+    "telemetry_hz": 5,
+    "latency": 0.3,
+    "jitter": 0.05,
+    "position_sigma": 3,
+    "velocity_sigma": 1,
+    "drop_probability": 0,
+    "comm_timeout": 1.0,
+    "blackout": [
+      2.0,
+      5.0
+    ],
+    "max_speed": [
+      40,
+      40
+    ],
+    "max_accel": [
+      100,
+      100
+    ],
+    "kp": 25,
+    "ki": 0.5,
+    "kd": 10,
+    "beamwidth": 20,
+    "seed": 42
+  },
+  "baseline_corrected_apogee_m": 6707.234725178851,
+  "calibrated_motor_accel_m_s2": 312.5837707519531,
+  "apogee_m": 9144.623084336721,
+  "apogee_ft": 30002.04423994987,
+  "peak_rocket_speed_m_s": 883.3912897868794,
+  "metrics": {
+    "hold_last_position": {
+      "peak_error_deg": 49.394146232888666,
+      "rms_error_deg": 8.514182777749213,
+      "p95_error_deg": 17.62888827366767,
+      "fraction_inside_beam": 0.9337449013339213,
+      "peak_projected_actual_error_deg": 48.11396140510473,
+      "peak_prediction_error_deg": 49.45669041725425
+    },
+    "constant_velocity_prediction": {
+      "peak_error_deg": 11.418964253099595,
+      "rms_error_deg": 2.4597426216656086,
+      "p95_error_deg": 5.656343920477075,
+      "fraction_inside_beam": 0.9719986771028553,
+      "peak_projected_actual_error_deg": 10.831211899737761,
+      "peak_prediction_error_deg": 7.131426889750314
+    }
+  },
+  "communication": {
+    "timeout_s": 1.0,
+    "loss_detected_during_flight": true,
+    "lost_duration_s": 2.16,
+    "lost_intervals_since_launch_s": [
+      [
+        2.92,
+        5.08
+      ]
+    ],
+    "definition": "No newer measurement received within timeout; not an RF link budget or beam-loss model."
+  },
+  "assumptions": [
+    "Target is altitude above launchpad (AGL), not sea level.",
+    "Apogee calibration changes thrust acceleration, not altitude samples.",
+    "Legacy atmosphere/drag and approximate rocket rotation retained; no recovery.",
+    "Ideal angle feedback; PID commands kinematic acceleration, not electrical torque.",
+    "Motor limits and beamwidth are scenario assumptions, not measured ratings.",
+    "No backlash, missed steps, mount bias, or covariance model.",
+    "Fixed masses 60.8/40.8 kg, burn 4.83 s; still air."
+  ]
+}

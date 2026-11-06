@@ -28,7 +28,8 @@ class RocketDataGenerator(BaseGenerator):
         self.launch_angle = np.deg2rad(launch_angle)
         # Add random heading angle between 0 and 2π
         self.heading_angle = heading_angle
-        self.wind_affector = wind_affector
+        self.wind_affector = (wind_affector if callable(wind_affector) else
+                              lambda t: np.zeros(3) if wind_affector is None else np.asarray(wind_affector, dtype=float))
         self.atmosphere = AtmosphereModel()
 
     def euler_to_quaternion(self, roll, pitch, yaw):
@@ -395,7 +396,7 @@ class RocketDataGenerator(BaseGenerator):
         time_list = []
         position = np.zeros((3,))
         velocity = np.zeros((3,))
-        acceleration = np.array([0, 0, -9.81])
+        acceleration = np.zeros(3)  # Stationary pad: net inertial acceleration is zero.
        
         roll, pitch, yaw = 0, self.launch_angle, self.heading_angle
         # Initialize orientation with quaternions
@@ -431,6 +432,9 @@ class RocketDataGenerator(BaseGenerator):
             t_val = i * dt
             time_list.append(t_val)
 
+            if t_val - self.pre_launch_delay > 600:
+                raise RuntimeError("Flight exceeded 600 seconds; check model parameters")
+
             # Calculate forces and moments at the current time
             altitude = position[2]  # Assuming altitude is along the z-axis
             relative_velocity = velocity - self.wind_affector(t_val)
@@ -448,10 +452,15 @@ class RocketDataGenerator(BaseGenerator):
             
             # Translational motion
             # Update acceleration based on the total force and mass
-            current_mass = self.rocket.get_current_mass(t_val)
+            current_mass = self.rocket.get_current_mass(t_val - self.pre_launch_delay)
             acceleration = total_force / current_mass
-            velocity += acceleration * dt
+            # Store the state at t_val before advancing to the next sample.
+            position_at_t = position.copy()
+            velocity_at_t = velocity.copy()
+            quaternion_at_t = quaternion.copy()
+            angular_velocity_at_t = angular_velocity.copy()
             position += velocity * dt + .5 * acceleration * dt**2
+            velocity += acceleration * dt
             # print(position[2])
 
             # Update angular dynamics (orientation, angular velocity, angular acceleration)
@@ -464,14 +473,14 @@ class RocketDataGenerator(BaseGenerator):
             rotation_matrix = self.quaternion_to_rotation_matrix(quaternion)
         
             # Store the current state for later retrieval
-            positions.append(position.copy())
-            velocities.append(velocity.copy())
+            positions.append(position_at_t)
+            velocities.append(velocity_at_t)
             accelerations.append(acceleration.copy())
             # print(acceleration)
-            quaternions.append(quaternion.copy())
+            quaternions.append(quaternion_at_t)
             if len(quaternion) != 4:
                 print("Error")
-            angular_velocities.append(angular_velocity.copy())
+            angular_velocities.append(angular_velocity_at_t)
             angular_accelerations.append(angular_accel.copy())
 
             # Increment time step

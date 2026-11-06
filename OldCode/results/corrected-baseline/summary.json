@@ -1,0 +1,84 @@
+{
+  "settings": {
+    "model": "standard",
+    "seed": 42,
+    "hz": 20,
+    "motor_accel": 201.5,
+    "burn_time": 4.83,
+    "launch_angle": 0,
+    "heading": 0,
+    "distance": 804.672,
+    "yaw_ratio": 1,
+    "pitch_ratio": 1,
+    "output": "OldCode\\results\\corrected-baseline"
+  },
+  "fixed_settings": {
+    "pre_launch_delay_s": 10.0,
+    "wind_m_s": [
+      0,
+      0,
+      0
+    ],
+    "length_m": 3.835,
+    "diameter_m": 0.1524,
+    "mass_empty_kg": 40.8,
+    "mass_full_kg": 60.8,
+    "roughness_m": 5e-06,
+    "CoG_m": 2.7686,
+    "CoP_m": 3.18
+  },
+  "warning": "Legacy physics unchanged; sampled tracking demands, not motor capability or guaranteed maxima.",
+  "apogee_m": {
+    "value": 6707.234725178851,
+    "time_since_launch_s": 31.6
+  },
+  "max_speed_m_s": {
+    "value": 643.709694273451,
+    "time_since_launch_s": 4.850000000000001
+  },
+  "max_mach_still_air": {
+    "value": 1.9330862323528117,
+    "time_since_launch_s": 4.850000000000001
+  },
+  "max_net_acceleration_m_s2": {
+    "value": 191.69334999999998,
+    "time_since_launch_s": 0.0
+  },
+  "max_net_acceleration_g": {
+    "value": 19.547281691505255,
+    "time_since_launch_s": 0.0
+  },
+  "last_above_ground_time_since_launch_s": 77.30000000000001,
+  "yaw_max_output_speed_deg_s": {
+    "value": 0.0,
+    "time_since_launch_s": 0.0
+  },
+  "yaw_max_output_acceleration_deg_s2": {
+    "value": 0.0,
+    "time_since_launch_s": 0.0
+  },
+  "yaw_max_motor_speed_rpm": {
+    "value": 0.0,
+    "time_since_launch_s": 0.0
+  },
+  "yaw_max_motor_acceleration_deg_s2": {
+    "value": 0.0,
+    "time_since_launch_s": 0.0
+  },
+  "pitch_max_output_speed_deg_s": {
+    "value": 21.320089043505618,
+    "time_since_launch_s": 2.1500000000000004
+  },
+  "pitch_max_output_acceleration_deg_s2": {
+    "value": 13.645571922666232,
+    "time_since_launch_s": 0.10000000000000142
+  },
+  "pitch_max_motor_speed_rpm": {
+    "value": 3.553348173917603,
+    "time_since_launch_s": 2.1500000000000004
+  },
+  "pitch_max_motor_acceleration_deg_s2": {
+    "value": 13.645571922666232,
+    "time_since_launch_s": 0.10000000000000142
+  }
+}

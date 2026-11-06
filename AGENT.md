@@ -11,7 +11,7 @@ replacement for the source.
 
 - Created: **2026-10-06** (America/New_York).
 - Created by: Divyansh Srivastava, Matt Urban
-- Last updated: **2026-10-06**.
+- Last updated: **2026-11-03**.
 - Last updated by: OpenAI Codex (AI agent), at Matt Urban's request.
 - Initial review: library version **0.1**, repository commit **11b4d7a** (metadata preserved from the supplied guide; not an ATS package version).
 - ATS adaptation reviewed against: checkout at **d1bf4af**, including local edits to `src/atsmain.cpp`.
@@ -28,6 +28,8 @@ affected sections and record that update in the same change.
 | --- | --- | --- |
 | 2026-10-06 | Matt Urban | Created the repository guide. |
 | 2026-10-06 | OpenAI Codex (AI agent) | Adapted Astra-specific architecture, APIs, units, simulation, build commands, and maintenance references to ATS BackendSoftware and OldCode; documented current integration gaps. |
+| 2026-11-03 | OpenAI Codex (AI agent) | Documented corrected Python flight integration and the new PID tracking/apogee-calibration experiment and checks. |
+| 2026-11-03 | OpenAI Codex (AI agent) | Added projected-angle error plots and configurable telemetry timeout/receive-blackout status, CSV fields and regression checks. |
 
 ## What the Antenna Tracking System is and how it reaches the controller
 
@@ -257,6 +259,19 @@ OldCode runs independent Python experiments:
   velocities into an antenna frame, unwraps pointing angles, and differentiates
   them to estimate required output-axis rates and accelerations.
 - `gear_calculations/`: separate gear analysis scripts.
+- `flight_stats.py`: exports trajectory and ideal pointing demands to CSV/JSON.
+- `tracking_sim.py`: calibrates a test trajectory to 30,000 ft AGL (optional),
+  compares PID tracking of held versus velocity-predicted telemetry, and saves
+  pointing-error diagrams. Motor limits, beamwidth and telemetry errors are
+  scenario assumptions; ideal angle feedback is not actual stepper feedback.
+  `--target-apogee-ft 0` disables calibration. See `OldCode/README.md`.
+
+Both Python flight generators now use time since launch for mass, advance position
+from the old velocity, align samples with timestamps, and initialize prelaunch
+net acceleration to zero. Historical saved summaries predate those fixes. The
+legacy aerodynamic/rotation models remain approximate; apogee calibration is
+test-case construction, not validation of rocket performance. Run Python
+regressions from OldCode with `python -B -m unittest test_tracking_sim -v`.
 
 These experiments use NumPy and Matplotlib. Inspect imports and script parameters
 before running them. Randomized results are samples, not guaranteed worst-case

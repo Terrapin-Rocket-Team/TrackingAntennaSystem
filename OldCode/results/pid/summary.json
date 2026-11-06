@@ -1,0 +1,59 @@
+{
+  "settings": {
+    "output": "results\\pid",
+    "target_apogee_ft": 30000,
+    "motor_accel": 201.5,
+    "flight_hz": 20,
+    "control_hz": 100,
+    "launch_angle": 0,
+    "heading": 0,
+    "distance": 804.672,
+    "telemetry_hz": 5,
+    "latency": 0.3,
+    "jitter": 0.05,
+    "position_sigma": 3,
+    "velocity_sigma": 1,
+    "drop_probability": 0,
+    "max_speed": [
+      40,
+      40
+    ],
+    "max_accel": [
+      100,
+      100
+    ],
+    "kp": 25,
+    "ki": 0.5,
+    "kd": 10,
+    "beamwidth": 20,
+    "seed": 42
+  },
+  "baseline_corrected_apogee_m": 6707.234725178851,
+  "calibrated_motor_accel_m_s2": 312.5837707519531,
+  "apogee_m": 9144.623084336721,
+  "apogee_ft": 30002.04423994987,
+  "peak_rocket_speed_m_s": 883.3912897868794,
+  "metrics": {
+    "hold_last_position": {
+      "peak_error_deg": 20.154541935475308,
+      "rms_error_deg": 3.54599269977917,
+      "p95_error_deg": 8.855948842694719,
+      "fraction_inside_beam": 0.9619667070885238
+    },
+    "constant_velocity_prediction": {
+      "peak_error_deg": 11.418964253099595,
+      "rms_error_deg": 1.938406888569847,
+      "p95_error_deg": 4.45155256630626,
+      "fraction_inside_beam": 0.9879836842685481
+    }
+  },
+  "assumptions": [
+    "Target is altitude above launchpad (AGL), not sea level.",
+    "Apogee calibration changes thrust acceleration, not altitude samples.",
+    "Legacy atmosphere/drag and approximate rocket rotation retained; no recovery.",
+    "Ideal angle feedback; PID commands kinematic acceleration, not electrical torque.",
+    "Motor limits and beamwidth are scenario assumptions, not measured ratings.",
+    "No backlash, missed steps, mount bias, or covariance model.",
+    "Fixed masses 60.8/40.8 kg, burn 4.83 s; still air."
+  ]
+}

@@ -42,6 +42,7 @@ class Rocket:
 
     def get_current_mass(self, time: float) -> float:
         """Calculate current mass based on fuel consumption."""
+        time = max(0.0, time)
         if time < self.burnTime:
             remaining_fuel_ratio = (self.burnTime - time) / self.burnTime
             return self.mass_empty + self.mass_fuel * remaining_fuel_ratio

@@ -1,6 +1,6 @@
-"""Export one reproducible legacy flight and its ideal tracking demands.
+"""Export one reproducible flight and its ideal tracking demands.
 
-This deliberately preserves the old generators' physics; see README.md before
+This uses the corrected legacy integrators; see README.md before
 using the results to size motors. No motor torque or capability is simulated.
 """
 import argparse
@@ -78,7 +78,7 @@ def main():
     speed = np.linalg.norm(velocity, axis=1)
     accel = np.linalg.norm(acceleration, axis=1)
     atmosphere = AtmosphereModel()
-    # The final legacy sample may already be underground: exclude it from stats.
+    # Restrict statistics to above-ground flight rather than the prelaunch pad.
     airborne = (time >= delay) & (position[:, 2] >= 0)
     if not np.any(airborne):
         raise ValueError("No above-ground flight samples")
@@ -96,7 +96,7 @@ def main():
                            "length_m": 3.835, "diameter_m": .1524,
                            "mass_empty_kg": 40.8, "mass_full_kg": 60.8,
                            "roughness_m": 5e-6, "CoG_m": 2.7686, "CoP_m": 3.180},
-        "warning": "Legacy physics unchanged; sampled tracking demands, not motor capability or guaranteed maxima.",
+        "warning": "Corrected legacy integration; approximate physics. Sampled tracking demands, not motor capability or guaranteed maxima.",
         "apogee_m": peak(position[:, 2]),
         "max_speed_m_s": peak(speed),
         "max_mach_still_air": peak(mach),
