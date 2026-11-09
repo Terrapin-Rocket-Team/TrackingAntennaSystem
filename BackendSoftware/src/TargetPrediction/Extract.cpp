@@ -92,6 +92,58 @@ State Extract::ExtractTelemetry(const uint8_t* telemetryBytes, size_t length, do
  
     return state;
 }
+
+State Extract::ExtractTelemetry(APRSTelem* telem, double dt, double timeSinceLaunch)
+{
+    // 3. Compute WGS84 meters-per-degree scalers at the origin latitude
+    double east, north, up;
+    llaToENU(telem->lat, telem->lng, telem->alt,
+             originLatDeg, originLngDeg, originAltFt,
+             east, north, up);
+ 
+    // 4. Decompose speed + heading into ENU velocity (m/s)
+    //    heading is degrees CW from North
+    //    velX = East, velY = North, velZ = Up (zeroed, no climb rate)
+    double speedMS = telem->spd * KNOTS_TO_MS; //meters per second 
+    double hdgRad  = telem->hdg * RAD; //measured from north clockwise, converted to radians
+    double velX    =  speedMS * std::sin(hdgRad);  // East
+    double velY    =  speedMS * std::cos(hdgRad);  // North
+    
+
+   // 5. Estimate vertical velocity (velZ)
+    //
+    //    First packet after launch: no previous altitude reading yet, use dynamic
+    //    model (constant 10g acceleration) to estimate velZ.
+    //    All subsequent packets: estimate from consecutive altitude readings.
+    //        velZ = (alt_now - alt_prev) / dtPacket
+    //
+    double velZ = 0.0;
+    double altM = telem->alt * FT_TO_M;  // current altitude in meters
+
+    if (!_hasPrevAlt) // First packet — use dynamic model until next packet arrives
+    {
+
+        velZ = BURN_ACCEL_MS2 * timeSinceLaunch;
+    }
+    else if (dt > 0.0 && _hasPrevAlt) // sanity check to avoid division by zero
+    {
+        // Subsequent packets — estimate from altitude delta
+        velZ = (altM - _prevAltM) / dt;
+    }
+
+    // Store altitude for next packet
+    _prevAltM   = altM;
+    _hasPrevAlt = true;
+
+
+    // 6. Populate and return State
+    State state;
+    state.setPosition(east, north, up);
+    state.setVelocity(velX, velY, velZ);
+    // Acceleration left at (0,0,0) — no source in APRSTelem
+ 
+    return state;
+}
  
 // ----------------------------------------------------------------------------
 // llaToENU

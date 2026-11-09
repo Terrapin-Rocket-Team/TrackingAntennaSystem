@@ -75,6 +75,9 @@ class Extract {
             Acceleration is left at zero — not available in APRSTelem.
     */
     State ExtractTelemetry(const uint8_t* telemetryBytes, size_t length, double dt, double timeSinceLaunch);
+
+    State ExtractTelemetry(APRSTelem* telem, double dt, double timeSinceLaunch);
+
  
 private:
  
