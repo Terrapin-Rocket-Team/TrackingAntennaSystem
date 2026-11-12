@@ -7,7 +7,7 @@ import numpy as np
 from data_generators.supersonic_generator import RocketDataGenerator
 from data_generators.worst_case_pointer_supersonic_generator import RocketDataGenerator as LowDragGenerator
 from models.rocket import Rocket
-from tracking_sim import AxisPID, communication_status, intervals, pointing, separation, simulate, wrap
+from tracking_sim import AxisPID, angular_derivatives, motion_peaks, communication_status, intervals, pointing, separation, simulate, wrap
 
 
 class FlightTests(unittest.TestCase):
@@ -43,6 +43,20 @@ class FlightTests(unittest.TestCase):
 
 
 class PIDTests(unittest.TestCase):
+    def test_motion_peaks_include_negative_extrema_gearing_and_flight_times(self):
+        times = np.array([9., 10., 11.])
+        rates = np.array([[999, 999], [2, -5], [-4, 3]])
+        accel = np.array([[999, 999], [-8, 2], [3, -6]])
+        peaks = motion_peaks(times, rates, accel, times >= 10, (50, 10))
+        self.assertEqual(peaks["azimuth"]["max_output_velocity_deg_s"], {"value": 4, "time_since_launch_s": 1})
+        self.assertAlmostEqual(peaks["azimuth"]["max_motor_velocity_rpm"]["value"], 4*50/6)
+        self.assertEqual(peaks["elevation"]["max_motor_acceleration_deg_s2"]["value"], 60)
+
+    def test_angular_derivatives_unwrap_azimuth_without_velocity_spike(self):
+        rates, accel = angular_derivatives([[178, 0], [179, 2], [-180, 4], [-179, 6]], [0, 1, 2, 3])
+        np.testing.assert_allclose(rates, [[1, 2]]*4, atol=1e-10)
+        np.testing.assert_allclose(accel, 0, atol=1e-10)
+
     def test_limits_and_integral_recovery(self):
         axis = AxisPID(kp=25, ki=1, kd=10, max_speed=5, max_accel=10)
         for _ in range(200):

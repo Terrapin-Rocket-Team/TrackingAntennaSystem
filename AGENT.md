@@ -11,7 +11,7 @@ replacement for the source.
 
 - Created: **2026-10-06** (America/New_York).
 - Created by: Divyansh Srivastava, Matt Urban
-- Last updated: **2026-11-03**.
+- Last updated: **2026-11-12**.
 - Last updated by: OpenAI Codex (AI agent), at Matt Urban's request.
 - Initial review: library version **0.1**, repository commit **11b4d7a** (metadata preserved from the supplied guide; not an ATS package version).
 - ATS adaptation reviewed against: checkout at **d1bf4af**, including local edits to `src/atsmain.cpp`.
@@ -30,6 +30,7 @@ affected sections and record that update in the same change.
 | 2026-10-06 | OpenAI Codex (AI agent) | Adapted Astra-specific architecture, APIs, units, simulation, build commands, and maintenance references to ATS BackendSoftware and OldCode; documented current integration gaps. |
 | 2026-11-03 | OpenAI Codex (AI agent) | Documented corrected Python flight integration and the new PID tracking/apogee-calibration experiment and checks. |
 | 2026-11-03 | OpenAI Codex (AI agent) | Added projected-angle error plots and configurable telemetry timeout/receive-blackout status, CSV fields and regression checks. |
+| 2026-11-12 | OpenAI Codex (AI agent) | Added PID ideal/command/actual angular-motion peak reports with timestamps, shaft conversions, native-grid truth derivatives, and 50:1/10:1 reporting defaults. |
 
 ## What the Antenna Tracking System is and how it reaches the controller
 

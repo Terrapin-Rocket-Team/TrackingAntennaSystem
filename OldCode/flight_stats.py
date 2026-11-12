@@ -32,8 +32,8 @@ def main():
     parser.add_argument("--launch-angle", type=float, default=0, help="degrees from vertical")
     parser.add_argument("--heading", type=float, default=0, help="radians about world Z")
     parser.add_argument("--distance", type=positive, default=804.672, help="antenna distance, metres")
-    parser.add_argument("--yaw-ratio", type=positive, default=1, help="motor revs per output rev")
-    parser.add_argument("--pitch-ratio", type=positive, default=1)
+    parser.add_argument("--yaw-ratio", type=positive, default=50, help="motor revs per output rev; azimuth")
+    parser.add_argument("--pitch-ratio", type=positive, default=10, help="motor revs per output rev; elevation")
     parser.add_argument("--output", type=Path, default=Path("results/flight"))
     args = parser.parse_args()
     if not np.isfinite(args.launch_angle) or abs(args.launch_angle) >= 90:

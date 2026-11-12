@@ -1,0 +1,273 @@
+{
+  "settings": {
+    "output": "results\\pid-motion-peaks",
+    "target_apogee_ft": 0.0,
+    "motor_accel": 312.5837707519531,
+    "flight_hz": 20,
+    "control_hz": 100,
+    "launch_angle": 0,
+    "heading": 0,
+    "distance": 804.672,
+    "telemetry_hz": 5,
+    "latency": 0.3,
+    "jitter": 0.05,
+    "position_sigma": 3,
+    "velocity_sigma": 1,
+    "drop_probability": 0,
+    "comm_timeout": 1,
+    "blackout": null,
+    "max_speed": [
+      40,
+      40
+    ],
+    "max_accel": [
+      100,
+      100
+    ],
+    "azimuth_ratio": 50,
+    "elevation_ratio": 10,
+    "kp": 25,
+    "ki": 0.5,
+    "kd": 10,
+    "beamwidth": 20,
+    "seed": 42
+  },
+  "baseline_corrected_apogee_m": 9144.623084336721,
+  "calibrated_motor_accel_m_s2": 312.5837707519531,
+  "apogee_m": 9144.623084336721,
+  "apogee_ft": 30002.04423994987,
+  "peak_rocket_speed_m_s": 883.3912897868794,
+  "metrics": {
+    "hold_last_position": {
+      "peak_error_deg": 20.154541935475308,
+      "rms_error_deg": 3.54599269977917,
+      "p95_error_deg": 8.855948842694719,
+      "fraction_inside_beam": 0.9619667070885238,
+      "peak_projected_actual_error_deg": 13.387612836277134,
+      "peak_prediction_error_deg": 13.497399035834043
+    },
+    "constant_velocity_prediction": {
+      "peak_error_deg": 11.418964253099595,
+      "rms_error_deg": 1.938406888569847,
+      "p95_error_deg": 4.45155256630626,
+      "fraction_inside_beam": 0.9879836842685481,
+      "peak_projected_actual_error_deg": 10.907244852601988,
+      "peak_prediction_error_deg": 2.65029675933816
+    }
+  },
+  "angular_motion": {
+    "ideal_tracking": {
+      "azimuth": {
+        "max_output_velocity_deg_s": {
+          "value": 0.0,
+          "time_since_launch_s": 0.0
+        },
+        "max_output_acceleration_deg_s2": {
+          "value": 0.0,
+          "time_since_launch_s": 0.0
+        },
+        "max_motor_velocity_rpm": {
+          "value": 0.0,
+          "time_since_launch_s": 0.0
+        },
+        "max_motor_acceleration_deg_s2": {
+          "value": 0.0,
+          "time_since_launch_s": 0.0
+        }
+      },
+      "elevation": {
+        "max_output_velocity_deg_s": {
+          "value": 26.740337402663727,
+          "time_since_launch_s": 1.700000000000001
+        },
+        "max_output_acceleration_deg_s2": {
+          "value": 21.54927118804561,
+          "time_since_launch_s": 0.10000000000000142
+        },
+        "max_motor_velocity_rpm": {
+          "value": 44.56722900443955,
+          "time_since_launch_s": 1.700000000000001
+        },
+        "max_motor_acceleration_deg_s2": {
+          "value": 215.49271188045608,
+          "time_since_launch_s": 0.10000000000000142
+        }
+      }
+    },
+    "hold_command": {
+      "azimuth": {
+        "max_output_velocity_deg_s": {
+          "value": 47.48718839205824,
+          "time_since_launch_s": 48.42
+        },
+        "max_output_acceleration_deg_s2": {
+          "value": 2499.1798713654953,
+          "time_since_launch_s": 88.23
+        },
+        "max_motor_velocity_rpm": {
+          "value": 395.72656993381867,
+          "time_since_launch_s": 48.42
+        },
+        "max_motor_acceleration_deg_s2": {
+          "value": 124958.99356827476,
+          "time_since_launch_s": 88.23
+        }
+      },
+      "elevation": {
+        "max_output_velocity_deg_s": {
+          "value": 271.30195720035226,
+          "time_since_launch_s": 2.1099999999999994
+        },
+        "max_output_acceleration_deg_s2": {
+          "value": 13565.097860017902,
+          "time_since_launch_s": 2.0999999999999996
+        },
+        "max_motor_velocity_rpm": {
+          "value": 452.16992866725377,
+          "time_since_launch_s": 2.1099999999999994
+        },
+        "max_motor_acceleration_deg_s2": {
+          "value": 135650.97860017902,
+          "time_since_launch_s": 2.0999999999999996
+        }
+      }
+    },
+    "hold_pid": {
+      "azimuth": {
+        "max_output_velocity_deg_s": {
+          "value": 1.298629480813393,
+          "time_since_launch_s": 59.03
+        },
+        "max_output_acceleration_deg_s2": {
+          "value": 22.575117193110316,
+          "time_since_launch_s": 48.43
+        },
+        "max_motor_velocity_rpm": {
+          "value": 10.821912340111608,
+          "time_since_launch_s": 59.03
+        },
+        "max_motor_acceleration_deg_s2": {
+          "value": 1128.755859655516,
+          "time_since_launch_s": 48.43
+        }
+      },
+      "elevation": {
+        "max_output_velocity_deg_s": {
+          "value": 28.29225156829697,
+          "time_since_launch_s": 2.3599999999999994
+        },
+        "max_output_acceleration_deg_s2": {
+          "value": 100.0,
+          "time_since_launch_s": 1.6300000000000008
+        },
+        "max_motor_velocity_rpm": {
+          "value": 47.15375261382828,
+          "time_since_launch_s": 2.3599999999999994
+        },
+        "max_motor_acceleration_deg_s2": {
+          "value": 1000.0,
+          "time_since_launch_s": 1.6300000000000008
+        }
+      }
+    },
+    "predicted_command": {
+      "azimuth": {
+        "max_output_velocity_deg_s": {
+          "value": 48.50570819928218,
+          "time_since_launch_s": 48.43
+        },
+        "max_output_acceleration_deg_s2": {
+          "value": 2529.7572975773965,
+          "time_since_launch_s": 88.23
+        },
+        "max_motor_velocity_rpm": {
+          "value": 404.21423499401817,
+          "time_since_launch_s": 48.43
+        },
+        "max_motor_acceleration_deg_s2": {
+          "value": 126487.86487886982,
+          "time_since_launch_s": 88.23
+        }
+      },
+      "elevation": {
+        "max_output_velocity_deg_s": {
+          "value": 98.7887820775432,
+          "time_since_launch_s": 0.6799999999999997
+        },
+        "max_output_acceleration_deg_s2": {
+          "value": 4719.353976778779,
+          "time_since_launch_s": 0.6699999999999999
+        },
+        "max_motor_velocity_rpm": {
+          "value": 164.64797012923867,
+          "time_since_launch_s": 0.6799999999999997
+        },
+        "max_motor_acceleration_deg_s2": {
+          "value": 47193.53976778779,
+          "time_since_launch_s": 0.6699999999999999
+        }
+      }
+    },
+    "predicted_pid": {
+      "azimuth": {
+        "max_output_velocity_deg_s": {
+          "value": 1.3448289884952578,
+          "time_since_launch_s": 59.040000000000006
+        },
+        "max_output_acceleration_deg_s2": {
+          "value": 22.898207747915045,
+          "time_since_launch_s": 48.43
+        },
+        "max_motor_velocity_rpm": {
+          "value": 11.206908237460482,
+          "time_since_launch_s": 59.040000000000006
+        },
+        "max_motor_acceleration_deg_s2": {
+          "value": 1144.9103873957522,
+          "time_since_launch_s": 48.43
+        }
+      },
+      "elevation": {
+        "max_output_velocity_deg_s": {
+          "value": 26.89509096070665,
+          "time_since_launch_s": 2.1899999999999995
+        },
+        "max_output_acceleration_deg_s2": {
+          "value": 55.07508169424096,
+          "time_since_launch_s": 0.8499999999999996
+        },
+        "max_motor_velocity_rpm": {
+          "value": 44.825151601177744,
+          "time_since_launch_s": 2.1899999999999995
+        },
+        "max_motor_acceleration_deg_s2": {
+          "value": 550.7508169424095,
+          "time_since_launch_s": 0.8499999999999996
+        }
+      }
+    }
+  },
+  "angular_motion_notes": [
+    "Absolute peaks during flight, with times relative to launch.",
+    "Ideal tracking derivatives use the native flight sampling grid.",
+    "Command derivatives include packet/noise jumps and depend on control timestep; not physical motor capability.",
+    "Actual PID peaks obey assumed kinematic limits, not a torque-speed motor model.",
+    "Motor RPM = output deg/s * reduction / 6; motor acceleration = output acceleration * reduction."
+  ],
+  "communication": {
+    "timeout_s": 1,
+    "loss_detected_during_flight": false,
+    "lost_duration_s": 0,
+    "lost_intervals_since_launch_s": [],
+    "definition": "No newer measurement received within timeout; not an RF link budget or beam-loss model."
+  },
+  "assumptions": [
+    "Target is altitude above launchpad (AGL), not sea level.",
+    "Apogee calibration changes thrust acceleration, not altitude samples.",
+    "Legacy atmosphere/drag and approximate rocket rotation retained; no recovery.",
+    "Ideal angle feedback; PID commands kinematic acceleration, not electrical torque.",
+    "Motor limits and beamwidth are scenario assumptions, not measured ratings.",
+    "No backlash, missed steps, mount bias, or covariance model.",
+    "Fixed masses 60.8/40.8 kg, burn 4.83 s; still air."
+  ]
+}

@@ -39,6 +39,34 @@ def separation(a, b):
     return np.degrees(np.arctan2(np.linalg.norm(np.cross(u, v), axis=-1), np.sum(u*v, axis=-1)))
 
 
+def angular_derivatives(angles, times):
+    """Unwrap azimuth before differentiating sampled angles in degrees."""
+    angles = np.array(angles, dtype=float, copy=True)
+    angles[:, 0] = np.degrees(np.unwrap(np.radians(angles[:, 0])))
+    rate = np.gradient(angles, times, axis=0)
+    return rate, np.gradient(rate, times, axis=0)
+
+
+def motion_peaks(times, rate, acceleration, mask, ratios):
+    """Absolute per-axis peaks, their timestamps, and geared motor equivalents."""
+    indices = np.flatnonzero(mask)
+    if not len(indices):
+        raise ValueError("No flight samples available for angular-motion statistics")
+    axes = {}
+    for i, (axis, ratio) in enumerate(zip(("azimuth", "elevation"), ratios)):
+        def peak(values):
+            index = indices[np.argmax(np.abs(values[indices]))]
+            return {"value": float(abs(values[index])),
+                    "time_since_launch_s": float(times[index]-10)}
+        axes[axis] = {
+            "max_output_velocity_deg_s": peak(rate[:, i]),
+            "max_output_acceleration_deg_s2": peak(acceleration[:, i]),
+            "max_motor_velocity_rpm": peak(rate[:, i]*ratio/6),
+            "max_motor_acceleration_deg_s2": peak(acceleration[:, i]*ratio),
+        }
+    return axes
+
+
 def communication_status(now, last_arrival, timeout):
     """1: fresh reception, 0: waiting initially, -1: reception timed out.
 
@@ -218,6 +246,21 @@ def simulate(args, data):
 def export(args, data, result, fitted, baseline):
     t = result["time"]-10
     airborne = t >= 0
+    # Differentiate truth on the flight integrator's native grid. Differentiating
+    # linearly upsampled positions twice would add interpolation artifacts.
+    native_angles = pointing(np.column_stack([data[f"r_{a}"] for a in "xyz"])
+                             - np.array([-args.distance, 0, 0]))
+    native_rate, native_accel = angular_derivatives(native_angles, data["time"])
+    ratios = (args.azimuth_ratio, args.elevation_ratio)
+    angular_motion = {"ideal_tracking": motion_peaks(data["time"], native_rate, native_accel,
+                                                    data["time"] >= 10, ratios)}
+    command_motion = []
+    for s, name in enumerate(("hold", "predicted")):
+        rate, acceleration = angular_derivatives(result["command"][:, s], result["time"])
+        command_motion.append((rate, acceleration))
+        angular_motion[f"{name}_command"] = motion_peaks(result["time"], rate, acceleration, airborne, ratios)
+        angular_motion[f"{name}_pid"] = motion_peaks(result["time"], result["rate"][:, s],
+                                                    result["accel"][:, s], airborne, ratios)
     outage_spans = intervals(t, result["communication_status"] == -1)
     flight_spans = [(max(0, start), end) for start, end in outage_spans if end > 0]
     metrics = {}
@@ -236,6 +279,12 @@ def export(args, data, result, fitted, baseline):
                    apogee_ft=float(np.max(data["r_z"])/0.3048),
                    peak_rocket_speed_m_s=float(np.max(np.linalg.norm(result["velocity"], axis=1))),
                    metrics=metrics,
+                   angular_motion=angular_motion,
+                   angular_motion_notes=["Absolute peaks during flight, with times relative to launch.",
+                                         "Ideal tracking derivatives use the native flight sampling grid.",
+                                         "Command derivatives include packet/noise jumps and depend on control timestep; not physical motor capability.",
+                                         "Actual PID peaks obey assumed kinematic limits, not a torque-speed motor model.",
+                                         "Motor RPM = output deg/s * reduction / 6; motor acceleration = output acceleration * reduction."],
                    communication=dict(timeout_s=args.comm_timeout,
                                       loss_detected_during_flight=bool(flight_spans),
                                       lost_duration_s=sum(end-start for start, end in flight_spans),
@@ -262,6 +311,10 @@ def export(args, data, result, fitted, baseline):
         columns[f"{strategy}_prediction_error_deg"] = result["prediction_error"][:, s]
         for i, axis in enumerate(("azimuth", "elevation")):
             columns[f"true_{axis}_deg"] = result["truth"][:, i]
+            columns[f"required_{axis}_rate_deg_s"] = np.interp(result["time"], data["time"], native_rate[:, i])
+            columns[f"required_{axis}_accel_deg_s2"] = np.interp(result["time"], data["time"], native_accel[:, i])
+            columns[f"{strategy}_{axis}_command_rate_deg_s"] = command_motion[s][0][:, i]
+            columns[f"{strategy}_{axis}_command_accel_deg_s2"] = command_motion[s][1][:, i]
             signed = result["command"][:, s, i]-result["actual"][:, s, i]
             columns[f"{strategy}_{axis}_projected_minus_actual_deg"] = wrap(signed) if i == 0 else signed
             prediction_error = result["command"][:, s, i]-result["truth"][:, i]
@@ -273,8 +326,8 @@ def export(args, data, result, fitted, baseline):
     # All plot comparisons use the same truth, packet draws and motor limits.
     fig, panels = plt.subplots(4, 2, figsize=(14, 13), sharex=True)
     unwrapped = np.degrees(np.unwrap(np.radians(result["truth"]), axis=0))
-    required_rate = np.gradient(unwrapped, result["time"], axis=0)
-    required_accel = np.gradient(required_rate, result["time"], axis=0)
+    required_rate = np.column_stack([np.interp(result["time"], data["time"], native_rate[:, i]) for i in range(2)])
+    required_accel = np.column_stack([np.interp(result["time"], data["time"], native_accel[:, i]) for i in range(2)])
     for i, axis in enumerate(("Azimuth", "Elevation")):
         panels[0, i].plot(t, unwrapped[:, i], label="True direction")
         panels[0, i].plot(t, np.degrees(np.unwrap(np.radians(result["command"][:, 1, i]))), label="Predicted command", alpha=.7)
@@ -360,6 +413,14 @@ def export(args, data, result, fitted, baseline):
     fig.savefig(args.output/"trajectory.png", dpi=160)
     plt.close(fig)
     print(json.dumps(summary, indent=2))
+    print("\nMAXIMUM ANGULAR MOTION (absolute peaks during flight)")
+    print(f"{'Source / axis':<30} {'Output deg/s':>13} {'Output deg/s^2':>15} {'Motor RPM':>12} {'Motor deg/s^2':>15}")
+    for source, axes in angular_motion.items():
+        for axis, peaks in axes.items():
+            values = [peaks[key]["value"] for key in ("max_output_velocity_deg_s", "max_output_acceleration_deg_s2",
+                                                     "max_motor_velocity_rpm", "max_motor_acceleration_deg_s2")]
+            print(f"{source+' / '+axis:<30} {values[0]:13.3f} {values[1]:15.3f} {values[2]:12.3f} {values[3]:15.3f}")
+    print("Command peaks include telemetry jumps. PID peaks use assumed limits, not measured motor capability.")
 
 
 def positive(text):
@@ -397,6 +458,8 @@ def main():
                         help="forced reception blackout, seconds since launch")
     parser.add_argument("--max-speed", nargs=2, type=positive, default=[40, 40], metavar=("AZ", "EL"), help="output deg/s")
     parser.add_argument("--max-accel", nargs=2, type=positive, default=[100, 100], metavar=("AZ", "EL"), help="output deg/s^2")
+    parser.add_argument("--azimuth-ratio", type=positive, default=50, help="motor revolutions per azimuth output revolution")
+    parser.add_argument("--elevation-ratio", type=positive, default=10, help="motor revolutions per elevation output revolution")
     parser.add_argument("--kp", type=nonnegative, default=25)
     parser.add_argument("--ki", type=nonnegative, default=0.5)
     parser.add_argument("--kd", type=nonnegative, default=10)

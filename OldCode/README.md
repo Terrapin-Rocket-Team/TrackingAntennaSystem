@@ -1,6 +1,6 @@
 # Running and interpreting the legacy simulations
 
-Updated 2026-11-03. These are standalone desktop
+Updated 2026-11-12. These are standalone desktop
 experiments, separate from the Teensy firmware and `platformio.ini`.
 
 For PID tracking and pointing-error diagrams, start with `tracking_sim.py` below.
@@ -15,6 +15,41 @@ From `OldCode`, after installing requirements:
 ```powershell
 & .\.venv\Scripts\python.exe -B tracking_sim.py
 ```
+
+### Maximum angular velocity and acceleration
+
+Every PID run prints a **MAXIMUM ANGULAR MOTION** table and saves the same
+measurements under `angular_motion` in `summary.json`. Each azimuth/elevation
+entry reports maximum absolute output velocity (deg/s), output acceleration
+(deg/s²), motor velocity (RPM), and motor acceleration (deg/s²), with the time
+of each peak relative to launch. Only flight samples contribute to these peaks.
+
+The report separates five sources:
+
+- `ideal_tracking`: the motion required to point exactly at the simulated rocket.
+- `hold_command` / `predicted_command`: motion implied by the unfiltered telemetry
+  commands, without and with velocity prediction.
+- `hold_pid` / `predicted_pid`: actual simulated PID motion after speed and
+  acceleration limits.
+
+Default motor reductions are **50:1 azimuth and 10:1 elevation**. Override with
+`--azimuth-ratio` and `--elevation-ratio`; these convert reported shaft demands,
+but do not change the assumed output-axis speed/acceleration limits. Likewise,
+`flight_stats.py` now defaults to `--yaw-ratio 50 --pitch-ratio 10`.
+
+Ideal angular derivatives are calculated on the flight generator's native
+sample grid before interpolation for plotting. Command derivatives are sampled
+on the control grid: noisy packet updates can create large jumps and apparent
+acceleration spikes. Treat these as raw command discontinuities to be handled by
+the controller, not motor sizing limits or physical rocket angular acceleration.
+Repeat cases at multiple sampling rates before accepting peak requirements.
+PID peaks reflect the configured plant limits, not measured motor capability;
+none of these sampled peaks proves a global worst-case bound.
+
+`history.csv` includes `required_*_rate_deg_s`, `required_*_accel_deg_s2`, and
+`hold_*` / `predict_*` command derivatives alongside the existing actual PID
+motion. `pointer.py` continues to report ideal output peaks across its randomized
+flights; `flight_stats.py` reports ideal output/shaft peaks for one flight.
 
 The script generates the corrected standard-drag trajectory, then adjusts the
 rocket's **thrust acceleration parameter** until sampled apogee is within 1 metre
