@@ -4507,7 +4507,7 @@
 	)
 	(rectangle
 		(start 168.91 68.58)
-		(end 387.35 135.89)
+		(end 393.7 135.89)
 		(stroke
 			(width 0)
 			(type default)
@@ -4682,10 +4682,28 @@
 		(uuid "25b28720-7e2f-454f-96c3-650610a33a53")
 	)
 	(junction
+		(at 316.23 88.9)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "2f18e1a5-1ee8-47b1-9262-ec7efe4af8c1")
+	)
+	(junction
+		(at 264.16 88.9)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "4293f752-1d4d-49ff-afb5-6e8531f1c0c7")
+	)
+	(junction
 		(at 254 100.33)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "42d21552-7881-4e8c-9f80-254b821ae7a3")
+	)
+	(junction
+		(at 212.09 88.9)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "45190b87-a1c2-41cd-8e08-469cdba2d7b5")
 	)
 	(junction
 		(at 110.49 163.83)
@@ -4758,6 +4776,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "7b8875b7-e18a-43a9-8626-b851781665a9")
+	)
+	(junction
+		(at 370.84 88.9)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "7c54d84c-deda-4cce-b041-861323c3e0a6")
 	)
 	(junction
 		(at 257.556 180.086)
@@ -5139,6 +5163,16 @@
 	)
 	(wire
 		(pts
+			(xy 276.86 88.9) (xy 285.75 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "234ab50e-893b-4dfe-bc0c-d8d5f392dba8")
+	)
+	(wire
+		(pts
 			(xy 307.34 100.33) (xy 308.61 100.33)
 		)
 		(stroke
@@ -5309,6 +5343,16 @@
 	)
 	(wire
 		(pts
+			(xy 381 88.9) (xy 389.89 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3ce018de-7366-4842-b5bb-46764c11fe24")
+	)
+	(wire
+		(pts
 			(xy 216.916 187.706) (xy 232.156 187.706)
 		)
 		(stroke
@@ -5409,7 +5453,7 @@
 	)
 	(wire
 		(pts
-			(xy 212.09 81.28) (xy 212.09 95.25)
+			(xy 212.09 81.28) (xy 212.09 88.9)
 		)
 		(stroke
 			(width 0)
@@ -5466,6 +5510,16 @@
 			(type default)
 		)
 		(uuid "53bea144-8b9a-4658-bad0-5dd4c3dd7508")
+	)
+	(wire
+		(pts
+			(xy 223.52 88.9) (xy 232.41 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "54787c3c-0238-4585-be99-e10216a05b0b")
 	)
 	(wire
 		(pts
@@ -5589,6 +5643,16 @@
 	)
 	(wire
 		(pts
+			(xy 264.16 88.9) (xy 264.16 95.25)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "765f8ea3-53fd-4421-8dec-0370456cd553")
+	)
+	(wire
+		(pts
 			(xy 295.656 177.546) (xy 290.576 177.546)
 		)
 		(stroke
@@ -5619,7 +5683,7 @@
 	)
 	(wire
 		(pts
-			(xy 316.23 81.28) (xy 316.23 95.25)
+			(xy 316.23 81.28) (xy 316.23 88.9)
 		)
 		(stroke
 			(width 0)
@@ -5669,7 +5733,7 @@
 	)
 	(wire
 		(pts
-			(xy 264.16 81.28) (xy 264.16 95.25)
+			(xy 264.16 81.28) (xy 264.16 88.9)
 		)
 		(stroke
 			(width 0)
@@ -5709,6 +5773,16 @@
 	)
 	(wire
 		(pts
+			(xy 212.09 88.9) (xy 212.09 95.25)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "858aa894-acd9-480f-835f-31929a977033")
+	)
+	(wire
+		(pts
 			(xy 303.53 44.45) (xy 297.18 44.45)
 		)
 		(stroke
@@ -5729,7 +5803,7 @@
 	)
 	(wire
 		(pts
-			(xy 370.84 81.28) (xy 370.84 95.25)
+			(xy 370.84 81.28) (xy 370.84 88.9)
 		)
 		(stroke
 			(width 0)
@@ -6099,6 +6173,16 @@
 	)
 	(wire
 		(pts
+			(xy 370.84 88.9) (xy 373.38 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c1fc6468-58ad-4b1c-bcc7-bb2c72ca5c29")
+	)
+	(wire
+		(pts
 			(xy 290.83 100.33) (xy 297.18 100.33)
 		)
 		(stroke
@@ -6106,6 +6190,16 @@
 			(type default)
 		)
 		(uuid "c43abc31-4fbc-4659-bdfe-0a35329fb450")
+	)
+	(wire
+		(pts
+			(xy 328.93 88.9) (xy 337.82 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c75a6797-8017-4879-91ab-49cc7e7d88ac")
 	)
 	(wire
 		(pts
@@ -6189,6 +6283,16 @@
 	)
 	(wire
 		(pts
+			(xy 316.23 88.9) (xy 321.31 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d83917a1-b4c3-42f1-ab3f-24423143dfc3")
+	)
+	(wire
+		(pts
 			(xy 252.73 100.33) (xy 254 100.33)
 		)
 		(stroke
@@ -6219,6 +6323,26 @@
 	)
 	(wire
 		(pts
+			(xy 264.16 88.9) (xy 269.24 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "db49140d-ead6-46b4-9db3-49217d527c76")
+	)
+	(wire
+		(pts
+			(xy 370.84 88.9) (xy 370.84 95.25)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "de0ee61b-3e19-4b5a-b8dc-31914483096c")
+	)
+	(wire
+		(pts
 			(xy 26.67 208.28) (xy 26.67 207.01)
 		)
 		(stroke
@@ -6226,6 +6350,16 @@
 			(type default)
 		)
 		(uuid "df766778-a751-49b1-b147-330b3c4bbfff")
+	)
+	(wire
+		(pts
+			(xy 212.09 88.9) (xy 215.9 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e0e880fe-371e-40a6-b26a-c5ef64abb8ac")
 	)
 	(wire
 		(pts
@@ -6366,6 +6500,16 @@
 			(type default)
 		)
 		(uuid "fd153cf3-4791-4539-94e2-750eb47bca77")
+	)
+	(wire
+		(pts
+			(xy 316.23 88.9) (xy 316.23 95.25)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ff46eb65-72d3-42aa-83a9-8ae8f168608e")
 	)
 	(global_label "33_pul-_2"
 		(shape input)
@@ -8007,6 +8151,86 @@
 			(project "teensiPCB"
 				(path "/ba786cef-8ef6-45a2-be74-19524883f146"
 					(reference "#PWR011")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 377.19 88.9 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "26e0030e-7641-468f-b7d6-f6d615e024cb")
+		(property "Reference" "R19"
+			(at 377.19 82.55 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "1kOhm"
+			(at 377.19 85.09 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder"
+			(at 377.19 90.678 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 377.19 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 377.19 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "8dc15a67-0488-453e-a825-bb74ca8785fd")
+		)
+		(pin "2"
+			(uuid "de8835b4-ec0c-447a-8d80-664183a69305")
+		)
+		(instances
+			(project "teensiPCB"
+				(path "/ba786cef-8ef6-45a2-be74-19524883f146"
+					(reference "R19")
 					(unit 1)
 				)
 			)
@@ -11101,6 +11325,84 @@
 		)
 	)
 	(symbol
+		(lib_id "power:+5V")
+		(at 389.89 88.9 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "8913133b-dc45-4095-a1d7-f22bdfd712a1")
+		(property "Reference" "#PWR043"
+			(at 389.89 92.71 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "+5V"
+			(at 389.89 83.82 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 389.89 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 389.89 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 389.89 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "a09e5381-7f98-4488-848b-b7416da586f0")
+		)
+		(instances
+			(project "teensiPCB"
+				(path "/ba786cef-8ef6-45a2-be74-19524883f146"
+					(reference "#PWR043")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Mechanical:MountingHole")
 		(at 63.5 39.37 0)
 		(unit 1)
@@ -11490,6 +11792,86 @@
 			(project "teensiPCB"
 				(path "/ba786cef-8ef6-45a2-be74-19524883f146"
 					(reference "#PWR036")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 273.05 88.9 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "9484f64f-29ec-415d-9777-e88293fcabd8")
+		(property "Reference" "R17"
+			(at 273.05 82.55 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "1kOhm"
+			(at 273.05 85.09 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder"
+			(at 273.05 90.678 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 273.05 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 273.05 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "3b0d6e49-d446-4daa-ab52-33bb9cdef174")
+		)
+		(pin "2"
+			(uuid "1238f776-3666-4740-9013-a8457ae089b2")
+		)
+		(instances
+			(project "teensiPCB"
+				(path "/ba786cef-8ef6-45a2-be74-19524883f146"
+					(reference "R17")
 					(unit 1)
 				)
 			)
@@ -12149,6 +12531,84 @@
 		)
 	)
 	(symbol
+		(lib_id "power:+5V")
+		(at 232.41 88.9 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "a7dca94e-6c22-4424-84da-0309ac14e75a")
+		(property "Reference" "#PWR040"
+			(at 232.41 92.71 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "+5V"
+			(at 232.41 83.82 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 232.41 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 232.41 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 232.41 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "a415a23a-dbbe-4296-affe-6e7dff368f35")
+		)
+		(instances
+			(project "teensiPCB"
+				(path "/ba786cef-8ef6-45a2-be74-19524883f146"
+					(reference "#PWR040")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "2026-11-01_21-04-11:TPS54202HDDCR")
 		(at 214.376 164.846 0)
 		(unit 1)
@@ -12559,6 +13019,86 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 219.71 88.9 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "ae12a210-b6ad-43fe-b753-4624a6f40637")
+		(property "Reference" "R16"
+			(at 219.71 82.55 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "1kOhm"
+			(at 219.71 85.09 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder"
+			(at 219.71 90.678 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 219.71 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 219.71 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "302cd80d-8158-4dfd-9b50-b22383548ee8")
+		)
+		(pin "2"
+			(uuid "21d5a408-64fd-4862-8417-39c24dce4318")
+		)
+		(instances
+			(project "teensiPCB"
+				(path "/ba786cef-8ef6-45a2-be74-19524883f146"
+					(reference "R16")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Mechanical:MountingHole")
 		(at 62.23 26.67 0)
 		(unit 1)
@@ -12715,6 +13255,86 @@
 	)
 	(symbol
 		(lib_id "Device:R")
+		(at 325.12 88.9 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "b4c11eda-571a-472f-a590-1ac8c067fabb")
+		(property "Reference" "R18"
+			(at 325.12 82.55 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "1kOhm"
+			(at 325.12 85.09 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder"
+			(at 325.12 90.678 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 325.12 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 325.12 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "cce505e3-9bb6-4da8-a44d-9450f9a52393")
+		)
+		(pin "2"
+			(uuid "a12319f4-d3bc-4e68-b4df-01b16c3e9539")
+		)
+		(instances
+			(project "teensiPCB"
+				(path "/ba786cef-8ef6-45a2-be74-19524883f146"
+					(reference "R18")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
 		(at 257.556 185.166 0)
 		(unit 1)
 		(body_style 1)
@@ -12796,8 +13416,8 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
-		(at -1377.95 781.05 0)
+		(lib_id "power:+5V")
+		(at 337.82 88.9 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -12806,9 +13426,9 @@
 		(in_pos_files yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "c13039fb-c349-460f-adbc-18c8c690b7be")
-		(property "Reference" "#PWR031"
-			(at -1377.95 787.4 0)
+		(uuid "c1699b6d-caab-4394-a477-1e7d990b7214")
+		(property "Reference" "#PWR042"
+			(at 337.82 92.71 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12818,8 +13438,8 @@
 				)
 			)
 		)
-		(property "Value" "GND"
-			(at -1377.95 786.13 0)
+		(property "Value" "+5V"
+			(at 337.82 83.82 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -12829,7 +13449,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at -1377.95 781.05 0)
+			(at 337.82 88.9 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12840,7 +13460,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at -1377.95 781.05 0)
+			(at 337.82 88.9 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12850,8 +13470,8 @@
 				)
 			)
 		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at -1377.95 781.05 0)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 337.82 88.9 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12862,12 +13482,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "3cd2c3d8-73a5-4f49-b575-47884b2c0b35")
+			(uuid "833daa99-bf25-472b-964d-d23a33ead1c8")
 		)
 		(instances
 			(project "teensiPCB"
 				(path "/ba786cef-8ef6-45a2-be74-19524883f146"
-					(reference "#PWR031")
+					(reference "#PWR042")
 					(unit 1)
 				)
 			)
@@ -13750,6 +14370,84 @@
 		)
 	)
 	(symbol
+		(lib_id "power:+5V")
+		(at 285.75 88.9 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "ec3ee382-61a5-47bc-bb3a-ffafc39fe172")
+		(property "Reference" "#PWR041"
+			(at 285.75 92.71 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "+5V"
+			(at 285.75 83.82 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 285.75 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 285.75 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 285.75 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "df03b9ea-81e0-4bb5-a356-3fa98aa5c4bc")
+		)
+		(instances
+			(project "teensiPCB"
+				(path "/ba786cef-8ef6-45a2-be74-19524883f146"
+					(reference "#PWR041")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Connector:Jack-DC")
 		(at 102.87 44.45 0)
 		(unit 1)
@@ -14229,9 +14927,8 @@
 	)
 	(group ""
 		(uuid "5c7bdc7d-d8dc-46ba-976e-a7938992a843")
-		(members "32d69eb9-71e3-45fc-ad62-8715849a352c" "5e44ecd8-bca5-48fb-8f2e-a01a01fd0d49"
-			"61148a6a-f125-4e3c-9bc7-e2ded6ae7250" "75c6b612-c908-49ec-be47-180cd2e388b6"
-			"d0a53575-77a7-49da-9bd0-469a6a3cbfc6" "e2b6e5fe-475c-4769-bc50-73483b655362"
+		(members "32d69eb9-71e3-45fc-ad62-8715849a352c" "61148a6a-f125-4e3c-9bc7-e2ded6ae7250"
+			"75c6b612-c908-49ec-be47-180cd2e388b6" "e2b6e5fe-475c-4769-bc50-73483b655362"
 		)
 	)
 	(group ""
