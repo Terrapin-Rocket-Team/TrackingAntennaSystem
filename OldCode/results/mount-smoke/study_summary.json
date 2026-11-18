@@ -1,0 +1,61 @@
+{
+  "studies": {
+    "minimum_torque": {
+      "gamma1_deg": 45.0,
+      "d_m": 0.025,
+      "ideal_peak_motor_torque_nm": 0.4692362383452124,
+      "max_tracking_error_deg": 7.633371281341344,
+      "rms_tracking_error_deg": 1.1840331585521096,
+      "actual_peak_motor_torque_nm": {
+        "azimuth": 0.0050661168021094525,
+        "elevation": 0.4906683598497388
+      },
+      "requested_peak_motor_torque_nm": {
+        "azimuth": 0.0050661168021094525,
+        "elevation": 0.4906683598497388
+      }
+    },
+    "minimum_tracking_error": {
+      "gamma1_deg": 90.0,
+      "d_m": 0.025,
+      "ideal_peak_motor_torque_nm": 0.5157999702124879,
+      "max_tracking_error_deg": 7.591564638052506,
+      "rms_tracking_error_deg": 1.1829446321747192,
+      "actual_peak_motor_torque_nm": {
+        "azimuth": 0.004961277328566174,
+        "elevation": 0.5174969339525635
+      },
+      "requested_peak_motor_torque_nm": {
+        "azimuth": 0.004961277328566174,
+        "elevation": 0.5174969339525635
+      }
+    }
+  },
+  "apogee_ft": 30002.04423994987,
+  "evaluated_candidates": 6,
+  "settings": {
+    "output": "results\\mount-smoke",
+    "gamma_points": 3,
+    "d_points": 2,
+    "refinements": 0,
+    "control_hz": 100,
+    "target_apogee_ft": 0.0,
+    "motor_accel": 312.5837707519531,
+    "efficiency": 0.8,
+    "usable_torque_fraction": 0.5,
+    "support_elevation_inertia": 0,
+    "base_azimuth_inertia": 0.0904,
+    "seed": 42
+  },
+  "scope": [
+    "Bounded sampled search, not proof of a global optimum.",
+    "Gamma1 0-90 degrees; d .025-.1 m; no mechanical travel stops.",
+    "Torque objective: highest ideal inverse-dynamics motor torque across axes and flight.",
+    "Error objective: maximum actual antenna-vs-true-rocket boresight error with fixed PID gains.",
+    "Prediction error is independent of mount geometry.",
+    "Vertical flight: ideal azimuth demand is zero; azimuth PID responds to noisy telemetry.",
+    "Uniform thin disk radius .25 m; elevation support inertia and damping assumed zero.",
+    "Motor envelope approximately digitized from supplied 24V chart, derated by usable fraction.",
+    "Ideal torque control and angle feedback; stepper resonances/missed steps/backlash not modeled."
+  ]
+}

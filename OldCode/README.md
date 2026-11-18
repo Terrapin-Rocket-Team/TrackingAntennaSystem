@@ -1,7 +1,248 @@
 # Running and interpreting the legacy simulations
 
-Updated 2026-11-12. These are standalone desktop
+Updated 2026-11-17. These are standalone desktop
 experiments, separate from the Teensy firmware and `platformio.ini`.
+
+## Start here: run the current simulation yourself
+
+These commands are for **PowerShell** in VS Code. Open **Terminal > New
+Terminal** and choose PowerShell from the terminal dropdown. Paste each command
+without the surrounding Markdown backticks. The `&` runs the Python executable
+at the quoted path; it is PowerShell syntax. `-B` prevents Python bytecode files.
+No PlatformIO build, Teensy connection, or environment activation is needed.
+
+### 1. Go to the simulation folder (each new terminal)
+
+```powershell
+cd "C:\Users\mattm\Documents\GitHub\TrackingAntennaSystem\OldCode"
+```
+
+All following paths are relative to this folder. If the checkout moves, change
+this path to the actual `OldCode` directory.
+
+### 2. Check the existing Python environment
+
+```powershell
+& ".\.venv\Scripts\python.exe" -B -c "import numpy, matplotlib, ambiance; print('Simulation environment ready')"
+```
+
+If it prints `Simulation environment ready`, proceed to step 3. If packages are
+missing, install them once (and again when requirements change):
+
+```powershell
+& ".\.venv\Scripts\python.exe" -m pip install -r requirements.txt
+```
+
+If `.venv` does not exist, create it using the working PlatformIO Python, then
+install the requirements. This creates a separate environment for simulations:
+
+```powershell
+& "$env:USERPROFILE\.platformio\penv\Scripts\python.exe" -m venv .venv
+& ".\.venv\Scripts\python.exe" -m pip install -r requirements.txt
+```
+
+If the existing environment reports that it cannot create a process, its base
+Python may have moved or become unavailable. Create an additional environment
+with `-m venv .venv-sim`, install requirements there, and substitute `.venv-sim`
+for `.venv` in the commands below. Preserve the existing environment until the
+replacement works. If the PlatformIO interpreter is also unavailable, use a
+working installed Python 3 interpreter to create the environment.
+
+### 3. Run both geometry optimization studies
+
+```powershell
+& ".\.venv\Scripts\python.exe" -B mount_study.py
+```
+
+This is the **current complete workflow**: create the 30,000-foot test flight,
+search gamma1/d for minimum ideal torque and minimum maximum antenna tracking
+error, simulate both with coupled torque dynamics, and save plots, motor torque,
+angular velocity/acceleration peaks, and reusable configurations. Wait until
+PowerShell returns its `PS ...>` prompt. Progress messages show generation,
+candidate evaluation and refinements; plots are saved rather than opened.
+
+### 4. Open the results
+
+Use the VS Code Explorer under `OldCode/results/mount-study`:
+
+| File | What to inspect |
+| --- | --- |
+| `study_summary.json` | Both selected geometries, maximum errors/torques, and angular-motion peaks |
+| `comparison.png` | Tracking error and motor torque versus time for both designs |
+| `optimization.png` | How gamma1 and d affect each objective |
+| `minimum_torque/summary.json` | Detailed minimum-torque motion peaks, timestamps and assumptions |
+| `minimum_tracking_error/summary.json` | Detailed minimum-error motion peaks, timestamps and assumptions |
+| Either design's `prediction_error.png` | True rocket direction minus predicted direction, separately for azimuth/elevation |
+| Either design's `tracking.png` | Required and actual antenna motion |
+| Either design's `history.csv` | Full time history, including shaft/output torque |
+
+`max_output_*` means **gearbox output / antenna axis**. `max_motor_*` means
+**motor shaft**, using 50:1 azimuth and 10:1 elevation. These are sampled
+requirements/achieved motions, not measured physical motor maximum ratings.
+
+### 5. Rerun one selected design without searching again
+
+After step 3 has produced the configurations, run either command:
+
+```powershell
+# Minimum-torque design
+& ".\.venv\Scripts\python.exe" -B tracking_sim.py --mount-config results/mount-study/minimum_torque/mount_config.json --output results/chosen-mount
+# Minimum-error design
+& ".\.venv\Scripts\python.exe" -B tracking_sim.py --mount-config results/mount-study/minimum_tracking_error/mount_config.json --output results/chosen-error-mount
+```
+
+These reuse the chosen geometry/controller but regenerate the calibrated flight.
+**Keep `--mount-config` in the command to use the coupled mechanical dynamics.**
+Running `tracking_sim.py` alone uses the earlier kinematic comparison.
+
+To test a radio outage with the chosen geometry:
+
+```powershell
+& ".\.venv\Scripts\python.exe" -B tracking_sim.py --mount-config results/mount-study/minimum_torque/mount_config.json --blackout 2 5 --comm-timeout 1 --output results/chosen-mount-outage
+```
+
+### 6. Check the code after simulation updates
+
+```powershell
+& ".\.venv\Scripts\python.exe" -B -m unittest test_tracking_sim test_mount_dynamics -v
+```
+
+Successful checks end in `OK`. Read failures before trusting changed results.
+Rerun step 3 after changes to geometry, objectives, PID, dynamics or flight inputs
+so saved selected configurations match the new model. Use a separate output
+directory to preserve a previous run:
+
+```powershell
+& ".\.venv\Scripts\python.exe" -B mount_study.py --output results/mount-study-new
+```
+
+When using that directory, also change the `--mount-config` paths in step 5 to
+`results/mount-study-new/...`. Reusing any output directory overwrites that run's
+generated files. See the sections below for assumptions and detailed settings.
+
+**Maintenance:** every simulation update must update this run process when
+commands, dependencies, inputs, outputs or interpretation change, and record the
+verification actually performed. Keep the repository README's simulation link current.
+
+For the supplied coupled mechanical equations and the two geometry studies, use
+`mount_study.py` and the saved configurations described below.
+
+## Coupled dynamics and two geometry studies
+
+From `OldCode`:
+
+```powershell
+& .\.venv\Scripts\python.exe -B mount_study.py
+```
+
+The script builds one calibrated 30,000-foot flight and one seeded telemetry
+history, then uses both for every geometry. It searches **gamma1=0–90 degrees**
+and **d=0.025–0.1 m**, with user-confirmed **a=s=0**, L=0.143 m and dish mass
+3 kg. The default coarse grid is 19 by 7 with two local refinements around both
+objectives. This is a bounded sampled search, not a global optimality proof.
+Mechanical travel and collision limits are intentionally unspecified for this
+provisional study. The two objectives optimize gamma1 and d only; PID gains,
+trajectory, telemetry and other mechanical assumptions remain fixed:
+
+- **Minimum torque:** minimize the largest absolute ideal motor-shaft torque
+  across both axes and the flight, computed by inverse dynamics. Then run the
+  torque-limited controller for that geometry and measure its tracking error.
+  Using ideal trajectory torque avoids the trivial alternative of reducing
+  torque by simply failing to follow the rocket.
+- **Minimum tracking error:** minimize the maximum actual antenna/true-rocket
+  boresight separation using the same torque PID controller; report its ideal,
+  requested and actual peak motor torques.
+
+The pure **rocket prediction error** is true rocket direction minus predicted
+rocket direction; it is identical for both geometries and is plotted separately.
+Geometry cannot change telemetry prediction error. Actual antenna tracking error
+includes the mechanism/controller response and therefore can change with geometry.
+
+Each study saves a `mount_config.json` and the usual trajectory, tracking,
+prediction-error, summary and history files. `study_summary.json` compares both
+designs, including peak angular velocity/acceleration for the ideal trajectory and
+actual predicted PID motion. `candidates.csv` records all evaluated geometries;
+`optimization.png` shows the objective surfaces; `comparison.png` compares
+tracking error and actual motor-shaft torque versus time. Reported torques are
+**motor-shaft N*m**, except CSV fields explicitly labeled `output_torque`.
+
+To use a selected geometry in a new simulation:
+
+```powershell
+& .\.venv\Scripts\python.exe -B tracking_sim.py --mount-config results/mount-study/minimum_torque/mount_config.json --output results/chosen-mount
+& .\.venv\Scripts\python.exe -B tracking_sim.py --mount-config results/mount-study/minimum_tracking_error/mount_config.json --output results/chosen-error-mount
+```
+
+Supplying `--mount-config` enables the coupled torque plant. Without that option,
+`tracking_sim.py` retains its original kinematic acceleration-limited comparison.
+The torque plant uses output-coordinate radians [phi,psi], converts sky elevation
+with `psi = pi/2 - elevation - gamma1`, and integrates both coupled equations with
+RK4 and zero-order-held torque. It has **no artificial acceleration or speed
+clipping**: the speed-dependent motor torque envelope limits the applied torque.
+The old `--max-speed` and `--max-accel` arguments apply only to the kinematic plant.
+Torque PID gains, separately for azimuth/elevation, default to Kp=[12,8] N*m/rad,
+Ki=[0.5,0.5] N*m/(rad*s), Kd=[4,2] N*m*s/rad. The controller adds gravity-holding
+torque, uses derivative on measured angle and conditional integral antiwindup.
+It assumes ideal angle/rate feedback and ideal torque actuation; this is not a
+simulation of stepper commutation or an assertion that the DM556T exposes torque
+commands or angle feedback.
+
+Provisional inputs are explicit in each saved configuration: a uniform thin dish
+of radius 0.25 m, base azimuth inertia 0.0904 kg*m² **excluding the added dish and
+azimuth rotor**, zero extra elevation support inertia, zero damping, 50:1/10:1
+reductions, and FY56ED420A rotor inertia 0.000068 kg*m². Approximate 24 V torque
+curve points are transcribed from the supplied chart, then derated to **50%**
+available torque; gearbox efficiency is assumed **80%**. Both can be varied with
+`--usable-torque-fraction` and `--efficiency`. No measured torque-speed curve,
+support COM/gravity, gearbox inertia, backlash, wind load or missed-step model is
+available. Thus numerical results are conditional on these assumptions.
+
+Output-equivalent input torque is eta*N*tau_motor. To account for motor rotor
+acceleration consistently when eliminating the shaft coordinate, effective
+inertia includes eta*N²*J_rotor (N²*J_rotor for unit efficiency). This is a
+constant-efficiency drive approximation, not a quadrant-specific gearbox-loss
+model. Required output motion maps to motor motion by N; a fixed gamma1 changes
+gravity/inertia and achievable tracking, not ideal tracking velocity/acceleration.
+
+The default vertical flight has zero ideal azimuth velocity/acceleration;
+actual azimuth PID motion comes from noisy telemetry. These runs therefore cannot
+establish azimuth worst-case requirements for an off-axis flight. Ideal elevation
+requirements are common to both geometries; controller motion can exceed those
+requirements while correcting errors. Inspect peak times and raw command jumps.
+
+Verified study results on 2026-11-17 (329 evaluated candidates, seed 42):
+
+| Geometry objective | gamma1 | d | Ideal peak shaft torque | Actual peak shaft torque | Maximum antenna tracking error |
+| --- | --- | --- | --- | --- | --- |
+| Minimum ideal torque | 55.56 deg | 25.69 mm | 0.3977 N*m | 0.4177 N*m | 7.6229 deg |
+| Minimum maximum tracking error | 90 deg | 25 mm | 0.5158 N*m | 0.5175 N*m | 7.5916 deg |
+
+The torque maxima above occur on elevation. Predicted-PID motion peaks:
+
+| Design / axis | Output deg/s | Output deg/s² | Motor RPM | Motor deg/s² |
+| --- | --- | --- | --- | --- |
+| Minimum torque / azimuth | 1.665 | 32.573 | 13.874 | 1628.656 |
+| Minimum torque / elevation | 28.760 | 116.444 | 47.934 | 1164.440 |
+| Minimum tracking error / azimuth | 1.642 | 30.252 | 13.681 | 1512.616 |
+| Minimum tracking error / elevation | 28.733 | 127.461 | 47.888 | 1274.610 |
+
+Ideal elevation motion for both designs is 26.740 deg/s and 21.549 deg/s²;
+the additional controller acceleration corrects lag/noise. Pure rocket-direction
+prediction error is the same for both designs (2.650 deg maximum boresight error).
+At 200 Hz with each geometry held fixed, peak tracking errors were 7.6336 and
+7.6037 deg, and peak elevation motor torques were 0.4181 and 0.5175 N*m.
+This timestep check preserves the tradeoff but does not establish robustness
+across telemetry seeds, aerodynamic assumptions or physical hardware.
+All 21 tracking/dynamics regression tests passed, including energy consistency,
+batch/scalar dynamics agreement, holding under gravity compensation and motor
+torque envelope checks. Selected configurations were also run through the main
+tracking simulator at 200 Hz.
+
+For a faster rerun of the already calibrated test flight (same 20 Hz integrator):
+
+```powershell
+& .\.venv\Scripts\python.exe -B mount_study.py --target-apogee-ft 0 --motor-accel 312.5837707519531
+```
 
 For PID tracking and pointing-error diagrams, start with `tracking_sim.py` below.
 For ideal antenna tracking demand, use `pointer.py`. For a repeatable single
@@ -76,10 +317,11 @@ Files saved under `results/pid` (overwritten when that directory is reused):
 - **`pointing_error.png`**: total boresight angular error for hold-last-position
   versus velocity prediction, a beam threshold, telemetry age, and a link-status
   panel. Red shading marks telemetry timeouts.
-- **`projected_actual_error.png`**: signed azimuth/elevation errors between the
-  projected command and actual antenna, and between the projected command and
-  true rocket direction. A boresight-error panel compares all three directions;
-  a link-status panel and red outage shading show communication loss/recovery.
+- **`prediction_error.png`**: one signed error per axis, defined as true rocket
+  angle minus predicted rocket angle relative to the ground system at the same
+  timestamp. Azimuth is wrapped into [-180,180) degrees. Telemetry status and red
+  timeout shading remain. `projected_actual_error.png` is a compatibility copy
+  of this simplified graph. Antenna-following error stays in the other graphs.
 - **`history.csv`**: rocket position, telemetry age, commands, actual motion,
   acceleration and errors for both strategies. Acceleration at row t acts over
   the next control interval. The final acceleration is zero (no next interval).
@@ -177,6 +419,38 @@ intervals, total timed-out duration and projected/actual error peaks. Radio
 status is shared by both controllers because they receive the same packets.
 
 ## Setup on Windows
+
+### Coupled mount dynamics equations (2026-11-17)
+
+`models/mount_dynamics.py` transcribes the supplied geometry and equations in SI
+units. It includes the dish inertias, parallel-axis contributions, gravity torque,
+both coupling terms, and constant reflected motor-rotor inertias. It provides
+inverse dynamics (motion to output torque) and forward dynamics (torque to
+acceleration). It is connected to `mount_study.py` and to `tracking_sim.py` when
+`--mount-config` is supplied. Horizontal offsets `a=s=0` were confirmed by the user.
+
+The supplied drawing defines `theta = psi + gamma1` from vertical, whereas sky
+elevation is above the horizon. The conversion is therefore
+`elevation = pi/2 - (psi + gamma1)`. Geometry is
+`x0 = a + d*sin(gamma1)`, `z0 = L + d*cos(gamma1)`,
+`x(psi) = L*sin(psi) + d*sin(psi+gamma1) + a*cos(psi)`,
+`l2 = s + x`, and `G = mass*g*x`. The forward solver follows the supplied
+elevation equation's sign: gravity drives positive psi, so holding torque is -G.
+
+Known/proposed model inputs: dish mass 3 kg, L=0.143 m, d in [0.025,0.1] m,
+thin-disk radius approximately 0.25 m from the sketch, rotor inertia
+0.000068 kg*m² and reductions 50/10. The 0.0904 kg*m² azimuth assembly inertia
+is treated as excluding the additional dish and azimuth rotor. Elevation support
+inertia and damping default to zero (incomplete until supplied). These defaults
+are explicit model assumptions, not CAD measurements. Constructor inputs `a`,
+`s`, `gamma1` and `d` are required by the model; study-specific values are saved
+in each configuration. Bounded geometry optima are conditional on the study assumptions.
+
+Check the equations and existing tracker with:
+
+```powershell
+& .\.venv\Scripts\python.exe -B -m unittest test_tracking_sim test_mount_dynamics -v
+```
 
 From the repository root in PowerShell, with a working Python 3 interpreter:
 

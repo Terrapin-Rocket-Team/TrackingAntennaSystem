@@ -11,7 +11,7 @@ replacement for the source.
 
 - Created: **2026-10-06** (America/New_York).
 - Created by: Divyansh Srivastava, Matt Urban
-- Last updated: **2026-11-12**.
+- Last updated: **2026-11-17**.
 - Last updated by: OpenAI Codex (AI agent), at Matt Urban's request.
 - Initial review: library version **0.1**, repository commit **11b4d7a** (metadata preserved from the supplied guide; not an ATS package version).
 - ATS adaptation reviewed against: checkout at **d1bf4af**, including local edits to `src/atsmain.cpp`.
@@ -31,6 +31,9 @@ affected sections and record that update in the same change.
 | 2026-11-03 | OpenAI Codex (AI agent) | Documented corrected Python flight integration and the new PID tracking/apogee-calibration experiment and checks. |
 | 2026-11-03 | OpenAI Codex (AI agent) | Added projected-angle error plots and configurable telemetry timeout/receive-blackout status, CSV fields and regression checks. |
 | 2026-11-12 | OpenAI Codex (AI agent) | Added PID ideal/command/actual angular-motion peak reports with timestamps, shaft conversions, native-grid truth derivatives, and 50:1/10:1 reporting defaults. |
+| 2026-11-17 | OpenAI Codex (AI agent) | Simplified rocket prediction error to true-minus-predicted angles; added an independently tested coupled mount model from the supplied drawing, pending geometry inputs before controller integration/optimization. |
+| 2026-11-17 | OpenAI Codex (AI agent) | Connected the coupled mount model to torque PID; added two bounded gamma1/d geometry studies, reusable configurations, motor torque/motion reports and comparison plots with user-confirmed a=s=0. |
+| 2026-11-17 | OpenAI Codex (AI agent) | Added a numbered simulation run process, repository README entry point, and an explicit requirement to maintain run instructions with future simulation updates. |
 
 ## What the Antenna Tracking System is and how it reaches the controller
 
@@ -266,6 +269,13 @@ OldCode runs independent Python experiments:
   pointing-error diagrams. Motor limits, beamwidth and telemetry errors are
   scenario assumptions; ideal angle feedback is not actual stepper feedback.
   `--target-apogee-ft 0` disables calibration. See `OldCode/README.md`.
+- `mount_study.py`: compares minimum ideal motor torque and minimum maximum
+  physical tracking error over gamma1/d geometry. Uses coupled torque dynamics,
+  fixed torque PID gains, approximate derated motor torque-speed curve and
+  assumed efficiency/support inertia. Saves configurations usable with
+  `tracking_sim.py --mount-config <path>`. That option enables torque dynamics;
+  otherwise tracking_sim retains its kinematic plant. See the README for units,
+  geometry, objectives, and limits of the vertical flight case.
 
 Both Python flight generators now use time since launch for mass, advance position
 from the old velocity, align samples with timestamps, and initialize prelaunch
@@ -324,6 +334,13 @@ platform guards around storage and hardware code. No library manifest or
 automatic `ASTRA_VERSION` injection is configured here.
 
 ## Documentation and maintenance workflow
+
+At the user's request, every simulation update must maintain the step-by-step
+"Start here" run process in `OldCode/README.md`. Update commands, dependencies,
+required inputs, selected-configuration usage, output locations/meaning and
+relevant checks whenever affected. Keep `README.md` linked to that process.
+State which verification actually ran. Do not leave obsolete run commands as the
+primary workflow after changing simulation entry points or the dynamics model.
 
 Read the [repository README](../README.md), the relevant headers and
 implementations, and [platformio.ini](platformio.ini) for configuration.

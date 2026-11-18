@@ -22,6 +22,14 @@ def wrap(degrees):
     return (np.asarray(degrees) + 180) % 360 - 180
 
 
+def prediction_axis_error(truth, predicted):
+    """True rocket angle minus predicted rocket angle at the same timestamp."""
+    error = np.asarray(truth)-np.asarray(predicted)
+    error = np.array(error, dtype=float, copy=True)
+    error[..., 0] = wrap(error[..., 0])
+    return error
+
+
 def pointing(relative):
     relative = np.asarray(relative)
     return np.degrees(np.stack((np.arctan2(relative[..., 1], relative[..., 0]),
@@ -297,6 +305,16 @@ def export(args, data, result, fitted, baseline):
                                 "Motor limits and beamwidth are scenario assumptions, not measured ratings.",
                                 "No backlash, missed steps, mount bias, or covariance model.",
                                 "Fixed masses 60.8/40.8 kg, burn 4.83 s; still air."])
+    if "mount_config" in result:
+        summary["mount_dynamics"] = result["mount_config"]
+        summary["angular_motion_notes"][3] = "Actual PID peaks arise from coupled torque dynamics and the assumed torque-speed envelope."
+        summary["assumptions"][3] = "Torque PID with gravity compensation, coupled forward dynamics, approximate motor torque-speed limit, and ideal angle feedback."
+        summary["assumptions"][4] = "Kinematic max_speed/max_accel settings do not constrain the coupled model; gear efficiency and torque envelope are assumptions."
+        summary["motor_torque_peaks_nm"] = {}
+        for s, strategy in enumerate(("hold", "predicted")):
+            summary["motor_torque_peaks_nm"][strategy] = {
+                axis: float(np.max(np.abs(result["motor_torque"][airborne, s, i])))
+                for i, axis in enumerate(("azimuth", "elevation"))}
     (args.output/"summary.json").write_text(json.dumps(summary, indent=2, allow_nan=False)+"\n", encoding="utf-8")
     columns = {"time_since_launch_s": t}
     for i, a in enumerate("xyz"):
@@ -319,8 +337,13 @@ def export(args, data, result, fitted, baseline):
             columns[f"{strategy}_{axis}_projected_minus_actual_deg"] = wrap(signed) if i == 0 else signed
             prediction_error = result["command"][:, s, i]-result["truth"][:, i]
             columns[f"{strategy}_{axis}_projected_minus_true_deg"] = wrap(prediction_error) if i == 0 else prediction_error
+            columns[f"{strategy}_{axis}_true_minus_predicted_deg"] = prediction_axis_error(
+                result["truth"], result["command"][:, s])[:, i]
             for key, unit in (("command", "deg"), ("actual", "deg"), ("rate", "deg_s"), ("accel", "deg_s2")):
                 columns[f"{strategy}_{axis}_{key}_{unit}"] = result[key][:, s, i]
+            if "mount_config" in result:
+                for key in ("motor_torque", "requested_motor_torque", "output_torque"):
+                    columns[f"{strategy}_{axis}_{key}_nm"] = result[key][:, s, i]
     np.savetxt(args.output/"history.csv", np.column_stack(list(columns.values())),
                delimiter=",", header=",".join(columns), comments="")
     # All plot comparisons use the same truth, packet draws and motor limits.
@@ -339,8 +362,9 @@ def export(args, data, result, fitted, baseline):
         panels[2, i].plot(t, result["accel"][:, 1, i], label="Actual PID acceleration")
         for row, limit, label in ((1, args.max_speed[i], "Rate (deg/s)"),
                                   (2, args.max_accel[i], "Acceleration (deg/s²)")):
-            panels[row, i].axhline(limit, color="red", linestyle="--", label="Assumed limit")
-            panels[row, i].axhline(-limit, color="red", linestyle="--")
+            if "mount_config" not in result:
+                panels[row, i].axhline(limit, color="red", linestyle="--", label="Assumed limit")
+                panels[row, i].axhline(-limit, color="red", linestyle="--")
             panels[row, i].set_ylabel(label)
         signed = result["actual"][:, 1, i]-result["truth"][:, i]
         if i == 0:
@@ -351,7 +375,8 @@ def export(args, data, result, fitted, baseline):
         panel.grid(alpha=.3)
         panel.legend(fontsize=8)
         panel.set_xlim(0, t[-1])
-    fig.suptitle("PID tracking with delayed, noisy telemetry — assumed motor limits")
+    fig.suptitle("Torque PID with coupled mount dynamics" if "mount_config" in result else
+                 "PID tracking with delayed, noisy telemetry — assumed motor limits")
     fig.tight_layout()
     fig.savefig(args.output/"tracking.png", dpi=160)
     plt.close(fig)
@@ -373,32 +398,24 @@ def export(args, data, result, fitted, baseline):
     fig.tight_layout()
     fig.savefig(args.output/"pointing_error.png", dpi=160)
     plt.close(fig)
-    fig, panels = plt.subplots(4, 1, figsize=(12, 11), sharex=True,
-                               gridspec_kw={"height_ratios": [2, 2, 2, 1]})
+    fig, panels = plt.subplots(3, 1, figsize=(12, 8), sharex=True,
+                               gridspec_kw={"height_ratios": [2, 2, 1]})
+    signed_prediction_error = prediction_axis_error(result["truth"], result["command"][:, 1])
     for i, axis in enumerate(("Azimuth", "Elevation")):
-        signed = result["command"][:, 1, i]-result["actual"][:, 1, i]
-        if i == 0:
-            signed = wrap(signed)
-        panels[i].plot(t, signed, label=f"{axis}: projected command - actual antenna")
-        prediction_error = result["command"][:, 1, i]-result["truth"][:, i]
-        panels[i].plot(t, wrap(prediction_error) if i == 0 else prediction_error,
-                       linestyle="--", label=f"{axis}: projected command - true rocket")
+        panels[i].plot(t, signed_prediction_error[:, i], label="True rocket angle - predicted rocket angle")
         panels[i].axhline(0, color="gray", linewidth=.7)
         panels[i].set_ylabel(f"{axis} error (deg)")
-    panels[0].set_title("Projected vs actual antenna angle — velocity-predicted PID")
-    panels[2].plot(t, result["projected_error"][:, 1], label="Projected direction vs actual antenna")
-    panels[2].plot(t, result["error"][:, 1], linestyle="--", label="True rocket direction vs actual antenna")
-    panels[2].plot(t, result["prediction_error"][:, 1], linestyle=":", label="Projected direction vs true rocket")
-    panels[2].set_ylabel("Boresight separation (deg)")
-    show_communication(panels[3], t, result["communication_status"])
+    panels[0].set_title("Rocket direction prediction error relative to the ground system")
+    show_communication(panels[2], t, result["communication_status"])
     for panel in panels:
         shade_outages(panel, outage_spans)
         panel.grid(alpha=.3)
         panel.set_xlim(0, t[-1])
-    for panel in panels[:3]:
+    for panel in panels[:2]:
         panel.legend(fontsize=9)
-    panels[3].set_title(f"LOST = no fresh packet for {args.comm_timeout:g} s; beam alignment is separate", fontsize=10)
+    panels[2].set_title(f"LOST = no fresh packet for {args.comm_timeout:g} s", fontsize=10)
     fig.tight_layout()
+    fig.savefig(args.output/"prediction_error.png", dpi=160)
     fig.savefig(args.output/"projected_actual_error.png", dpi=160)
     plt.close(fig)
     fig, panel = plt.subplots(figsize=(10, 5))
@@ -420,7 +437,9 @@ def export(args, data, result, fitted, baseline):
             values = [peaks[key]["value"] for key in ("max_output_velocity_deg_s", "max_output_acceleration_deg_s2",
                                                      "max_motor_velocity_rpm", "max_motor_acceleration_deg_s2")]
             print(f"{source+' / '+axis:<30} {values[0]:13.3f} {values[1]:15.3f} {values[2]:12.3f} {values[3]:15.3f}")
-    print("Command peaks include telemetry jumps. PID peaks use assumed limits, not measured motor capability.")
+    print("Command peaks include telemetry jumps. Coupled PID peaks use an assumed torque-speed envelope."
+          if "mount_config" in result else
+          "Command peaks include telemetry jumps. PID peaks use assumed limits, not measured motor capability.")
 
 
 def positive(text):
@@ -465,6 +484,7 @@ def main():
     parser.add_argument("--kd", type=nonnegative, default=10)
     parser.add_argument("--beamwidth", type=positive, default=20, help="assumed full half-power beamwidth, deg")
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--mount-config", help="JSON configuration saved by mount_study.py; enables coupled torque PID")
     args = parser.parse_args()
     if args.drop_probability > 1:
         parser.error("drop probability must be between 0 and 1")
@@ -477,7 +497,14 @@ def main():
     with (args.output/"generator.log").open("w", encoding="utf-8") as log:
         data, fitted, baseline = build_flight(args, log)
     print("Simulating PID and exporting plots...", flush=True)
-    export(args, data, simulate(args, data), fitted, baseline)
+    result = simulate(args, data)
+    if args.mount_config:
+        from mount_study import run_configured_mount
+        config = json.loads(Path(args.mount_config).read_text(encoding="utf-8"))
+        if args.azimuth_ratio != 50 or args.elevation_ratio != 10:
+            parser.error("Coupled mount configurations currently require 50:1 azimuth and 10:1 elevation")
+        result = run_configured_mount(result, config)
+    export(args, data, result, fitted, baseline)
 
 
 if __name__ == "__main__":

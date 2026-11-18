@@ -1,0 +1,225 @@
+{
+  "studies": {
+    "minimum_torque": {
+      "gamma1_deg": 55.55555555555556,
+      "d_m": 0.025694444444444447,
+      "ideal_peak_motor_torque_nm": 0.3976585711592752,
+      "max_tracking_error_deg": 7.622896358337402,
+      "rms_tracking_error_deg": 1.1833217310247537,
+      "actual_peak_motor_torque_nm": {
+        "azimuth": 0.0050348775731714574,
+        "elevation": 0.4177087777894636
+      },
+      "requested_peak_motor_torque_nm": {
+        "azimuth": 0.0050348775731714574,
+        "elevation": 0.4177087777894636
+      },
+      "ideal_peak_motor_torque_by_axis_nm": {
+        "azimuth": 0.0,
+        "elevation": 0.3976585711592752
+      },
+      "angular_motion": {
+        "ideal_tracking": {
+          "azimuth": {
+            "max_output_velocity_deg_s": {
+              "value": 0.0,
+              "time_since_launch_s": 0.0
+            },
+            "max_output_acceleration_deg_s2": {
+              "value": 0.0,
+              "time_since_launch_s": 0.0
+            },
+            "max_motor_velocity_rpm": {
+              "value": 0.0,
+              "time_since_launch_s": 0.0
+            },
+            "max_motor_acceleration_deg_s2": {
+              "value": 0.0,
+              "time_since_launch_s": 0.0
+            }
+          },
+          "elevation": {
+            "max_output_velocity_deg_s": {
+              "value": 26.740337402663727,
+              "time_since_launch_s": 1.700000000000001
+            },
+            "max_output_acceleration_deg_s2": {
+              "value": 21.54927118804561,
+              "time_since_launch_s": 0.10000000000000142
+            },
+            "max_motor_velocity_rpm": {
+              "value": 44.56722900443955,
+              "time_since_launch_s": 1.700000000000001
+            },
+            "max_motor_acceleration_deg_s2": {
+              "value": 215.49271188045608,
+              "time_since_launch_s": 0.10000000000000142
+            }
+          }
+        },
+        "predicted_pid": {
+          "azimuth": {
+            "max_output_velocity_deg_s": {
+              "value": 1.6649101647487652,
+              "time_since_launch_s": 59.0
+            },
+            "max_output_acceleration_deg_s2": {
+              "value": 32.57311965184853,
+              "time_since_launch_s": 48.43
+            },
+            "max_motor_velocity_rpm": {
+              "value": 13.874251372906377,
+              "time_since_launch_s": 59.0
+            },
+            "max_motor_acceleration_deg_s2": {
+              "value": 1628.6559825924264,
+              "time_since_launch_s": 48.43
+            }
+          },
+          "elevation": {
+            "max_output_velocity_deg_s": {
+              "value": 28.760411604058916,
+              "time_since_launch_s": 1.7200000000000006
+            },
+            "max_output_acceleration_deg_s2": {
+              "value": 116.44404285201446,
+              "time_since_launch_s": 0.6799999999999997
+            },
+            "max_motor_velocity_rpm": {
+              "value": 47.93401934009819,
+              "time_since_launch_s": 1.7200000000000006
+            },
+            "max_motor_acceleration_deg_s2": {
+              "value": 1164.4404285201447,
+              "time_since_launch_s": 0.6799999999999997
+            }
+          }
+        }
+      }
+    },
+    "minimum_tracking_error": {
+      "gamma1_deg": 90.0,
+      "d_m": 0.025,
+      "ideal_peak_motor_torque_nm": 0.5157999702124879,
+      "max_tracking_error_deg": 7.591564638052506,
+      "rms_tracking_error_deg": 1.1829446321747192,
+      "actual_peak_motor_torque_nm": {
+        "azimuth": 0.004961277328566174,
+        "elevation": 0.5174969339525635
+      },
+      "requested_peak_motor_torque_nm": {
+        "azimuth": 0.004961277328566174,
+        "elevation": 0.5174969339525635
+      },
+      "ideal_peak_motor_torque_by_axis_nm": {
+        "azimuth": 0.0,
+        "elevation": 0.5157999702124879
+      },
+      "angular_motion": {
+        "ideal_tracking": {
+          "azimuth": {
+            "max_output_velocity_deg_s": {
+              "value": 0.0,
+              "time_since_launch_s": 0.0
+            },
+            "max_output_acceleration_deg_s2": {
+              "value": 0.0,
+              "time_since_launch_s": 0.0
+            },
+            "max_motor_velocity_rpm": {
+              "value": 0.0,
+              "time_since_launch_s": 0.0
+            },
+            "max_motor_acceleration_deg_s2": {
+              "value": 0.0,
+              "time_since_launch_s": 0.0
+            }
+          },
+          "elevation": {
+            "max_output_velocity_deg_s": {
+              "value": 26.740337402663727,
+              "time_since_launch_s": 1.700000000000001
+            },
+            "max_output_acceleration_deg_s2": {
+              "value": 21.54927118804561,
+              "time_since_launch_s": 0.10000000000000142
+            },
+            "max_motor_velocity_rpm": {
+              "value": 44.56722900443955,
+              "time_since_launch_s": 1.700000000000001
+            },
+            "max_motor_acceleration_deg_s2": {
+              "value": 215.49271188045608,
+              "time_since_launch_s": 0.10000000000000142
+            }
+          }
+        },
+        "predicted_pid": {
+          "azimuth": {
+            "max_output_velocity_deg_s": {
+              "value": 1.6416623285770329,
+              "time_since_launch_s": 59.010000000000005
+            },
+            "max_output_acceleration_deg_s2": {
+              "value": 30.25232826204239,
+              "time_since_launch_s": 88.23
+            },
+            "max_motor_velocity_rpm": {
+              "value": 13.680519404808607,
+              "time_since_launch_s": 59.010000000000005
+            },
+            "max_motor_acceleration_deg_s2": {
+              "value": 1512.6164131021194,
+              "time_since_launch_s": 88.23
+            }
+          },
+          "elevation": {
+            "max_output_velocity_deg_s": {
+              "value": 28.733017909425577,
+              "time_since_launch_s": 1.7100000000000009
+            },
+            "max_output_acceleration_deg_s2": {
+              "value": 127.46100457170665,
+              "time_since_launch_s": 0.6799999999999997
+            },
+            "max_motor_velocity_rpm": {
+              "value": 47.88836318237596,
+              "time_since_launch_s": 1.7100000000000009
+            },
+            "max_motor_acceleration_deg_s2": {
+              "value": 1274.6100457170664,
+              "time_since_launch_s": 0.6799999999999997
+            }
+          }
+        }
+      }
+    }
+  },
+  "apogee_ft": 30002.04423994987,
+  "evaluated_candidates": 329,
+  "settings": {
+    "output": "results\\mount-study",
+    "gamma_points": 19,
+    "d_points": 7,
+    "refinements": 2,
+    "control_hz": 100,
+    "target_apogee_ft": 30000,
+    "motor_accel": 201.5,
+    "efficiency": 0.8,
+    "usable_torque_fraction": 0.5,
+    "support_elevation_inertia": 0,
+    "base_azimuth_inertia": 0.0904,
+    "seed": 42
+  },
+  "scope": [
+    "Bounded sampled search, not proof of a global optimum.",
+    "Gamma1 0-90 degrees; d .025-.1 m; no mechanical travel stops.",
+    "Torque objective: highest ideal inverse-dynamics motor torque across axes and flight.",
+    "Error objective: maximum actual antenna-vs-true-rocket boresight error with fixed PID gains.",
+    "Prediction error is independent of mount geometry.",
+    "Vertical flight: ideal azimuth demand is zero; azimuth PID responds to noisy telemetry.",
+    "Uniform thin disk radius .25 m; elevation support inertia and damping assumed zero.",
+    "Motor envelope approximately digitized from supplied 24V chart, derated by usable fraction.",
+    "Ideal torque control and angle feedback; stepper resonances/missed steps/backlash not modeled."
+  ]
+}
