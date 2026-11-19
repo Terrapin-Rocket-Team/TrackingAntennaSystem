@@ -14,11 +14,12 @@
       "+3V3",
       "33_dir-_1",
       "Net-(Q2-G)",
+      "5_dir-_1",
+      "5_dir-_2",
       "Net-(U3-FB)",
       "Net-(U3-EN)",
       "Net-(Q3-G)",
       "5_pul-_2",
-      "5_dir-_1",
       "Net-(C8-Pad1)",
       "GPS_SDA",
       "TX_TO_GCS",
@@ -29,8 +30,7 @@
       "33_dir-_2",
       "33_pul-_2",
       "GPS_SCL",
-      "Net-(U2-RESET_N)",
-      "5_dir-_2"
+      "Net-(U2-RESET_N)"
     ],
     "high_contrast_mode": 0,
     "net_color_mode": 1,
