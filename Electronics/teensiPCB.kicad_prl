@@ -6,12 +6,12 @@
     "hidden_netclasses": [],
     "hidden_nets": [
       "+5V",
+      "+3V3",
       "Net-(Q4-G)",
       "Net-(Q1-G)",
       "5_pul-_1",
       "Net-(U3-SW)",
       "Net-(U3-BOOT)",
-      "+3V3",
       "33_dir-_1",
       "Net-(Q2-G)",
       "5_dir-_1",
