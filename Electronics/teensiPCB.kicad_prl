@@ -2,7 +2,7 @@
   "board": {
     "active_layer": 0,
     "active_layer_preset": "",
-    "auto_track_width": true,
+    "auto_track_width": false,
     "hidden_netclasses": [],
     "hidden_nets": [
       "+5V",
@@ -22,8 +22,8 @@
       "5_pul-_2",
       "Net-(C8-Pad1)",
       "GPS_SDA",
-      "TX_TO_GCS",
       "RX_TO_GCS",
+      "TX_TO_GCS",
       "33_pul-_1",
       "RX1",
       "TX1",
